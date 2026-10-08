@@ -1,0 +1,1726 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><style>*{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>שאלוני תפיסה עצמית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;600;700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Layout: printed-worksheet look — pastel domain tables with colored answer columns, side "improve" boxes, pastel summary boxes. Deliberately a single light "paper" theme. */
+:root{
+  color-scheme:light;
+  --bg:#EEF2F8; --paper:#FFFFFF; --ink:#1E2A4F; --muted:#5B6584; --line:#DCE2EE; --accent:#2F56B0;
+  --social:#24448F; --social-band:#D6E4FA; --social-soft:#F1F6FE;
+  --learning:#17775A; --learning-band:#D2EFE1; --learning-soft:#EEF9F3;
+  --emotion:#C2295A; --emotion-band:#FBD7E2; --emotion-soft:#FFF1F5;
+  --indep:#5B3FB8; --indep-band:#E2D9F6; --indep-soft:#F4F0FC;
+  --yes:#3AA850; --yes-col:#E2F5E5; --yes-btn:#4DB861;
+  --some:#E3A900; --some-col:#FFF4C7; --some-btn:#FFE07A;
+  --help:#DE4850; --help-col:#FDE2E3; --help-btn:#F9B5B8;
+  --teal:#13879A; --teal-band:#CBEEF3;
+  --staff:#DC6A1E; --staff-band:#FCDCC3; --staff-soft:#FFF3E9;
+  --pink:#C42550; --pink-band:#FBDCE5; --pink-soft:#FFF2F6;
+  --mint:#1E8A5E; --mint-band:#D7F2E3; --mint-soft:#F0FAF4;
+  --idea:#E8B400; --idea-band:#FFF1BF;
+  --warn-soft:#FDEBDD; --warn:#B4541A;
+  --font-display:"Rubik","Assistant",system-ui,sans-serif;
+  --font-body:"Assistant","Rubik","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.45;direction:rtl}
+.shell{max-width:1060px;margin:0 auto;padding-inline:16px;padding-block:16px 60px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-wrap:balance;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* app header */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:44px;height:44px;border-radius:12px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:7px;background:var(--paper);border:1px solid var(--line)}
+.brand-mark i{border-radius:4px}
+.brand h1{font-size:1.4rem;line-height:1.1}
+.brand p{margin:0;color:var(--muted);font-size:.92rem}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:5px}
+.tab{border:0;background:transparent;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+
+/* form banner */
+.banner{--b:var(--social-band);--bi:var(--social);position:relative;overflow:hidden;text-align:center;background:linear-gradient(180deg,#fff 0%,color-mix(in srgb,var(--b) 70%,#fff) 100%);border:2px solid var(--b);border-radius:24px;padding:22px 150px 18px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.banner[data-kind="visual"]{--b:var(--teal-band);--bi:var(--teal)}
+.banner[data-kind="staff"]{--b:var(--staff-band);--bi:var(--staff)}
+.banner h2{font-size:2rem;line-height:1.2;font-weight:700}
+.banner .hl{background:linear-gradient(transparent 52%,color-mix(in srgb,var(--bi) 26%,transparent) 52%);padding:0 8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.legend{display:inline-block;background:var(--idea-band);border-radius:12px;padding:4px 16px;font-family:var(--font-display);font-weight:700;font-size:1.15rem}
+.banner .binst{margin:0;color:var(--muted);font-weight:600;font-size:.95rem}
+.deco{position:absolute;pointer-events:none;display:block;line-height:0}
+.deco svg{width:100%;height:auto;display:block}
+.d-star{width:48px;top:14px;inset-inline-start:22px;transform:rotate(-12deg)}
+.d-rays1{width:34px;top:58px;inset-inline-start:78px;transform:scaleX(-1)}
+.d-cloud1{width:74px;bottom:10px;inset-inline-start:16px}
+.d-squig{width:38px;bottom:20px;inset-inline-start:100px}
+.d-mount{width:104px;bottom:4px;inset-inline-end:14px}
+.d-pencil{width:58px;top:10px;inset-inline-end:28px}
+.d-rays2{width:30px;top:22px;inset-inline-end:96px}
+.d-spark{width:18px;top:72px;inset-inline-end:112px}
+/* meta */
+.meta{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.field .lbl{font-weight:700;font-size:.95rem}
+.field input,.field select,.field textarea{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:9px 12px;min-height:46px;width:100%}
+.field textarea{min-height:80px;resize:vertical}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 auto;border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:8px 10px;font-weight:700;cursor:pointer;min-height:46px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.req{color:var(--help)}
+
+/* domain row = table + improve box */
+.drow{--d:var(--social);--band:var(--social-band);--soft:var(--social-soft);display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px;align-items:start}
+.drow[data-d="learning"]{--d:var(--learning);--band:var(--learning-band);--soft:var(--learning-soft)}
+.drow[data-d="emotion"]{--d:var(--emotion);--band:var(--emotion-band);--soft:var(--emotion-soft)}
+.drow[data-d="indep"]{--d:var(--indep);--band:var(--indep-band);--soft:var(--indep-soft)}
+.drow.vis,.drow.staffrow{grid-template-columns:minmax(0,1fr)}
+.dcard{background:var(--paper);border:2px solid var(--band);border-radius:20px;overflow:hidden;box-shadow:0 2px 0 rgba(30,42,79,.05)}
+.grid{--c:76px;display:grid;grid-template-columns:minmax(0,1fr) repeat(3,var(--c))}
+.dtitle{display:flex;align-items:center;gap:12px;background:var(--band);padding:10px 16px;min-height:62px}
+.dtitle{min-height:76px}
+.dtitle .art{margin-inline-start:auto;width:64px;flex:none;line-height:0}
+.dtitle .art svg,.vside .art svg{width:100%;height:auto}
+.dray{width:24px;flex:none;line-height:0;opacity:.85}
+.dray svg{width:100%;height:auto}
+.dtitle h3{font-size:1.3rem;color:var(--ink)}
+.colh{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.8rem;font-weight:800;padding:6px 2px;text-align:center;line-height:1.1}
+.colh .face{width:28px;height:28px}
+.colh.yes{background:var(--yes-col)} .colh.some{background:var(--some-col)} .colh.help{background:var(--help-col)}
+.qtext{padding:12px 16px;border-top:1px solid var(--line);font-size:1.03rem;display:flex;align-items:center;gap:10px}
+.answers{display:contents}
+.ans{border:0;border-top:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 2px;transition:background .15s}
+.ans[data-tone="yes"]{--t:var(--yes);background:var(--yes-col)}
+.ans[data-tone="some"]{--t:var(--some);background:var(--some-col)}
+.ans[data-tone="help"]{--t:var(--help);background:var(--help-col)}
+.ans .r{width:24px;height:24px;border-radius:50%;border:2px solid #8C95AE;background:#fff;display:grid;place-items:center;color:#fff;font-size:.8rem;font-weight:900;transition:transform .15s}
+.ans .l{display:none;font-size:.78rem;font-weight:800}
+.ans:hover .r{border-color:var(--t)}
+.ans[aria-pressed="true"]{background:color-mix(in srgb,var(--t) 30%,#fff)}
+.ans[aria-pressed="true"] .r{background:var(--t);border-color:var(--t);transform:scale(1.15);animation:pop .25s ease}
+.ans[aria-pressed="true"] .r::after{content:"✓"}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1.15)}}
+
+/* visual version */
+.vcard{display:grid;grid-template-columns:118px minmax(0,1fr)}
+.vside{background:var(--band);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 8px;text-align:center}
+.vside{position:relative}
+.vside .art{width:70px;line-height:0}
+.v-rays{width:26px;top:10px;inset-inline-end:10px}
+.vside h3{font-size:1.15rem;line-height:1.2}
+.vgrid{--c:84px;display:grid;grid-template-columns:64px minmax(0,1fr) repeat(3,var(--c));column-gap:0}
+.vgrid .colh{background:transparent;padding-block:6px}
+.vgrid .sp{grid-column:span 2}
+.pic{border-top:1px solid var(--line);display:grid;place-items:center;padding:8px 0 8px 4px}
+.pic span{width:54px;height:54px;border-radius:12px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:2rem;line-height:1}
+.vgrid .qtext{font-size:1.12rem;font-weight:700;padding-inline:10px}
+.vgrid .ans{background:transparent;padding:6px 5px}
+.vb{width:100%;height:58px;border-radius:12px;display:grid;place-items:center;border:2px solid transparent;transition:transform .15s,box-shadow .15s,opacity .15s}
+.vb svg{width:36px;height:36px}
+.ans[data-tone="yes"] .vb{background:var(--yes-btn);color:#fff}
+.ans[data-tone="some"] .vb{background:var(--some-btn)}
+.ans[data-tone="help"] .vb{background:var(--help-btn)}
+.vgrid .ans[aria-pressed="true"]{background:transparent}
+.vgrid .ans[aria-pressed="true"] .vb{border-color:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--t) 40%,transparent);transform:scale(1.06);animation:pop2 .25s ease}
+.vgrid .answers:has(.ans[aria-pressed="true"]) .ans:not([aria-pressed="true"]) .vb{opacity:.4}
+@keyframes pop2{0%{transform:scale(1)}50%{transform:scale(1.14)}100%{transform:scale(1.06)}}
+
+/* improve box & checkbox items */
+.ibox{background:var(--soft);border:2px solid var(--band);border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.ibox h4,.vimprove h4{display:flex;align-items:center;justify-content:center;gap:8px}
+.tg{width:34px;flex:none;line-height:0}.tg svg{width:100%;height:auto}
+.ibox h4{font-size:1.05rem;text-align:center;padding-bottom:6px;border-bottom:2px solid var(--band);margin-bottom:4px}
+.vimprove{border-top:2px dashed var(--band);background:var(--soft);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.vimprove h4{font-size:1.05rem;justify-content:flex-start}
+.chips{display:flex;flex-direction:column;gap:2px}
+.chip{--c:var(--d,var(--accent));border:0;background:transparent;display:flex;align-items:center;gap:10px;text-align:right;padding:6px 4px;cursor:pointer;border-radius:10px;min-height:40px;width:100%}
+.chip:hover{background:rgba(255,255,255,.7)}
+.chip .box{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #8C95AE;background:#fff;display:grid;place-items:center;color:#fff;font-size:.85rem;font-weight:900}
+.chip[aria-pressed="true"] .box{background:var(--c);border-color:var(--c)}
+.chip[aria-pressed="true"] .box::after{content:"✓"}
+.chip[aria-pressed="true"] .cl{font-weight:700}
+.chip .ce{flex:none;width:30px;height:30px;display:grid;place-items:center;font-size:1.45rem;line-height:1}
+.chip .ce svg{width:28px;height:28px}
+.other-input{border:0;border-bottom:2px solid #B7BFD2;background:transparent;padding:4px 6px;margin-inline-start:32px;width:calc(100% - 32px)}
+.chips.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.chips.cards .chip{flex-direction:column;justify-content:center;background:#fff;border:2px solid var(--band);border-radius:16px;min-height:96px;padding:10px 6px;position:relative;text-align:center}
+.chips.cards .chip .ce{font-size:2.1rem;width:44px;height:44px}
+.chips.cards .chip .box{position:absolute;top:8px;inset-inline-start:8px}
+.chips.cards .chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--band) 55%,#fff)}
+
+
+.drow[data-d="climate"]{--d:#13879A;--band:var(--teal-band);--soft:#EDF9FB}
+.drow[data-d="climate"] .dcard{border-color:#F6C9A0}
+.drow[data-d="climate"] .dtitle{background:linear-gradient(90deg,#FCDCC3 0%,var(--teal-band) 55%)}
+.drow[data-d="climate"] .vside{background:linear-gradient(180deg,var(--teal-band) 0%,#FCDCC3 100%)}
+.single .chip .box{border-radius:50%}
+.ghint{margin:-2px 0 4px;text-align:center;color:var(--muted);font-size:.85rem}
+.vimprove .ghint{text-align:start}
+.vimprove h4{display:flex;align-items:center;gap:8px}
+
+.goalpanel{border-top:2px dashed color-mix(in srgb,var(--d) 35%,transparent);background:var(--soft);padding:12px 16px 14px;display:flex;flex-direction:column;gap:8px}
+.goalpanel h4{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:1.08rem}
+.goalpanel h4 .ghint{margin:0;font-weight:400;font-family:var(--font-body)}
+.chips.gp{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 10px}
+.chips.gp .chip{background:#fff;border:1.5px solid var(--band);border-radius:12px;padding:8px 10px}
+.chips.gp .chip[aria-pressed="true"]{border-color:var(--d);background:color-mix(in srgb,var(--band) 60%,#fff)}
+.chips.gp .other-input{grid-column:1/-1;margin-inline-start:0;width:100%;max-width:420px}
+
+.msg.note{background:var(--idea-band);color:var(--ink);font-weight:500}
+.msg.ok{background:var(--yes-col);color:#1E6B33}
+.ed-tabs{align-self:flex-start}
+.edlist{display:flex;flex-direction:column;gap:12px}
+.edrow{display:flex;flex-direction:column;gap:4px}
+.edrow label{font-weight:700;font-size:.92rem;display:flex;gap:8px;align-items:center}
+.edrow textarea{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:9px 12px;width:100%;resize:vertical;min-height:48px}
+.edrow.changed textarea{border-color:var(--accent);background:#fff}
+.edmeta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:.82rem}
+
+.pchart{margin:0;background:linear-gradient(180deg,#fff,#F7F9FD);border:1px solid var(--line);border-radius:16px;padding:12px 12px 8px;overflow-x:auto}
+.pchart svg{width:100%;min-width:520px;height:auto;display:block}
+.pchart .grid line{stroke:var(--line);stroke-dasharray:3 4}
+.pchart .grid text{font-size:10px;fill:var(--muted)}
+.pchart .val{font-size:10px;font-weight:700;fill:var(--ink)}
+.pchart .lab{font-size:12.5px;font-weight:700;fill:var(--ink);font-family:var(--font-display)}
+.pchart .staffmark{stroke:#1E2A4F;stroke-width:3;stroke-linecap:round}
+.pchart figcaption{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;font-size:.82rem;color:var(--muted);padding-top:6px}
+.pchart figcaption span{display:inline-flex;align-items:center;gap:6px}
+.pchart .sw{width:14px;height:10px;border-radius:3px;background:var(--accent);display:inline-block}
+.pchart .sm{width:16px;height:3px;border-radius:2px;background:#1E2A4F;display:inline-block}
+
+/* print pages (A4 at 96dpi) */
+.prctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.prctl .seg button{font-size:.9rem}
+.pwrap{overflow-x:auto;padding:16px 4px;display:flex;flex-direction:column;align-items:center;gap:22px;background:#DCE2EE;border-radius:20px}
+.ppage{width:794px;height:1123px;flex:none;background:#fff;color:#1E2A4F;padding:34px 40px 50px;box-sizing:border-box;position:relative;overflow:hidden;direction:rtl;font-family:var(--font-body);font-size:13px;line-height:1.4;box-shadow:0 6px 20px rgba(30,42,79,.18);display:flex;flex-direction:column;gap:12px}
+.ph{display:flex;align-items:center;gap:16px;border-radius:18px;padding:14px 20px;background:linear-gradient(90deg,#D6E4FA,#E2D9F6 55%,#FBD7E2)}
+.ph.cover{background:linear-gradient(90deg,#CBEEF3,#D2EFE1 50%,#FFF1BF)}
+.ph.staff{background:linear-gradient(90deg,#FCDCC3,#FFF1BF)}
+.ph-art{width:44px;flex:none;line-height:0}.ph-art2{width:74px;flex:none;line-height:0;margin-inline-start:auto}
+.ph svg{width:100%;height:auto}
+.ph-eyebrow{font-size:11px;font-weight:700;letter-spacing:.04em;color:#5B6584}
+.ph h1{font-family:var(--font-display);font-size:26px;line-height:1.15;margin:2px 0}
+.ph-sub{font-size:13px;font-weight:600}
+.ps{font-family:var(--font-display);font-size:16px;margin:4px 0 0}
+.pt{width:100%;border-collapse:collapse;font-size:13px}
+.pt th{background:#1E2A4F;color:#fff;font-weight:700;padding:6px 8px;text-align:center;font-size:12px}
+.pt th small{font-weight:400;opacity:.8}
+.pt td{border-bottom:1px solid #DCE2EE;padding:6px 8px;text-align:center;white-space:nowrap}
+.pt.small td,.pt.small th{padding:4px 6px;font-size:12px}
+.pt td:first-child{text-align:right}
+.pd{font-weight:700;border-inline-start:6px solid var(--pc);background:var(--pcs)}
+.psc{display:inline-block;min-width:38px;border-radius:7px;padding:1px 6px;font-weight:800}
+.psc.s3{background:#C9EFD3;color:#1E6B33}.psc.s2{background:#FFF1BF;color:#7A5A00}.psc.s1{background:#FBD5D7;color:#9B2530}
+.pm{color:#5B6584}
+.plegend{display:flex;gap:10px;justify-content:center;font-size:12px}
+.plegend span{border-radius:7px;padding:2px 10px;font-weight:700}
+.pl3{background:#C9EFD3}.pl2{background:#FFF1BF}.pl1{background:#FBD5D7}
+.pchartwrap .pchart{padding:6px 8px 4px;border-radius:14px}
+.pchartwrap .pchart svg{min-width:0}
+.pchartwrap .pchart{width:74%;margin:0 auto}
+.pchartwrap figcaption{font-size:11px;padding-top:2px}
+.ppage .pt td{padding:4px 8px}
+.pbox{border:2px solid var(--pcb);border-radius:14px;padding:8px 12px;background:var(--pcs)}
+.pbox h3{margin:0 0 4px;font-size:14px;color:var(--pc)}
+.pbox ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.pbox ul.two{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}
+.ppage{gap:10px}
+.pbox li::before{content:"•";color:var(--pc);font-weight:900;margin-inline-end:6px}
+.pbox p{margin:0}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pgrid.three{grid-template-columns:1fr 1fr 1fr}
+.pdom{border-radius:12px;border:1.5px solid var(--pcb);overflow:hidden}
+.pdom h3{margin:0;padding:5px 12px;font-size:13.5px;background:var(--pch);border-inline-start:6px solid var(--pc)}
+.pq{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 12px;border-top:1px solid #EEF1F7;font-size:12.5px}
+.pans{flex:none;border-radius:999px;padding:1px 10px;font-weight:800;font-size:11.5px}
+.pans.yes{background:#C9EFD3;color:#1E6B33}.pans.some{background:#FFF1BF;color:#7A5A00}.pans.help{background:#FBD5D7;color:#9B2530}.pans.none{background:#EEF1F7;color:#5B6584}
+.pgoal{padding:4px 12px 6px;font-size:12px;background:#FFFBEA;border-top:1px dashed #F0D98A}
+.ppage.filled{gap:8px}
+.pf{position:absolute;bottom:16px;inset-inline:40px;display:flex;justify-content:space-between;font-size:10.5px;color:#5B6584;border-top:1px solid #DCE2EE;padding-top:6px}
+
+.pwov{position:fixed;inset:0;background:rgba(30,42,79,.45);display:grid;place-items:center;z-index:50;padding:16px}
+.pwbox{background:#fff;border-radius:20px;padding:22px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 50px rgba(30,42,79,.3)}
+.pwbox h3{font-size:1.3rem}.pwbox p{margin:0}
+.pwbox input{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:10px 12px;min-height:46px}
+.pwbox .row{display:flex;gap:8px}
+/* summary boxes */
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.sbox{--sb:var(--pink-band);--ss:var(--pink-soft);--c:var(--pink);background:var(--ss);border:2px solid var(--sb);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.sbox[data-c="mint"]{--sb:var(--mint-band);--ss:var(--mint-soft);--c:var(--mint)}
+.sbox[data-c="blue"]{--sb:var(--social-band);--ss:var(--social-soft);--c:var(--social)}
+.sbox[data-c="staff"]{--sb:var(--staff-band);--ss:var(--staff-soft);--c:var(--staff)}
+.sbox[data-c="idea"]{--sb:var(--idea-band);--ss:#FFFBEA;--c:#B88700}
+.sbox .sh{background:var(--sb);padding:10px 14px;display:flex;align-items:center;gap:10px}
+.sbox .sh h4{font-size:1.15rem}
+.sbox{position:relative}
+.sbox .sh .sic{width:42px;flex:none;line-height:0}.sbox .sh .sic svg{width:100%;height:auto}
+.s-spark1{width:20px;bottom:74px;inset-inline-end:58px}.s-spark2{width:14px;bottom:100px;inset-inline-end:26px}.s-spark3{width:22px;top:12px;inset-inline-end:20px}
+.s-plant{width:52px;bottom:6px;inset-inline-end:10px}
+.sbox .sh small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;font-family:var(--font-body)}
+.sbox .sbody{padding:10px 14px 14px}
+.sbox .chip{--c:var(--sbc,var(--c))}
+.sbox .chips.two{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}
+.sbox.wide{grid-column:1/-1}
+.sbox .field textarea{background:#fff}
+
+.footer{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;background:#ECE6FA;border-radius:999px;padding:10px 24px;min-height:70px}
+.footer p{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.2rem;text-align:center;text-wrap:balance}
+.f-mount{width:72px;flex:none;line-height:0}.f-plant{width:44px;flex:none;line-height:0}.f-rays{width:26px;flex:none;line-height:0}.f-rays.flip{transform:scaleX(-1)}
+.footer svg{width:100%;height:auto}
+.submitbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--ink);color:#fff;border-radius:18px;padding:14px 18px}
+.submitbar p{margin:0}
+.btn{border:0;border-radius:14px;padding:12px 22px;font-weight:800;cursor:pointer;background:var(--accent);color:#fff;min-height:48px}
+.submitbar .btn{background:#fff;color:var(--ink)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.55;cursor:wait}
+.msg{border-radius:14px;padding:12px 14px;font-weight:600}
+.msg.err{background:var(--warn-soft);color:var(--warn)}
+.done{background:var(--paper);border:2px solid var(--yes);border-radius:24px;padding:32px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.done .big{font-size:3.2rem;line-height:1}
+.done h2{font-size:1.8rem}
+
+/* dashboard */
+.gate{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;max-width:440px}
+.gate .row{display:flex;gap:8px}
+.gate input{flex:1;min-width:0;border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:10px 12px;min-height:48px}
+.dash{display:flex;flex-direction:column;gap:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;justify-content:space-between}
+.toolbar .field{min-width:200px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.kpi b{display:block;font-family:var(--font-display);font-size:2rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:.92rem}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h3{font-size:1.2rem}
+.panel .sub{margin:0;color:var(--muted);font-size:.92rem}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.96rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:.85rem;color:var(--muted);font-weight:700}
+td.dn{font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.score{display:inline-flex;align-items:center;gap:6px}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);opacity:.75}
+.gap-big{background:var(--warn-soft);color:var(--warn);font-weight:800;border-radius:8px;padding:2px 8px}
+.muted{color:var(--muted)}
+.insights{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.82rem;font-weight:700;background:var(--bg);border:1px solid var(--line)}
+.ibar{display:grid;grid-template-columns:150px minmax(0,1fr) 36px;gap:10px;align-items:center}
+.ibar .track{height:14px;border-radius:7px;background:var(--bg);overflow:hidden}
+.ibar .fill{height:100%;background:var(--mint);border-radius:7px}
+.empty{background:var(--paper);border:2px dashed var(--line);border-radius:20px;padding:26px;text-align:center;color:var(--muted)}
+.linkbtn{border:0;background:none;color:var(--help);font-weight:700;cursor:pointer;padding:4px 6px}
+
+@media (max-width:760px){
+  body{font-size:16px}
+  .drow{grid-template-columns:minmax(0,1fr)}
+  .grid{--c:minmax(0,1fr);grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid .dtitle,.grid .qtext{grid-column:1/-1}
+  .grid .colh{display:none}
+  .grid .ans{border-top:0;padding-block:8px 10px}
+  .grid .ans .l{display:block}
+  .vcard{grid-template-columns:minmax(0,1fr)}
+  .vside{flex-direction:row;justify-content:flex-start;padding:10px 14px}
+  .vside .di{width:40px;height:40px}
+  .vgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .vgrid .colh,.vgrid .sp{display:none}
+  .vgrid .pic{grid-column:1/2;justify-content:start;padding-inline:12px 0}
+  .vgrid .qtext{grid-column:2/-1;border-top:1px solid var(--line)}
+  .banner{padding:18px 54px 14px}
+  .banner h2{font-size:1.3rem}
+  .legend{font-size:.95rem}
+  .d-cloud1,.d-squig,.d-pencil,.d-rays2,.d-spark,.d-rays1{display:none}
+  .d-star{width:32px;inset-inline-start:12px}
+  .d-mount{width:58px;inset-inline-end:6px}
+  .dtitle .art{width:48px}
+  .footer{border-radius:22px;padding:10px 14px}
+  .footer p{font-size:1rem}
+  .f-mount{width:48px}.f-rays{display:none}.f-plant{width:32px}
+  .tabs{width:100%}
+  .tab{flex:1 1 45%}
+  .sbox .chips.two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><i style="background:var(--social)"></i><i style="background:var(--learning)"></i><i style="background:var(--emotion)"></i><i style="background:var(--indep)"></i></div>
+      <div><h1>שאלוני תפיסה עצמית</h1><p>מיפוי בית־ספרי · ארבעה תחומים · שלושה מועדים בשנה</p></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="בחירת שאלון">
+      <button class="tab" role="tab" id="tab-high" data-tab="high" aria-selected="true">תלמיד/ה</button>
+      <button class="tab" role="tab" id="tab-visual" data-tab="visual" aria-selected="false">תלמיד/ה · חזותי</button>
+      <button class="tab" role="tab" id="tab-staff" data-tab="staff" aria-selected="false">צוות</button>
+      <button class="tab" role="tab" id="tab-data" data-tab="data" aria-selected="false">נתונים ו־Excel</button>
+    </nav>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script>
+/* ---------- content ---------- */
+const STAFF_CODE = "orim";
+const TP = {start:"תחילת שנה", mid:"אמצע שנה", end:"סוף שנה"};
+const TP_ORDER = ["start","mid","end"];
+const TYPE_LABEL = {high:"תלמיד/ה – גרסה מילולית", visual:"תלמיד/ה – גרסה חזותית", staff:"צוות/מורה"};
+const CLASSES = ["כיתת נופר"];
+const ICONS = {
+  social:'<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><circle cx="16" cy="9" r="4.5"/><circle cx="7" cy="12" r="3.5"/><circle cx="25" cy="12" r="3.5"/><path d="M8.5 27c0-4.6 3.4-8.5 7.5-8.5s7.5 3.9 7.5 8.5z"/><path d="M1.5 26c0-3.6 2.4-6.6 5.5-6.6 1.2 0 2.3.4 3.2 1.1A11 11 0 0 0 7.3 26z"/><path d="M30.5 26c0-3.6-2.4-6.6-5.5-6.6-1.2 0-2.3.4-3.2 1.1A11 11 0 0 1 24.7 26z"/></svg>',
+  learning:'<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M3 6.5C6.8 5.3 11 5.6 15 8v19c-4-2.4-8.2-2.7-12-1.5z"/><path d="M29 6.5C25.2 5.3 21 5.6 17 8v19c4-2.4 8.2-2.7 12-1.5z"/></svg>',
+  emotion:'<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28S3 20.2 3 11.6C3 7.4 6.2 4.5 9.9 4.5c2.6 0 4.8 1.4 6.1 3.6 1.3-2.2 3.5-3.6 6.1-3.6 3.7 0 6.9 2.9 6.9 7.1C29 20.2 16 28 16 28z"/></svg>',
+  indep:'<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3.5 2.5 15h4v13.5h7.5v-8h4v8h7.5V15h4z"/></svg>'
+};
+const VERSION = "version_2";
+const DOMAINS = [
+  {k:"social", name:"חברתי", field:"social_score", t:{high:"איך אני עם חברים?", visual:"אני עם חברים", staff:"חברתי"}},
+  {k:"learning", name:"למידה", field:"learning_score", t:{high:"איך אני בלמידה?", visual:"אני בלמידה", staff:"למידה"}},
+  {k:"emotion", name:"רגשות והתנהגות", field:"emotion_score", t:{high:"איך אני עם הרגשות וההתנהגות שלי?", visual:"אני והרגשות שלי", staff:"רגשות והתנהגות"}},
+  {k:"indep", name:"עצמאות וביום־יום", field:"independence_score", t:{high:"איך אני בעצמאות וביום־יום?", visual:"אני בעצמאות", staff:"עצמאות וביום־יום"}}
+];
+const GOAL_FIELD = {social:"improvement_goal_social", learning:"improvement_goal_learning", emotion:"improvement_goal_emotion", indep:"improvement_goal_independence"};
+const DNAME = Object.fromEntries(DOMAINS.map(d=>[d.k,d.name]));
+const ITEM_ICONS = {social:["👥","💬","✋"], learning:["🪑","📝","✋"], emotion:["🙂","🧘","🛡️"], indep:["🎒","📦","👤"]};
+const ITEMS = {
+  high:{
+    social:["אני מרגיש/ה שאני חלק מהקבוצה.","אני מצליח/ה ליצור קשר עם אחרים.","כשיש לי קושי עם מישהו, אני מנסה להתמודד או מבקש/ת עזרה."],
+    learning:["אני משתתף/ת בשיעור בדרך שמתאימה לי.","אני ממשיך/ה לנסות גם כשהמשימה קשה לי.","אני מבקש/ת עזרה כשאני צריך/ה."],
+    emotion:["אני יודע/ת לזהות כשנעים לי וכשקשה לי.","כשקשה לי, אני משתמש/ת בדרך שעוזרת לי להירגע.","אני שומר/ת על גוף בטוח."],
+    indep:["אני מתארגן/ת לקראת השיעור או הפעילות.","אני שומר/ת על הדברים שלי.","אני מנסה לעשות דברים בעצמי לפני שאני מבקש/ת עזרה."]
+  },
+  visual:{
+    social:["אני חלק מהקבוצה","אני מדבר/ת עם אחרים","כשקשה לי עם מישהו – אני מבקש/ת עזרה"],
+    learning:["אני משתתף/ת בשיעור","אני ממשיך/ה לנסות","אני מבקש/ת עזרה"],
+    emotion:["אני יודע/ת איך אני מרגיש/ה","אני משתמש/ת במשהו שעוזר לי להירגע","אני שומר/ת על גוף בטוח"],
+    indep:["אני מתארגן/ת","אני שומר/ת על הדברים שלי","אני מנסה לעשות לבד"]
+  },
+  staff:{
+    social:["התלמיד/ה משתלב/ת בקבוצה.","התלמיד/ה יוצר/ת קשר עם תלמידים אחרים.","כשיש קושי חברתי, התלמיד/ה מנסה להתמודד או פונה לעזרה."],
+    learning:["התלמיד/ה משתתף/ת בשיעור.","התלמיד/ה ממשיך/ה לנסות גם כשהמשימה קשה לו/לה.","התלמיד/ה פונה לעזרה כשצריך."],
+    emotion:["התלמיד/ה מזהה מתי נעים לו/לה ומתי קשה לו/לה.","כשקשה לתלמיד/ה, הוא/היא משתמש/ת בדרך שעוזרת לו/לה להירגע.","התלמיד/ה שומר/ת על גוף בטוח."],
+    indep:["התלמיד/ה מתארגן/ת לקראת שיעור או פעילות.","התלמיד/ה שומר/ת על הדברים שלו/ה.","התלמיד/ה מנסה לבצע דברים בעצמו/ה לפני שהוא/היא מבקש/ת עזרה."]
+  }
+};
+const CLIMATE = {
+  title:{high:"איך אני מרגיש/ה בבית הספר?", visual:"אני בבית הספר"},
+  high:["אני אוהב/ת להגיע לבית הספר.","אני מרגיש/ה בטוח/ה בבית הספר.","יש בבית הספר מבוגר שאני יכול/ה לפנות אליו.","כשקשה לי בבית הספר, יש משהו או מישהו שעוזר לי."],
+  visual:["נעים לי להגיע לבית הספר","אני מרגיש/ה בטוח/ה","יש מבוגר שאני יכול/ה לפנות אליו","יש מי שעוזר לי כשקשה"],
+  icons:["🏫","🛡️","👩‍🏫","🤲"]
+};
+const STAFF_OBS = [
+  {k:"teacher_observation_entry", id:"obs1", t:"התלמיד/ה נכנס/ת לשגרת בית הספר ברוב הימים.", label:"כניסה לשגרה", icon:"🚪"},
+  {k:"teacher_observation_contact", id:"obs2", t:"התלמיד/ה פונה לאיש צוות כאשר הוא/היא זקוק/ה לעזרה.", label:"פנייה לאיש צוות", icon:"🙋"}
+];
+/* ic: which picture each answer shows */
+const SCALE = {
+  high:[{v:3,l:"מצליח/ה",t:"yes",ic:"yes"},{v:2,l:"לפעמים / עם קצת עזרה",t:"some",ic:"some"},{v:1,l:"צריך/ה עזרה",t:"help",ic:"buoy"}],
+  visual:[{v:3,l:"מצליח/ה",t:"yes",ic:"yes"},{v:2,l:"לפעמים",t:"some",ic:"some"},{v:1,l:"צריך/ה עזרה",t:"help",ic:"buoy"}],
+  staff:[{v:3,l:"רוב הזמן",t:"yes",ic:"yes"},{v:2,l:"לפעמים",t:"some",ic:"some"},{v:1,l:"נדרש סיוע",t:"help",ic:"buoy"}],
+  climate:[{v:3,l:"כן",t:"yes",ic:"yes"},{v:2,l:"לפעמים",t:"some",ic:"some"},{v:1,l:"לא",t:"help",ic:"sad"}]
+};
+/* goal options: [stored value, short visual label, icon] */
+const IMPROVE = {
+  social:[["להכיר עוד חבר/ה","חבר/ה חדש/ה","🤝"],["להצטרף לפעילות עם אחרים","פעילות עם אחרים","🧩"],["לדבר/לתקשר עם אחרים","לדבר עם אחרים","💬"],["לבקש עזרה כשיש קושי","לבקש עזרה","✋"]],
+  learning:[["להתחיל משימה","להתחיל","▶️"],["לסיים חלק ממשימה","לסיים חלק","✅"],["להשתתף בשיעור","להשתתף","🙋"],["להמשיך לנסות גם כשקשה","להמשיך לנסות","💪"],["לבקש עזרה","לבקש עזרה","✋"]],
+  emotion:[["לדעת איך אני מרגיש/ה","לדעת מה אני מרגיש/ה","🙂"],["לבחור דרך להירגע","להירגע","🧘"],["לעצור לפני שאני מגיב/ה","לעצור לפני תגובה","🛑"],["לשמור על גוף בטוח","גוף בטוח","🛡️"],["להתמודד טוב יותר עם שינוי","שינוי","🔄"]],
+  indep:[["להתארגן לקראת שיעור או פעילות","להתארגן","🎒"],["לשמור על הדברים שלי","לשמור על הדברים","📦"],["להתחיל לבד","להתחיל לבד","🚀"],["לעשות יותר דברים לבד","לעשות לבד","👤"]]
+};
+const STRENGTHS = [["חברים","👥"],["למידה","📘"],["רגשות והתנהגות","❤️"],["עצמאות","⚙️"]];
+const HELPS = [["מקום שקט","🤫"],["הפסקה קצרה","⏸️"],["מבוגר שאני מכיר/ה","👩‍🏫"],["תנועה / הליכה","🚶"],["שמסבירים לי שוב","💬"],["קצת זמן לבד","🚪"],["מוזיקה","🎵"]];
+const INTERESTS = [["ספורט ותנועה","⚽"],["אומנות ויצירה","🎨"],["מוזיקה","🎵"],["מחשבים וטכנולוגיה","💻"],["משחקים","🎮"],["בעלי חיים","🐾"],["טבע","🌿"],["אוכל ובישול","🍳"]];
+const STAFF_DOMAINS = [["חברתי","social"],["למידה","learning"],["רגשות והתנהגות","emotion"],["עצמאות","indep"]];
+const STAFF_HELPS = ["חיזוק הצלחות","תיווך חברתי","תמיכה בוויסות","מטרות קטנות וברורות","הזדמנויות לעצמאות","בחירה ותחושת שליטה","פעילות בתחום עניין וחוזקה"];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+const nameKey = s => String(s||"").trim().replace(/\s+/g," ");
+const avg = a => { const v=a.filter(x=>typeof x==="number"); return v.length? Math.round(v.reduce((s,x)=>s+x,0)/v.length*100)/100 : null; };
+const f2 = n => n==null? "—" : n.toFixed(2);
+const sgn = n => n==null? "—" : (n>0?"+":"")+n.toFixed(2);
+const dscore = (r,k) => { const v = r?.[DOMAINS.find(d=>d.k===k).field]; return typeof v==="number"? v : null; };
+
+let dbP = null, userP = null;
+const SB_URL = "https://rbtsrxscaaeigjasqiwf.supabase.co", SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJidHNyeHNjYWFlaWdqYXNxaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NzkyMDQsImV4cCI6MjA5OTU1NTIwNH0.yr8F3pVUe_C-itIs_zALTz6L_ak-0X-8tT7EWRjoSA4";
+const sb = (window.supabase && SB_URL.startsWith("https"))? supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:false}}) : null;
+let adminPass = (()=>{ try{ return sessionStorage.getItem("sm_pass")||""; }catch(e){ return ""; } })();
+const snapOf = list => ({docs:list.map(r=>({id:r.id, exists:true, data:()=>r.data})), size:list.length, empty:!list.length, docChanges:()=>[]});
+async function fetchAll(){ const {data,error} = await sb.from("sm_responses").select("id,data").order("created_at").limit(3000); if(error) throw {code:"unavailable", message:error.message}; return data||[]; }
+const dbAdapter = {
+  collection(){ const q = {orderBy(){return q}, limit(){return q}, where(){return q},
+      async get(){ return snapOf(await fetchAll()); },
+      onSnapshot(next, err){ let stop=false; const tick=async()=>{ if(stop) return; try{ next(snapOf(await fetchAll())); }catch(e){ if(err) err(e); } }; tick(); const iv=setInterval(tick, 20000); dbAdapter._refresh=tick; return ()=>{ stop=true; clearInterval(iv); dbAdapter._refresh=null; }; },
+      async add(doc){ const {error} = await sb.from("sm_responses").insert({data:doc}); if(error) throw {code:"unavailable", message:error.message}; } };
+    return q; },
+  doc(path){ const [col,id] = path.split("/");
+    return {
+      async get(){ if(col!=="config") return {exists:false, data:()=>undefined}; const {data} = await sb.from("sm_config").select("value").eq("key",id).maybeSingle(); return {exists:!!data, data:()=>data?.value}; },
+      async set(v){ const {data,error} = await sb.rpc("sm_save_config",{p_pass:adminPass, p_key:id, p_value:v}); if(error||data!==true) throw {code:"invalid_argument"}; },
+      async delete(){ const {data,error} = await sb.rpc("sm_delete_response",{p_pass:adminPass, p_id:id}); if(error||data!==true) throw {code:"invalid_argument"}; if(dbAdapter._refresh) dbAdapter._refresh(); } }; }
+};
+const downloadsAdapter = { async save({filename, data}){ const blob = data instanceof Blob? data : new Blob([data]); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500); return {status:"saved"}; } };
+function requirePass(then){
+  if(adminPass) return then();
+  const ov=document.createElement("div"); ov.className="pwov";
+  ov.innerHTML=`<div class="pwbox" role="dialog" aria-modal="true" aria-labelledby="pw-t"><h3 id="pw-t">🔒 סיסמת ניהול</h3><p class="muted">ייצוא ל־Excel, עריכת נוסחים ומחיקת מילויים פתוחים רק עם הסיסמה.</p><label for="pw-in" class="lbl">סיסמה</label><input id="pw-in" type="password" autocomplete="current-password"><div id="pw-msg"></div><div class="row"><button class="btn" type="button" id="pw-ok">כניסה</button><button class="btn ghost" type="button" id="pw-x">ביטול</button></div></div>`;
+  document.body.appendChild(ov); const inp=ov.querySelector("#pw-in"); inp.focus();
+  const go=async()=>{ const p=inp.value; if(!p) return; const {data} = await sb.rpc("sm_check_password",{p_pass:p});
+    if(data===true){ adminPass=p; try{ sessionStorage.setItem("sm_pass",p); }catch(e){} ov.remove(); then(); }
+    else ov.querySelector("#pw-msg").innerHTML=`<div class="msg err">הסיסמה לא נכונה.</div>`; };
+  ov.querySelector("#pw-ok").onclick=go; inp.onkeydown=e=>{ if(e.key==="Enter") go(); if(e.key==="Escape") ov.remove(); };
+  ov.querySelector("#pw-x").onclick=()=>ov.remove();
+}
+function getDb(){ return Promise.resolve(sb? dbAdapter : null); }
+function getUser(){ return Promise.resolve(null); }
+
+/* ---------- form state ---------- */
+let state, currentTab = "high", unlocked = true;
+function newState(type){
+  return {type, name:"", cls:CLASSES[0], clsOther:"", tp:"", date:today(), answers:{},
+    goals:{social:"",learning:"",emotion:"",indep:""}, other:{},
+    strengths:new Set(), helps:new Set(), interests:new Set(),
+    sStrength:"", sNeed:"", sHelps:new Set(), note:""};
+}
+
+const SK = 'stroke="#1E2A4F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"';
+const ILL = {
+  social:`<svg viewBox="0 0 64 48" aria-hidden="true"><g ${SK}><circle cx="15" cy="15" r="7" fill="#F6A43A"/><path d="M3 46q0-16 12-16t12 16z" fill="#F6A43A"/><circle cx="49" cy="15" r="7" fill="#4CB66A"/><path d="M37 46q0-16 12-16t12 16z" fill="#4CB66A"/><circle cx="32" cy="11" r="8" fill="#3D8BE0"/><path d="M17 46q0-19 15-19t15 19z" fill="#3D8BE0"/></g></svg>`,
+  learning:`<svg viewBox="0 0 64 54" aria-hidden="true"><g ${SK}><rect x="6" y="40" width="50" height="11" rx="3" fill="#4CB66A"/><rect x="48" y="42" width="5" height="7" fill="#fff"/><rect x="10" y="29" width="48" height="11" rx="3" fill="#FFD34D"/><rect x="50" y="31" width="5" height="7" fill="#fff"/><rect x="4" y="18" width="50" height="11" rx="3" fill="#F27E8E"/><rect x="46" y="20" width="5" height="7" fill="#fff"/><rect x="9" y="7" width="46" height="11" rx="3" fill="#4A7FD8"/><rect x="47" y="9" width="5" height="7" fill="#fff"/></g></svg>`,
+  emotion:`<svg viewBox="0 0 64 62" aria-hidden="true"><path ${SK} fill="#F05A7E" d="M32 56S6 40 6 22C6 13 13 7 21 7c5 0 9 3 11 7 2-4 6-7 11-7 8 0 15 6 15 15 0 18-26 34-26 34z"/><path d="M15 21c1-5 4-7 8-7" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`,
+  indep:`<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="#3D8BE0" ${SK}>${[0,45,90,135,180,225,270,315].map(a=>`<rect x="26.5" y="3" width="11" height="15" rx="2.5" transform="rotate(${a} 32 32)"/>`).join("")}<circle cx="32" cy="32" r="20"/></g><circle cx="32" cy="32" r="8" fill="#fff" ${SK}/></svg>`,
+  target:`<svg viewBox="0 0 48 48" aria-hidden="true"><g ${SK}><circle cx="21" cy="27" r="17" fill="#fff"/><circle cx="21" cy="27" r="12" fill="#F05A6A"/><circle cx="21" cy="27" r="7" fill="#fff"/><circle cx="21" cy="27" r="3" fill="#F05A6A"/><path d="M21 27 40 8" fill="none" stroke-width="2.6"/><path d="M37 4h7l-2 4 4 2-7 2z" fill="#FFC93C"/></g></svg>`,
+  star:`<svg viewBox="0 0 48 46" aria-hidden="true"><path ${SK} fill="#FFD34D" d="M24 3l6.2 13.2 14.4 1.8-10.6 9.9 2.8 14.3L24 35.1l-12.8 7.1 2.8-14.3L3.4 18l14.4-1.8z"/></svg>`,
+  sparkle:c=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${c}" d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0z"/></svg>`,
+  bulb:`<svg viewBox="0 0 48 58" aria-hidden="true"><g stroke="#FFC93C" stroke-width="3.5" stroke-linecap="round"><path d="M24 2v5M6 10l4 4M42 10l-4 4M2 26h5M46 26h-5"/></g><g ${SK}><path fill="#FFD34D" d="M24 11a14 14 0 0 0-8 25.5V41h16v-4.5A14 14 0 0 0 24 11z"/><rect x="17" y="41" width="14" height="5" rx="1.5" fill="#B9C2D6"/><rect x="18.5" y="46" width="11" height="5" rx="1.5" fill="#B9C2D6"/><path d="M20 30l4-4 4 4" fill="none" stroke="#E07A1E"/></g></svg>`,
+  palette:`<svg viewBox="0 0 64 58" aria-hidden="true"><path ${SK} fill="#F7D9A8" d="M30 5C14 5 4 16 4 27c0 9 7 13 13 11 4-1 6 1 6 4 0 4 3 7 9 7 13 0 22-11 22-23S45 5 30 5z"/><g ${SK}><circle cx="16" cy="22" r="4" fill="#F05A6A"/><circle cx="26" cy="14" r="4" fill="#FFD34D"/><circle cx="38" cy="14" r="4" fill="#4CB66A"/><circle cx="46" cy="24" r="4" fill="#3D8BE0"/><circle cx="42" cy="36" r="4" fill="#9B6BDF"/><circle cx="25" cy="37" r="4" fill="#fff"/></g><g ${SK}><path d="M60 4 46 26" stroke-width="5" stroke="#1E2A4F"/><path d="M60 4 46 26" stroke-width="2.5" stroke="#3D8BE0"/><path d="M46 26c-3 1-4 4-4 7 3 0 6-1 7-4z" fill="#FFC93C"/></g></svg>`,
+  mountain:`<svg viewBox="0 0 80 60" aria-hidden="true"><g ${SK}><path d="M3 57 33 15l14 18 9-11 21 35z" fill="#6EC1E4"/><path d="M33 15l-8 12 5-2 4 4 4-5 4 2z" fill="#fff"/><path d="M33 15V1" fill="none"/><path d="M33 2l13 4-13 5z" fill="#F05A6A"/></g></svg>`,
+  pencil:`<svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(40 32 32)" ${SK}><rect x="24" y="2" width="16" height="9" rx="3" fill="#F7A1B5"/><rect x="24" y="11" width="16" height="4" fill="#B9C2D6"/><rect x="24" y="15" width="16" height="30" fill="#FFD34D"/><path d="M24 45h16l-8 16z" fill="#F7D9A8"/><path d="M29.5 55.5h5L32 61z" fill="#1E2A4F"/></g></svg>`,
+  cloud:`<svg viewBox="0 0 64 40" aria-hidden="true"><path ${SK} fill="#fff" d="M14 35h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3A10.5 10.5 0 0 0 14 35z"/></svg>`,
+  rays:c=>`<svg viewBox="0 0 40 40" aria-hidden="true"><g stroke="${c}" stroke-width="4.5" stroke-linecap="round" fill="none"><path d="M5 20h11M9 7l8 7M9 33l8-7"/></g></svg>`,
+  plant:`<svg viewBox="0 0 50 60" aria-hidden="true"><g ${SK} stroke-width="1.8"><path d="M25 58V22" fill="none"/><path d="M25 32C14 32 7 24 7 13c11 0 18 8 18 19z" fill="#6CC27A"/><path d="M25 44c11 0 18-8 18-18-11 0-18 8-18 18z" fill="#4CB66A"/><path d="M25 22c-3-7 0-14 6-18 3 7 0 14-6 18z" fill="#8ED48B"/></g></svg>`,
+  squiggle:`<svg viewBox="0 0 40 28" aria-hidden="true"><path d="M3 22c6-15 15-15 13-1s9 9 15-6l4-6" stroke="#1E2A4F" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
+  note:`<svg viewBox="0 0 48 48" aria-hidden="true"><g ${SK}><rect x="7" y="6" width="28" height="36" rx="3" fill="#fff"/><path d="M13 15h16M13 22h16M13 29h10" fill="none"/></g><g transform="translate(8 2)" >${''}</g></svg>`
+};
+
+const FACE_C = {yes:["#57C06A","#2E8A42"], some:["#FFCB2E","#C99400"], help:["#F2636A","#B8323A"]};
+const MOUTH = {yes:"M7.3 13.6q4.7 4.6 9.4 0", some:"M8 15.2h8", help:"M7.6 16.8q4.4-4.2 8.8 0"};
+function face(t){ const c=FACE_C[t]; return `<svg class="face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6" fill="${c[0]}" stroke="${c[1]}" stroke-width="1.4"/><circle cx="8.6" cy="9.6" r="1.35" fill="#1E2A4F"/><circle cx="15.4" cy="9.6" r="1.35" fill="#1E2A4F"/><path d="${MOUTH[t]}" stroke="#1E2A4F" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`; }
+const THUMB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 10h4v11H2zM8 21h9.4c.9 0 1.7-.6 1.9-1.5l1.6-6.5c.3-1.3-.7-2.5-2-2.5H14l.9-4.2c.2-1.1-.5-2.1-1.6-2.3h-.7L8 9.6z"/></svg>';
+const DOC_ICON = '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="6" width="22" height="28" rx="3"/><path d="M12 13h12M12 19h12M12 25h7"/><path d="M27 31l7-12 3 2-7 12-4 1z" fill="currentColor" stroke-width="1.6"/></svg>';
+const CLIP_ICON = '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="7" width="24" height="29" rx="3"/><rect x="14" y="4" width="12" height="6" rx="2" fill="currentColor"/><path d="M13 16h14M13 22h14M13 28h9"/></svg>';
+const CHAT_ICON = '<svg viewBox="0 0 40 40" aria-hidden="true"><path fill="currentColor" d="M9 7h22a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H17l-8 6v-6a4 4 0 0 1-4-4V11a4 4 0 0 1 4-4z"/><path d="M14 22l8-9 3 3-8 9h-3z" fill="#fff"/></svg>';
+
+function chip(group, value, label, icon, pressed, color){
+  return `<button type="button" class="chip" ${color?`style="--c:${color}"`:""} data-group="${group}" data-value="${esc(value)}" aria-pressed="${pressed?"true":"false"}"><span class="box" aria-hidden="true"></span>${icon?`<span class="ce" aria-hidden="true">${icon}</span>`:""}<span class="cl">${esc(label)}</span></button>`;
+}
+function otherChip(group, label="אחר:"){
+  const on = state.other[group]!=null;
+  return chip(group,"__other",label,"",on) + `<input class="other-input" id="other-${group.replace(":","-")}" data-other="${group}" aria-label="אחר – פירוט" placeholder="אפשר לכתוב (לא חובה)" value="${esc(state.other[group]||"")}" ${on?"":"hidden"}>`;
+}
+function sbox(c, icon, title, sub, body, wide, deco){
+  return `<section class="sbox${wide?" wide":""}" data-c="${c}">${deco||""}<div class="sh"><span class="sic" aria-hidden="true">${icon}</span><h4>${title}${sub?`<small>${sub}</small>`:""}</h4></div><div class="sbody">${body}</div></section>`;
+}
+const DOMAIN_COLOR = {"חברים":"var(--social)","למידה":"var(--learning)","רגשות והתנהגות":"var(--emotion)","עצמאות":"var(--indep)"};
+const STRENGTH_ICON = {"חברים":"social","למידה":"learning","רגשות והתנהגות":"emotion","עצמאות":"indep"};
+
+const BUOY = '<svg class="face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6" fill="#F2636A" stroke="#B8323A" stroke-width="1.4"/><circle cx="12" cy="12" r="7.6" fill="none" stroke="#fff" stroke-width="5.6" stroke-dasharray="5.2 6.74" stroke-dashoffset="2.6"/><circle cx="12" cy="12" r="4.6" fill="#EEF2F8" stroke="#B8323A" stroke-width="1.2"/></svg>';
+ILL.school = `<svg viewBox="0 0 64 56" aria-hidden="true"><g ${SK}><path d="M32 4v10" fill="none"/><path d="M32 4l11 3-11 4z" fill="#F6A43A"/><path d="M6 24 32 12l26 12z" fill="#F6A43A"/><rect x="9" y="24" width="46" height="28" fill="#fff"/><rect x="27" y="36" width="10" height="16" fill="#13879A"/><rect x="14" y="30" width="8" height="7" fill="#9FDCE6"/><rect x="42" y="30" width="8" height="7" fill="#9FDCE6"/><rect x="14" y="41" width="8" height="7" fill="#9FDCE6"/><rect x="42" y="41" width="8" height="7" fill="#9FDCE6"/><path d="M3 52h58" fill="none"/></g></svg>`;
+ILL.eye = `<svg viewBox="0 0 64 44" aria-hidden="true"><g ${SK}><path d="M3 22C11 10 21 4 32 4s21 6 29 18c-8 12-18 18-29 18S11 34 3 22z" fill="#fff"/><circle cx="32" cy="22" r="11" fill="#13879A"/><circle cx="32" cy="22" r="4.5" fill="#1E2A4F"/></g><circle cx="35.5" cy="18.5" r="2" fill="#fff"/></svg>`;
+function pic(ic){ return ic==="buoy"? BUOY : ic==="sad"? face("help") : face(ic); }
+function vpic(ic){ return ic==="yes"? THUMB : pic(ic); }
+
+function rowsGrid(ids, texts, scale){
+  return ids.map((id,i)=>`<div class="qtext" id="t-${id}">${esc(texts[i])}</div>
+    <div class="answers" role="group" aria-labelledby="t-${id}">${scale.map(s=>`<button type="button" class="ans" data-item="${id}" data-v="${s.v}" data-tone="${s.t}" aria-pressed="false" aria-label="${s.l}"><span class="r"></span><span class="l">${s.l}</span></button>`).join("")}</div>`).join("");
+}
+function rowsVis(ids, texts, icons, scale){
+  return ids.map((id,i)=>`<div class="pic"><span aria-hidden="true">${icons[i]}</span></div><div class="qtext" id="t-${id}">${esc(texts[i])}</div>
+    <div class="answers" role="group" aria-labelledby="t-${id}">${scale.map(s=>`<button type="button" class="ans" data-item="${id}" data-v="${s.v}" data-tone="${s.t}" aria-pressed="false" aria-label="${s.l}"><span class="vb">${vpic(s.ic)}</span></button>`).join("")}</div>`).join("");
+}
+const colHeads = (scale, tinted) => scale.map(s=>`<div class="colh ${tinted? s.t : ""}">${pic(s.ic)}<span>${s.l}</span></div>`).join("");
+const GOAL_TITLE = `<span class="tg">${ILL.target}</span>השנה הייתי רוצה לעבוד על...`;
+
+function renderForm(type){
+  state = newState(type);
+  const vis = type==="visual", staff = type==="staff";
+  const scale = SCALE[type];
+  const B = {
+    high:["מיפוי עצמי – איך אני מרגיש/ה בתחומים שונים?","מסמנים: מצליח/ה / לפעמים / צריך/ה עזרה","אין תשובות נכונות או לא נכונות. בוחרים את מה שמתאים לך."],
+    visual:["מיפוי עצמי חזותי","מסמנים: מצליח/ה / לפעמים / צריך/ה עזרה","לוחצים על התמונה שמתאימה לך."],
+    staff:["שאלון צוות – התרשמות מתפקוד התלמיד/ה","מסמנים: רוב הזמן / לפעמים / נדרש סיוע","בוחרים את מה שנצפה אצל התלמיד/ה בתקופה האחרונה."]
+  }[type];
+  let h = `<form id="qform" novalidate style="display:flex;flex-direction:column;gap:16px">
+  <header class="banner" data-kind="${type}">
+    <span class="deco d-star">${ILL.star}</span><span class="deco d-rays1">${ILL.rays("#FFC93C")}</span><span class="deco d-cloud1">${ILL.cloud}</span><span class="deco d-squig">${ILL.squiggle}</span>
+    <span class="deco d-mount">${ILL.mountain}</span><span class="deco d-pencil">${ILL.pencil}</span><span class="deco d-rays2">${ILL.rays("#3D8BE0")}</span><span class="deco d-spark">${ILL.sparkle("#9B6BDF")}</span>
+    <h2><span class="hl">${B[0]}</span></h2><div class="legend">${B[1]}</div><p class="binst">${B[2]}</p></header>
+  <section class="meta" aria-label="פרטי המילוי">
+    <div class="field"><label for="f-name">שם התלמיד/ה <span class="req">*</span></label><input id="f-name" list="names" autocomplete="off" placeholder="שם פרטי ומשפחה"></div>
+    <div class="field"><label for="f-class">כיתה <span class="req">*</span></label>
+      <select id="f-class">${CLASSES.map(c=>`<option>${esc(c)}</option>`).join("")}<option value="__other">כיתה אחרת</option></select>
+      <input id="f-class-other" placeholder="שם הכיתה, למשל: כיתת רונית" hidden></div>
+    <div class="field"><span class="lbl">מועד הערכה <span class="req">*</span></span><div class="seg" role="group" aria-label="מועד הערכה">${TP_ORDER.map(k=>`<button type="button" data-tp="${k}" aria-pressed="false">${TP[k]}</button>`).join("")}</div></div>
+    <div class="field"><label for="f-date">תאריך</label><input id="f-date" type="date" value="${state.date}"></div>
+  </section><datalist id="names"></datalist>`;
+
+  DOMAINS.forEach((d,di)=>{
+    const ids=[1,2,3].map(i=>d.k+i), texts=ITEMS[type][d.k], imp=IMPROVE[d.k], g="goal:"+d.k;
+    if(vis){
+      h += `<div class="drow vis" data-d="${d.k}"><section class="dcard vcard" aria-labelledby="h-${d.k}">
+        <div class="vside"><span class="deco v-rays">${ILL.rays("rgba(255,255,255,.9)")}</span><div class="di art">${ILL[d.k]}</div><h3 id="h-${d.k}">${di+1}. ${d.t.visual}</h3></div>
+        <div><div class="vgrid"><div class="sp"></div>${colHeads(scale,false)}${rowsVis(ids,texts,ITEM_ICONS[d.k],scale)}</div>
+        <div class="vimprove"><h4>${GOAL_TITLE}</h4><p class="ghint">בוחרים מטרה אחת</p><div class="chips cards single" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[1],o[2],false)).join("")}${chip(g,"אחר","אחר","✨",false)}</div></div></div>
+      </section></div>`;
+    } else {
+      h += `<div class="drow staffrow" data-d="${d.k}"><section class="dcard" aria-labelledby="h-${d.k}"><div class="grid">
+        <div class="dtitle"><h3 id="h-${d.k}">${di+1}. ${d.t[type]}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL[d.k]}</div></div>
+        ${colHeads(scale,true)}${rowsGrid(ids,texts,scale)}
+      </div>
+      ${staff? "" : `<div class="goalpanel"><h4>${GOAL_TITLE}<span class="ghint">בוחרים מטרה אחת</span></h4><div class="chips single gp" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[0],o[2],false)).join("")}${otherChip(g)}</div></div>`}
+      </section></div>`;
+    }
+  });
+
+  /* climate (students) or observation questions (staff) */
+  if(!staff){
+    const ids=[1,2,3,4].map(i=>"climate"+i), cs=SCALE.climate;
+    if(vis){
+      h += `<div class="drow vis" data-d="climate"><section class="dcard vcard" aria-labelledby="h-climate">
+        <div class="vside"><span class="deco v-rays">${ILL.rays("rgba(255,255,255,.9)")}</span><div class="di art">${ILL.school}</div><h3 id="h-climate">${esc(CLIMATE.title.visual)}</h3></div>
+        <div><div class="vgrid"><div class="sp"></div>${colHeads(cs,false)}${rowsVis(ids,CLIMATE.visual,CLIMATE.icons,cs)}</div></div>
+      </section></div>`;
+    } else {
+      h += `<div class="drow staffrow" data-d="climate"><section class="dcard" aria-labelledby="h-climate"><div class="grid">
+        <div class="dtitle"><h3 id="h-climate">${esc(CLIMATE.title.high)}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL.school}</div></div>
+        ${colHeads(cs,true)}${rowsGrid(ids,CLIMATE.high,cs)}
+      </div></section></div>`;
+    }
+  } else {
+    h += `<div class="drow staffrow" data-d="climate"><section class="dcard" aria-labelledby="h-obs"><div class="grid">
+      <div class="dtitle"><h3 id="h-obs">שאלות תצפית משלימות</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL.eye}</div></div>
+      ${colHeads(scale,true)}${rowsGrid(STAFF_OBS.map(o=>o.id),STAFF_OBS.map(o=>o.t),scale)}
+    </div></section></div>`;
+  }
+
+  if(!staff){
+    const strengths = `<div class="chips">${STRENGTHS.map(s=>chip("strengths",s[0],s[0],ILL[STRENGTH_ICON[s[0]]],false,DOMAIN_COLOR[s[0]])).join("")}${otherChip("strengths")}</div>`;
+    const helps = `<div class="chips">${HELPS.map(s=>chip("helps",s[0],s[0],s[1])).join("")}${otherChip("helps","משהו אחר:")}</div>`;
+    const ints = `<div class="chips two">${INTERESTS.map(s=>chip("interests",s[0],s[0],s[1])).join("")}${otherChip("interests")}</div>`;
+    h += `<div class="sumgrid">
+      ${sbox("pink",ILL.star,"במה אני מרגיש/ה שאני טוב/ה?","אפשר לבחור יותר מאחד",strengths,false,`<span class="deco s-spark1">${ILL.sparkle("#FFC93C")}</span><span class="deco s-spark2">${ILL.sparkle("#B79BEF")}</span><span class="deco s-plant">${ILL.plant}</span>`)}
+      ${sbox("blue",ILL.bulb,"מה עוזר לי כשקשה לי?","אפשר לבחור יותר מאחד",helps)}
+      ${sbox("mint",ILL.palette,"מה אני אוהב/ת לעשות?","אפשר לבחור יותר מאחד · עוזר להתאים שיעורי העצמה · לא נכנס לציון",ints,true,`<span class="deco s-spark3">${ILL.sparkle("#FFC93C")}</span>`)}
+    </div>
+    <div class="footer"><span class="f-mount">${ILL.mountain}</span><span class="f-rays">${ILL.rays("#3D8BE0")}</span><p>אני לומד/ת ומתקדם/ת בקצב שלי – וכל צעד קטן הוא הצלחה גדולה!</p><span class="f-rays flip">${ILL.rays("#FFC93C")}</span><span class="f-plant">${ILL.plant}</span></div>`;
+  } else {
+    h += `<div class="sumgrid">
+      ${sbox("staff",ILL.star,"תחום חוזק נצפה","",`<div class="chips">${STAFF_DOMAINS.map(s=>chip("sStrength",s[0],s[0],"")).join("")}</div>`)}
+      ${sbox("staff",ILL.target,"תחום שבו נדרש חיזוק","",`<div class="chips">${STAFF_DOMAINS.map(s=>chip("sNeed",s[0],s[0],"")).join("")}</div>`)}
+      ${sbox("idea",ILL.bulb,"מה עשוי לעזור לתלמיד/ה כרגע?",'<span id="shelps-hint">אפשר לבחור עד 2</span>',`<div class="chips two">${STAFF_HELPS.map(s=>chip("sHelps",s,s,"")).join("")}${otherChip("sHelps")}</div>`,true)}
+      ${sbox("blue",ILL.pencil,"הערה מקצועית קצרה","לא חובה",`<div class="field"><textarea id="f-note" maxlength="600" aria-label="הערה מקצועית קצרה"></textarea></div>`,true)}
+    </div>`;
+  }
+  h += `<div id="formmsg"></div>
+  <div class="submitbar"><p id="progress"></p><button class="btn" type="submit" id="submitbtn">שמירת השאלון</button></div></form>`;
+  $("#view").innerHTML = h;
+  updateProgress();
+  fillNames();
+}
+
+async function fillNames(){
+  // name suggestions only for viewers who can read stored data
+  const db = await getDb(); if(!db) return;
+  try{
+    const snap = await db.collection("responses").limit(1000).get();
+    const names = new Set(); const classes = new Set();
+    snap.docs.forEach(d=>{const x=d.data(); if(x?.name) names.add(x.name); if(x?.className) classes.add(x.className);});
+    const dl = $("#names"); if(dl) dl.innerHTML = [...names].sort().map(n=>`<option value="${esc(n)}">`).join("");
+    const sel = $("#f-class");
+    if(sel){ [...classes].filter(c=>!CLASSES.includes(c)).sort().forEach(c=>{ const o=document.createElement("option"); o.textContent=c; sel.insertBefore(o, sel.querySelector('[value="__other"]')); }); }
+  }catch(e){}
+}
+
+function updateProgress(){
+  const total = state.type==="staff"? 14 : 16;
+  const n = Object.keys(state.answers).length;
+  const p = $("#progress"); if(p) p.textContent = `${n} מתוך ${total} שאלות נענו`;
+}
+
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button"); if(!t) return;
+  if(t.dataset.tab){ switchTab(t.dataset.tab); return; }
+  if(!state || !t.closest("#qform")) return;
+  if(t.dataset.item){
+    const id=t.dataset.item, v=+t.dataset.v;
+    state.answers[id] = v;
+    t.parentElement.querySelectorAll(".ans").forEach(b=>b.setAttribute("aria-pressed", b===t?"true":"false"));
+    updateProgress(); return;
+  }
+  if(t.dataset.tp){
+    state.tp = t.dataset.tp;
+    t.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b===t?"true":"false")); return;
+  }
+  if(t.dataset.group){
+    const g=t.dataset.group, v=t.dataset.value, on=t.getAttribute("aria-pressed")==="true";
+    /* one goal per domain: radio-like, tap again to clear */
+    if(g.startsWith("goal:")){
+      const k=g.split(":")[1], box=t.closest(".chips");
+      box.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed", (!on && b===t)?"true":"false"));
+      const inp = box.querySelector(`[data-other="${g}"]`);
+      if(on){ state.goals[k]=""; delete state.other[g]; if(inp){ inp.hidden=true; inp.value=""; } return; }
+      if(v==="__other"){ state.goals[k]="__other"; state.other[g]=state.other[g]||""; if(inp){ inp.hidden=false; inp.focus(); } }
+      else { state.goals[k]=v; delete state.other[g]; if(inp){ inp.hidden=true; inp.value=""; } }
+      return;
+    }
+    if(v==="__other"){
+      const inp = document.querySelector(`[data-other="${g}"]`);
+      if(on){ delete state.other[g]; inp.hidden=true; inp.value=""; t.setAttribute("aria-pressed","false"); }
+      else {
+        if(g==="sHelps" && state.sHelps.size + 1 > 2){ flashHint(); return; }
+        state.other[g]=""; inp.hidden=false; inp.focus(); t.setAttribute("aria-pressed","true");
+      }
+      return;
+    }
+    if(g==="sStrength"||g==="sNeed"){
+      state[g] = on? "" : v;
+      t.parentElement.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed", (!on && b===t)?"true":"false")); return;
+    }
+    const set = state[g];
+    if(on){ set.delete(v); t.setAttribute("aria-pressed","false"); }
+    else {
+      if(g==="sHelps" && set.size + (state.other.sHelps!=null?1:0) >= 2){ flashHint(); return; }
+      set.add(v); t.setAttribute("aria-pressed","true");
+    }
+  }
+});
+function flashHint(){ const h=$("#shelps-hint"); if(h){ h.textContent="אפשר לבחור עד 2 – בטל/י בחירה אחת כדי לבחור אחרת."; h.style.color="var(--warn)"; } }
+
+document.addEventListener("input", e=>{
+  const t=e.target; if(!state) return;
+  if(t.dataset.other){ state.other[t.dataset.other]=t.value; }
+  if(t.id==="f-name") state.name=t.value;
+  if(t.id==="f-class-other") state.clsOther=t.value;
+  if(t.id==="f-date") state.date=t.value;
+  if(t.id==="f-note") state.note=t.value;
+});
+document.addEventListener("change", e=>{
+  if(e.target.id==="f-class"){ state.cls=e.target.value; const o=$("#f-class-other"); o.hidden = state.cls!=="__other"; if(!o.hidden) o.focus(); }
+});
+document.addEventListener("submit", async e=>{
+  if(e.target.id!=="qform") return;
+  e.preventDefault();
+  const msg=$("#formmsg"); msg.innerHTML="";
+  const className = state.cls==="__other"? nameKey(state.clsOther) : state.cls;
+  const missing=[];
+  if(!nameKey(state.name)) missing.push("שם התלמיד/ה");
+  if(!className) missing.push("כיתה");
+  if(!state.tp) missing.push("מועד הערכה");
+  if(missing.length){ msg.innerHTML=`<div class="msg err">חסר: ${missing.join(", ")}. ממלאים בראש הדף ושומרים שוב.</div>`; $(".meta").scrollIntoView({behavior:"smooth",block:"center"}); return; }
+  const doc = buildDoc(className);
+  const btn=$("#submitbtn"); btn.disabled=true; btn.textContent="שומר…";
+  const db = await getDb();
+  if(!db){ btn.disabled=false; btn.textContent="שמירת השאלון"; msg.innerHTML=`<div class="msg err">אין חיבור למאגר הנתונים. בודקים את החיבור לאינטרנט ומנסים שוב.</div>`; return; }
+  try{
+    await db.collection("responses").add(doc);
+    $("#view").innerHTML = `<section class="done"><div class="big" aria-hidden="true">🌟</div><h2>תודה! השאלון נשמר</h2><p class="muted">${esc(doc.name)} · ${esc(doc.className)} · ${TP[doc.timepoint]}</p><button class="btn" type="button" id="again">מילוי חדש</button></section>`;
+    $("#again").onclick=()=>renderForm(currentTab);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    btn.disabled=false; btn.textContent="שמירת השאלון";
+    const c = err && err.code;
+    msg.innerHTML = `<div class="msg err">${c==="invalid_argument"? "השמירה נדחתה. בודקים שהשם והכיתה מולאו ומנסים שוב." : c==="quota_exceeded"? "מאגר הנתונים מלא. מוחקים מילויים ישנים בלשונית הנתונים ומנסים שוב." : "השמירה נכשלה לרגע. לוחצים שוב על שמירה."}</div>`;
+  }
+});
+
+function buildDoc(className){
+  const s=state;
+  const withOther = (arr,g)=> { const o = s.other[g]; return o!=null ? [...arr, o.trim()? "אחר: "+o.trim() : "אחר"] : [...arr]; };
+  const doc = {version:VERSION, type:s.type, name:nameKey(s.name), nameKey:nameKey(s.name).toLowerCase(), className, timepoint:s.tp, date:s.date||today(),
+    createdAt:new Date().toISOString(), texts_version:textsVersion, answers:{...s.answers}};
+  DOMAINS.forEach(d=>{ doc[d.field] = avg([1,2,3].map(i=>s.answers[d.k+i])); });
+  if(s.type!=="staff"){
+    doc.school_climate_score = avg([1,2,3,4].map(i=>s.answers["climate"+i]));
+    DOMAINS.forEach(d=>{ const v=s.goals[d.k], g="goal:"+d.k; doc[GOAL_FIELD[d.k]] = v==="__other"? ((s.other[g]||"").trim()? "אחר: "+s.other[g].trim() : "אחר") : v; });
+    doc.perceived_strengths = withOther([...s.strengths],"strengths");
+    doc.supports_that_help = withOther([...s.helps],"helps");
+    doc.interests_and_empowerment = withOther([...s.interests],"interests");
+  } else {
+    doc.teacher_strength = s.sStrength;
+    doc.teacher_need = s.sNeed;
+    doc.teacher_supports = withOther([...s.sHelps],"sHelps");
+    doc.teacher_note = s.note.trim();
+    STAFF_OBS.forEach(o=>{ doc[o.k] = s.answers[o.id] ?? null; });
+  }
+  return doc;
+}
+
+/* ---------- editable wording ---------- */
+const QNAME = {high:"תלמיד/ה – מילולי", visual:"תלמיד/ה – חזותי", staff:"צוות"};
+function textEntries(){
+  const E=[];
+  for(const q of ["high","visual","staff"]){
+    DOMAINS.forEach(d=>{
+      E.push({key:`title.${q}.${d.k}`, q, sec:d.name, label:"כותרת התחום", obj:d.t, prop:q});
+      ITEMS[q][d.k].forEach((_,i)=>E.push({key:`item.${q}.${d.k}.${i}`, q, sec:d.name, label:`היגד ${i+1}`, obj:ITEMS[q][d.k], prop:i}));
+    });
+    if(q!=="staff"){
+      E.push({key:`title.${q}.climate`, q, sec:"אקלים בית־ספרי", label:"כותרת", obj:CLIMATE.title, prop:q});
+      CLIMATE[q].forEach((_,i)=>E.push({key:`climate.${q}.${i}`, q, sec:"אקלים בית־ספרי", label:`שאלה ${i+1}`, obj:CLIMATE[q], prop:i}));
+    } else {
+      STAFF_OBS.forEach((o,i)=>E.push({key:`obs.${i}`, q, sec:"שאלות תצפית", label:`שאלה ${i+1}`, obj:o, prop:"t"}));
+    }
+  }
+  return E;
+}
+const TEXT_DEFAULTS = Object.fromEntries(textEntries().map(e=>[e.key, e.obj[e.prop]]));
+let textOverrides = {}, textsVersion = "default";
+function applyTexts(ov){
+  textOverrides = ov||{};
+  textEntries().forEach(e=>{ e.obj[e.prop] = (typeof textOverrides[e.key]==="string" && textOverrides[e.key].trim())? textOverrides[e.key] : TEXT_DEFAULTS[e.key]; });
+}
+async function loadTexts(){
+  const db = await getDb(); if(!db) return;
+  try{
+    const snap = await db.doc("config/texts").get();
+    if(!snap.exists) return;
+    const d = snap.data()||{};
+    applyTexts(d.overrides); textsVersion = d.updatedAt || "default";
+    const untouched = state && !Object.keys(state.answers).length && !state.name;
+    if(untouched && currentTab!=="data") renderForm(currentTab);
+  }catch(e){}
+}
+
+let editQ = "high";
+function renderEditor(msg){
+  stopData();
+  const E = textEntries().filter(e=>e.q===editQ);
+  const secs = [...new Set(E.map(e=>e.sec))];
+  let h = `<div class="dash"><div class="toolbar"><div><h2 style="font-size:1.5rem">✏️ עריכת נוסחים</h2><p class="muted" style="margin:4px 0 0">משנים ניסוח ושומרים. השינוי יופיע בשאלון מהמילוי הבא. השדות הריקים חוזרים לנוסח המקורי.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="ed-pass">🔑 שינוי סיסמה</button><button class="btn ghost" type="button" id="ed-back">חזרה לנתונים</button></div></div><div id="passbox"></div>
+    <div class="msg note">💡 כדאי לשנות נוסחים לפני תחילת המעקב, או רק תיקונים קטנים באמצע השנה, כדי שההשוואה בין המועדים תישאר הוגנת. כל מילוי שומר את גרסת הנוסחים שבה מולא.</div>
+    <nav class="tabs ed-tabs" aria-label="בחירת שאלון לעריכה">${Object.entries(QNAME).map(([k,v])=>`<button class="tab" type="button" data-edq="${k}" aria-selected="${k===editQ}">${v}</button>`).join("")}</nav>
+    ${msg||""}`;
+  secs.forEach(sec=>{
+    h += `<section class="panel"><h3>${esc(sec)}</h3><div class="edlist">`;
+    E.filter(e=>e.sec===sec).forEach(e=>{
+      const cur = pendingEdits[e.key] ?? e.obj[e.prop], def = TEXT_DEFAULTS[e.key], changed = cur!==def;
+      h += `<div class="edrow${changed?" changed":""}"><label for="ed-${e.key}">${e.label}${changed?' <span class="pill">נוסח מעודכן</span>':""}</label>
+        <textarea id="ed-${e.key}" data-ed="${e.key}" rows="2" placeholder="${esc(def)}">${esc(cur)}</textarea>
+        <div class="edmeta"><span class="muted">מקורי: ${esc(def)}</span>${changed?`<button type="button" class="linkbtn" data-reset="${e.key}">החזרה למקור</button>`:""}</div></div>`;
+    });
+    h += `</div></section>`;
+  });
+  h += `<div class="submitbar"><p>השינויים נשמרים לכל מי שממלא את השאלון.</p><button class="btn" type="button" id="ed-save">שמירת הנוסחים</button></div></div>`;
+  $("#view").innerHTML = h;
+  document.querySelectorAll("[data-edq]").forEach(b=>b.onclick=()=>{ collectEdits(); editQ=b.dataset.edq; renderEditor(); });
+  document.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{ const t=document.querySelector(`[data-ed="${b.dataset.reset}"]`); t.value=TEXT_DEFAULTS[b.dataset.reset]; });
+  $("#ed-back").onclick=()=>{ pendingEdits={}; renderData(); };
+  $("#ed-save").onclick=saveTexts;
+  $("#ed-pass").onclick=()=>{ $("#passbox").innerHTML=`<section class="panel"><h3>🔑 שינוי סיסמת ניהול</h3><div class="field"><label for="np1">סיסמה חדשה (לפחות 6 תווים)</label><input id="np1" type="password" autocomplete="new-password"></div><div class="field"><label for="np2">שוב, לאימות</label><input id="np2" type="password" autocomplete="new-password"></div><div><button class="btn" type="button" id="np-ok">שמירת הסיסמה</button></div><div id="np-msg"></div></section>`;
+    $("#np-ok").onclick=async()=>{ const a=$("#np1").value, b=$("#np2").value, m=$("#np-msg");
+      if(a.length<6){ m.innerHTML=`<div class="msg err">הסיסמה צריכה לכלול לפחות 6 תווים.</div>`; return; }
+      if(a!==b){ m.innerHTML=`<div class="msg err">שתי הסיסמאות לא זהות.</div>`; return; }
+      const {data} = await sb.rpc("sm_set_password",{p_old:adminPass, p_new:a});
+      if(data===true){ adminPass=a; try{ sessionStorage.setItem("sm_pass",a); }catch(e){} m.innerHTML=`<div class="msg ok">✅ הסיסמה עודכנה. מעבירים אותה רק למי שצריך/ה.</div>`; }
+      else m.innerHTML=`<div class="msg err">העדכון לא הצליח. יוצאים מניהול, נכנסים שוב ומנסים.</div>`; }; };
+}
+let pendingEdits = {};
+function collectEdits(){ document.querySelectorAll("[data-ed]").forEach(t=>{ pendingEdits[t.dataset.ed]=t.value; }); }
+async function saveTexts(){
+  collectEdits();
+  const btn=$("#ed-save"); btn.disabled=true; btn.textContent="שומר…";
+  const ov = {...textOverrides};
+  Object.entries(pendingEdits).forEach(([k,v])=>{ const t=String(v||"").trim(); if(!t || t===TEXT_DEFAULTS[k]) delete ov[k]; else ov[k]=t; });
+  const db = await getDb();
+  try{
+    const updatedAt = new Date().toISOString();
+    await db.doc("config/texts").set({overrides:ov, updatedAt});
+    applyTexts(ov); textsVersion=updatedAt; pendingEdits={};
+    renderEditor(`<div class="msg ok">✅ הנוסחים נשמרו. הם יופיעו בשאלון מהמילוי הבא.</div>`);
+  }catch(e){
+    btn.disabled=false; btn.textContent="שמירת הנוסחים";
+    const m = e?.code==="invalid_argument"? "הסיסמה לא אושרה. לוחצים \"יציאה מניהול\" ונכנסים שוב עם הסיסמה." : "השמירה לא הצליחה. לוחצים שוב.";
+    renderEditor(`<div class="msg err">${m}</div>`);
+  }
+}
+
+/* ---------- print view (PDF by class) ---------- */
+const rgba = (hex,a) => { const n=parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
+const pcs = hex => `--pc:${hex};--pcs:${rgba(hex,.08)};--pch:${rgba(hex,.16)};--pcb:${rgba(hex,.4)}`;
+let pr = {cls:"", tp:"all", kind:"summary", staff:true};
+const P_TONE = {3:"yes",2:"some",1:"help"};
+function trimStudent(s, tp){
+  if(tp==="all") return s;
+  const lim = TP_ORDER.indexOf(tp), keep = o => Object.fromEntries(Object.entries(o).filter(([t])=>TP_ORDER.indexOf(t)<=lim));
+  const t = {...s, self:keep(s.self), staff:keep(s.staff)}; t.insights = insightsFor(t); return t;
+}
+const pDate = () => new Date().toLocaleDateString("he-IL");
+const pHead = (title, sub, kind) => `<header class="ph ${kind||""}"><div class="ph-art">${ILL.star}</div><div class="ph-t"><div class="ph-eyebrow">מיפוי עצמי · ${esc(pr.cls)}</div><h1>${title}</h1><div class="ph-sub">${sub}</div></div><div class="ph-art2">${ILL.mountain}</div></header>`;
+const pFoot = n => `<footer class="pf"><span>כלי מיפוי בית־ספרי – לא כלי אבחוני · הודפס ב־${pDate()}</span><span>${n}</span></footer>`;
+const pBox = (title, body, c) => `<section class="pbox" style="${pcs(c)}"><h3>${title}</h3>${body}</section>`;
+const pList = arr => arr && arr.length? `<ul>${arr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : `<p class="pm">—</p>`;
+
+function coverPage(students, rows, n){
+  const avgs = domainAverages(students);
+  const tps = pr.tp==="all"? TP_ORDER : [pr.tp];
+  let h = `<div class="ppage">${pHead("סיכום כיתתי", `${pr.tp==="all"?"כל השנה":TP[pr.tp]} · ${students.length} תלמידים · ${rows.length} מילויים`,"cover")}
+  <h2 class="ps">ממוצעי הכיתה לפי תחום</h2>
+  <table class="pt"><thead><tr><th>תחום</th>${tps.map(t=>`<th>${TP[t]}<br><small>תלמיד · צוות</small></th>`).join("")}</tr></thead><tbody>
+  ${DOMAINS.map(d=>`<tr><td class="pd" style="${pcs(DCOL_HEX[d.k])}">${d.name}</td>${tps.map(t=>`<td>${pScore(avgs[t].self[d.k])} <span class="pm">· ${f2(avgs[t].staff[d.k])}</span></td>`).join("")}</tr>`).join("")}
+  <tr><td class="pd" style="${pcs(DCOL_HEX.climate)}">אקלים בית־ספרי</td>${tps.map(t=>`<td>${pScore(avgs[t].climate)}</td>`).join("")}</tr></tbody></table>
+  <h2 class="ps">תלמידי הכיתה – הערכה עצמית אחרונה</h2>
+  <table class="pt small"><thead><tr><th>שם</th>${DOMAINS.map(d=>`<th>${d.name}</th>`).join("")}<th>אקלים</th><th>מועד</th></tr></thead><tbody>
+  ${students.map(s=>{ const t=trimStudent(s,pr.tp), r=latestSelf(t); return `<tr><td><b>${esc(s.name)}</b></td>${DOMAINS.map(d=>`<td>${pScore(dscore(r,d.k))}</td>`).join("")}<td>${pScore(r?.school_climate_score)}</td><td class="pm">${r?TP[r.timepoint]:"—"}</td></tr>`; }).join("")}
+  </tbody></table>
+  <div class="plegend"><span class="pl3">3 מצליח/ה</span><span class="pl2">2 לפעמים</span><span class="pl1">1 צריך/ה עזרה</span></div>
+  ${pFoot(n)}</div>`;
+  return h;
+}
+function pScore(v){ if(v==null) return `<span class="pm">—</span>`; const t = v>=2.5?"3":v>=1.75?"2":"1"; return `<span class="psc s${t}">${f2(v)}</span>`; }
+
+function summaryPage(s0, n){
+  const s = trimStudent(s0, pr.tp), ls = latestSelf(s), lt = latestStaff(s);
+  const tps = TP_ORDER.filter(t=>s.self[t]||s.staff[t]);
+  return `<div class="ppage">${pHead(esc(s.name), `דף סיכום אישי · ${pr.tp==="all"?"כל השנה":"עד "+TP[pr.tp]}`)}
+  <div class="pchartwrap">${profileChart(s)}</div>
+  <table class="pt"><thead><tr><th>תחום</th>${tps.map(t=>`<th>${TP[t]}<br><small>תלמיד · צוות</small></th>`).join("")}</tr></thead><tbody>
+  ${DOMAINS.map(d=>`<tr><td class="pd" style="${pcs(DCOL_HEX[d.k])}">${d.name}</td>${tps.map(t=>`<td>${pScore(dscore(s.self[t],d.k))} <span class="pm">· ${f2(dscore(s.staff[t],d.k))}</span></td>`).join("")}</tr>`).join("")}
+  <tr><td class="pd" style="${pcs(DCOL_HEX.climate)}">אקלים בית־ספרי</td>${tps.map(t=>`<td>${pScore(s.self[t]?.school_climate_score)}</td>`).join("")}</tr></tbody></table>
+  ${pBox("💡 תובנות", pList(s.insights), "#E3A900")}
+  <div class="pgrid">
+    ${pBox("🎯 השנה הייתי רוצה לעבוד על...", `<ul>${DOMAINS.map(d=>`<li><b>${d.name}:</b> ${esc(ls?.[GOAL_FIELD[d.k]]||"—")}</li>`).join("")}</ul>`, "#C42550")}
+    ${pBox("⭐ במה אני מרגיש/ה שאני טוב/ה", pList(ls?.perceived_strengths), "#E3A900")}
+    ${pBox("🤲 מה עוזר לי כשקשה לי", pList(ls?.supports_that_help), "#3D6FD1")}
+    ${pBox("🎨 מה אני אוהב/ת לעשות", pList(ls?.interests_and_empowerment), "#1E8A5E")}
+  </div>
+  ${pr.staff && lt? pBox("👁️ התרשמות הצוות", `<ul class="two"><li><b>תחום חוזק נצפה:</b> ${esc(lt.teacher_strength||"—")}</li><li><b>נדרש חיזוק:</b> ${esc(lt.teacher_need||"—")}</li><li><b>מה עשוי לעזור:</b> ${esc((lt.teacher_supports||[]).join(" · ")||"—")}</li>${STAFF_OBS.map(o=>`<li><b>${o.label}:</b> ${obsLabel(lt[o.k])}</li>`).join("")}${lt.teacher_note?`<li><b>הערה:</b> ${esc(lt.teacher_note)}</li>`:""}</ul>`, "#DC6A1E") : ""}
+  ${pFoot(n)}</div>`;
+}
+function filledPage(r, n){
+  const sc = r.type==="staff"? SCALE.staff : SCALE[r.type]||SCALE.high, q = r.type==="staff"?"staff":r.type;
+  const ans = (id, scale) => { const v=r.answers?.[id]; if(v==null) return `<span class="pans none">לא נענה</span>`; const s=scale.find(x=>x.v===v); return `<span class="pans ${s?.t||""}">${s?.l||v}</span>`; };
+  let body = DOMAINS.map(d=>`<section class="pdom" style="${pcs(DCOL_HEX[d.k])}"><h3>${esc(d.t[q])}</h3>
+    ${ITEMS[q][d.k].map((t,i)=>`<div class="pq"><span>${esc(t)}</span>${ans(d.k+(i+1),sc)}</div>`).join("")}
+    ${r.type!=="staff"?`<div class="pgoal">🎯 השנה הייתי רוצה לעבוד על: <b>${esc(r[GOAL_FIELD[d.k]]||"—")}</b></div>`:""}</section>`).join("");
+  if(r.type!=="staff"){
+    body += `<section class="pdom" style="${pcs(DCOL_HEX.climate)}"><h3>${esc(CLIMATE.title[q==="visual"?"visual":"high"])}</h3>${CLIMATE[q==="visual"?"visual":"high"].map((t,i)=>`<div class="pq"><span>${esc(t)}</span>${ans("climate"+(i+1),SCALE.climate)}</div>`).join("")}</section>
+    <div class="pgrid three">${pBox("⭐ טוב/ה ב־", pList(r.perceived_strengths),"#E3A900")}${pBox("🤲 עוזר לי", pList(r.supports_that_help),"#3D6FD1")}${pBox("🎨 אוהב/ת לעשות", pList(r.interests_and_empowerment),"#1E8A5E")}</div>`;
+  } else {
+    body += `<section class="pdom" style="${pcs(DCOL_HEX.climate)}"><h3>שאלות תצפית משלימות</h3>${STAFF_OBS.map(o=>`<div class="pq"><span>${esc(o.t)}</span>${ans(o.id,sc)}</div>`).join("")}</section>
+    ${pBox("סיכום הצוות", `<ul><li><b>תחום חוזק נצפה:</b> ${esc(r.teacher_strength||"—")}</li><li><b>נדרש חיזוק:</b> ${esc(r.teacher_need||"—")}</li><li><b>מה עשוי לעזור:</b> ${esc((r.teacher_supports||[]).join(" · ")||"—")}</li>${r.teacher_note?`<li><b>הערה:</b> ${esc(r.teacher_note)}</li>`:""}</ul>`,"#DC6A1E")}`;
+  }
+  return `<div class="ppage filled">${pHead(esc(r.name), `${TYPE_LABEL[r.type]||""} · ${TP[r.timepoint]||""} · ${esc(r.date||"")}`, r.type==="staff"?"staff":"")}${body}${pFoot(n)}</div>`;
+}
+
+async function renderPrint(){
+  stopData();
+  $("#view").innerHTML = `<div class="empty">טוען נתונים להדפסה…</div>`;
+  const db = await getDb(); let rows=[];
+  try{ rows = db? (await db.collection("responses").orderBy("createdAt").limit(1000).get()).docs.map(d=>({id:d.id,...d.data()})) : []; }catch(e){}
+  rows = rows.filter(isV2);
+  const classes = [...new Set(rows.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"he"));
+  if(!classes.includes(pr.cls)) pr.cls = classes[0]||"";
+  const sel = rows.filter(r=>r.className===pr.cls && (pr.tp==="all" || r.timepoint===pr.tp || pr.kind==="summary") && (pr.staff || r.type!=="staff"));
+  const students = buildModel(rows.filter(r=>r.className===pr.cls));
+  let pages = [];
+  if(pr.cls){
+    if(pr.kind==="summary"){ pages.push(n=>coverPage(students, sel, n)); students.forEach(s=>pages.push(n=>summaryPage(s,n))); }
+    else { [...sel].sort((a,b)=>a.name.localeCompare(b.name,"he")||TP_ORDER.indexOf(a.timepoint)-TP_ORDER.indexOf(b.timepoint)||(a.type==="staff")-(b.type==="staff")).forEach(r=>pages.push(n=>filledPage(r,n))); }
+  }
+  const total = pages.length;
+  $("#view").innerHTML = `<div class="dash">
+    <div class="toolbar"><div><h2 style="font-size:1.5rem">🖨️ הדפסה לפי כיתה</h2><p class="muted" style="margin:4px 0 0">בוחרים כיתה ומועד, רואים את הדפים כאן, ומורידים קובץ PDF מוכן להדפסה.</p></div><button class="btn ghost" type="button" id="pr-back">חזרה לנתונים</button></div>
+    <section class="panel prctl">
+      <div class="field"><label for="pr-cls">כיתה</label><select id="pr-cls">${classes.map(c=>`<option ${c===pr.cls?"selected":""}>${esc(c)}</option>`).join("")||"<option>אין עדיין נתונים</option>"}</select></div>
+      <div class="field"><label for="pr-tp">מועד</label><select id="pr-tp"><option value="all" ${pr.tp==="all"?"selected":""}>כל השנה</option>${TP_ORDER.map(t=>`<option value="${t}" ${pr.tp===t?"selected":""}>${TP[t]}</option>`).join("")}</select></div>
+      <div class="field"><span class="lbl">מה להדפיס</span><div class="seg" role="group" aria-label="סוג דוח"><button type="button" data-kind="summary" aria-pressed="${pr.kind==="summary"}">דף סיכום לכל תלמיד/ה</button><button type="button" data-kind="filled" aria-pressed="${pr.kind==="filled"}">השאלונים כפי שמולאו</button></div></div>
+      <div class="field"><span class="lbl">שאלוני צוות</span><div class="seg" role="group" aria-label="שאלוני צוות"><button type="button" data-staff="1" aria-pressed="${pr.staff}">לכלול</button><button type="button" data-staff="0" aria-pressed="${!pr.staff}">בלי</button></div></div>
+    </section>
+    <div class="submitbar"><p>${total? `${total} עמודים מוכנים להדפסה` : "אין מילויים לבחירה הזו"}</p><button class="btn" type="button" id="pr-pdf" ${total?"":"disabled"}>⬇️ הורדת PDF להדפסה</button></div>
+    <div id="prmsg"></div>
+    <div class="pwrap" id="pwrap">${pages.map((f,i)=>f(`עמוד ${i+1} מתוך ${total}`)).join("")}</div></div>`;
+  $("#pr-back").onclick=()=>renderData();
+  $("#pr-cls").onchange=e=>{ pr.cls=e.target.value; renderPrint(); };
+  $("#pr-tp").onchange=e=>{ pr.tp=e.target.value; renderPrint(); };
+  document.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{ pr.kind=b.dataset.kind; renderPrint(); });
+  document.querySelectorAll("[data-staff]").forEach(b=>b.onclick=()=>{ pr.staff=b.dataset.staff==="1"; renderPrint(); });
+  $("#pr-pdf").onclick=makePdf;
+}
+async function makePdf(){
+  const m=$("#prmsg"), btn=$("#pr-pdf"); m.innerHTML="";
+  if(!window.html2canvas || !window.jspdf){ m.innerHTML=`<div class="msg err">רכיב ה־PDF לא נטען. מרעננים את הדף ומנסים שוב.</div>`; return; }
+  const dl = downloadsAdapter;
+  if(!dl){ m.innerHTML=`<div class="msg err">הורדת קבצים לא זמינה בתצוגה הזו. מנסים שוב.</div>`; return; }
+  const pages=[...document.querySelectorAll("#pwrap .ppage")];
+  btn.disabled=true;
+  try{
+    if(document.fonts?.ready) await document.fonts.ready;
+    const pdf = new jspdf.jsPDF({orientation:"portrait", unit:"mm", format:"a4", compress:true});
+    for(let i=0;i<pages.length;i++){
+      btn.textContent=`מכין עמוד ${i+1} מתוך ${pages.length}…`;
+      const c = await html2canvas(pages[i], {scale:2, backgroundColor:"#ffffff", useCORS:true, logging:false, windowWidth:900});
+      if(i) pdf.addPage();
+      pdf.addImage(c.toDataURL("image/jpeg",0.92), "JPEG", 0, 0, 210, 297);
+    }
+    const data = new Uint8Array(pdf.output("arraybuffer"));
+    const tpName = pr.tp==="all"?"כל-השנה":TP[pr.tp].replace(/ /g,"-");
+    await dl.save({filename:`${pr.kind==="summary"?"דפי-סיכום":"שאלונים-ממולאים"}-${pr.cls.replace(/ /g,"-")}-${tpName}.pdf`, data});
+    m.innerHTML=`<div class="msg ok">✅ הקובץ מוכן. פותחים אותו ומדפיסים.</div>`;
+  }catch(e){ console.log("pdf err",e&&(e.message||e.code||e)); if(e?.code!=="cancelled" && e?.code!=="declined") m.innerHTML=`<div class="msg err">יצירת הקובץ לא הושלמה. לוחצים שוב.</div>`; }
+  finally{ btn.disabled=false; btn.textContent="⬇️ הורדת PDF להדפסה"; }
+}
+/* ---------- tabs ---------- */
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab?"true":"false"));
+  if(tab==="data") renderData(); else { stopData(); renderForm(tab); }
+  window.scrollTo({top:0});
+}
+
+/* ---------- analysis model ---------- */
+const isStudentType = t => t==="high"||t==="visual";
+const isV2 = r => r.version===VERSION;
+const GAP_FLAG = 0.7;
+function buildModel(rows){
+  const students = new Map();
+  const sorted = rows.filter(isV2).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
+  for(const r of sorted){
+    const key = (r.className||"")+"|"+(r.nameKey||nameKey(r.name).toLowerCase());
+    if(!students.has(key)) students.set(key,{key,name:r.name,className:r.className,self:{},staff:{}});
+    const s = students.get(key); s.name=r.name;
+    if(!TP[r.timepoint]) continue;
+    if(isStudentType(r.type)) s.self[r.timepoint]=r; else if(r.type==="staff") s.staff[r.timepoint]=r;
+  }
+  for(const s of students.values()) s.insights = insightsFor(s);
+  return [...students.values()].sort((a,b)=>a.className.localeCompare(b.className,"he")||a.name.localeCompare(b.name,"he"));
+}
+function gapsAt(s,tp){
+  const a=s.self[tp], b=s.staff[tp]; if(!a||!b) return null;
+  return Object.fromEntries(DOMAINS.map(d=>{ const x=dscore(a,d.k), y=dscore(b,d.k); return [d.k, (x!=null&&y!=null)? Math.round((x-y)*100)/100 : null]; }));
+}
+function biggestGap(g){
+  if(!g) return null;
+  const arr = Object.entries(g).filter(x=>x[1]!=null); if(!arr.length) return null;
+  return arr.reduce((x,y)=>Math.abs(y[1])>Math.abs(x[1])?y:x);
+}
+const meanAbsGap = g => g? avg(Object.values(g).filter(x=>x!=null).map(Math.abs)) : null;
+const firstLast = (obj) => { const t=TP_ORDER.filter(x=>obj[x]); return t.length? [t[0], t.at(-1)] : null; };
+function change(s, getter){
+  const fl = firstLast(s.self); if(!fl || fl[0]===fl[1]) return null;
+  const a=getter(s.self[fl[0]]), b=getter(s.self[fl[1]]);
+  return (a!=null&&b!=null)? Math.round((b-a)*100)/100 : null;
+}
+function insightsFor(s){
+  const out=[];
+  const fl = firstLast(s.self);
+  if(fl){
+    const last = s.self[fl[1]], sc = DOMAINS.map(d=>[d.k,dscore(last,d.k)]).filter(x=>x[1]!=null);
+    if(sc.length){
+      const hi = sc.reduce((a,b)=>b[1]>a[1]?b:a), lo = sc.reduce((a,b)=>b[1]<a[1]?b:a);
+      if(hi[1]===lo[1]) out.push(`בהערכה האחרונה (${TP[last.timepoint]}) התלמיד/ה מעריך/ה את עצמו/ה באופן דומה בכל התחומים (${f2(hi[1])}).`);
+      else {
+        out.push(`התחום שבו התלמיד/ה מעריך/ה את עצמו/ה הכי גבוה: ${DNAME[hi[0]]} (${f2(hi[1])}).`);
+        out.push(`התלמיד/ה מעריך/ה את עצמו/ה נמוך יחסית בתחום ${DNAME[lo[0]]} (${f2(lo[1])}).`);
+        if(lo[1]<=1.67) out.push(`התחום ${DNAME[lo[0]]} עולה כתחום שכדאי לבדוק לעומק.`);
+      }
+    }
+    if(fl[0]!==fl[1]){
+      const a=s.self[fl[0]], b=s.self[fl[1]];
+      const diffs = DOMAINS.map(d=>[d.k, (dscore(a,d.k)!=null&&dscore(b,d.k)!=null)? dscore(b,d.k)-dscore(a,d.k) : null]).filter(x=>x[1]!=null);
+      if(diffs.length){
+        const up = diffs.reduce((x,y)=>y[1]>x[1]?y:x), down = diffs.reduce((x,y)=>y[1]<x[1]?y:x);
+        if(up[1]>0.01) out.push(`ניכר שיפור בתפיסת המסוגלות בתחום ${DNAME[up[0]]} (${f2(dscore(a,up[0]))} → ${f2(dscore(b,up[0]))}).`);
+        if(down[1]<-0.3) out.push(`בתחום ${DNAME[down[0]]} ההערכה העצמית ירדה (${f2(dscore(a,down[0]))} → ${f2(dscore(b,down[0]))}). תחום שכדאי לבדוק לעומק.`);
+      }
+    }
+    const cl = s.self[fl[1]].school_climate_score;
+    if(cl!=null){
+      const ch = change(s, r=>r.school_climate_score);
+      out.push(`ציון אקלים בית־ספרי: ${f2(cl)}${ch!=null&&Math.abs(ch)>=0.01? ` (שינוי מתחילת המעקב: ${sgn(ch)})` : ""}.`);
+    }
+  }
+  const both = TP_ORDER.filter(t=>s.self[t]&&s.staff[t]);
+  if(both.length){
+    const big = biggestGap(gapsAt(s,both.at(-1)));
+    if(big){
+      if(Math.abs(big[1])>=GAP_FLAG) out.push(`קיים פער בין תפיסת התלמיד/ה לבין התרשמות הצוות בתחום ${DNAME[big[0]]}: התלמיד/ה מעריך/ה את עצמו/ה ${big[1]<0?"נמוך":"גבוה"} יותר מהתרשמות הצוות (${sgn(big[1])}).`);
+      else out.push(`קיימת התאמה גבוהה בין תפיסת התלמיד/ה לבין התרשמות הצוות בכל התחומים.`);
+    }
+  }
+  if(both.length>=2){
+    const g0=meanAbsGap(gapsAt(s,both[0])), g1=meanAbsGap(gapsAt(s,both.at(-1)));
+    if(g0!=null&&g1!=null){
+      if(g0-g1>=0.3) out.push(`ניכר צמצום בפער בין תפיסת התלמיד/ה לבין התרשמות הצוות (פער ממוצע ${f2(g0)} → ${f2(g1)}).`);
+      else if(g1-g0>=0.3) out.push(`הפער בין תפיסת התלמיד/ה לבין התרשמות הצוות גדל (${f2(g0)} → ${f2(g1)}). נושא שכדאי לבדוק לעומק.`);
+    }
+  }
+  return out;
+}
+function latestSelf(s){ const t=TP_ORDER.filter(x=>s.self[x]).at(-1); return t? s.self[t]:null; }
+function latestStaff(s){ const t=TP_ORDER.filter(x=>s.staff[x]).at(-1); return t? s.staff[t]:null; }
+const goalsOf = r => DOMAINS.map(d=>[d.k, r?.[GOAL_FIELD[d.k]]||""]);
+const goalsText = r => goalsOf(r).filter(x=>x[1]).map(x=>`${DNAME[x[0]]}: ${x[1]}`);
+function domainAverages(students){
+  const res={};
+  for(const tp of TP_ORDER){ res[tp]={self:{},staff:{}};
+    for(const d of DOMAINS){
+      res[tp].self[d.k]=avg(students.map(s=>dscore(s.self[tp],d.k)));
+      res[tp].staff[d.k]=avg(students.map(s=>dscore(s.staff[tp],d.k)));
+    }
+    res[tp].climate = avg(students.map(s=>s.self[tp]?.school_climate_score));
+  }
+  return res;
+}
+const normOther = i => i.startsWith("אחר")? "אחר" : i;
+function interestCounts(students){
+  const c=new Map();
+  students.forEach(s=>{ (latestSelf(s)?.interests_and_empowerment||[]).forEach(i=>{ const k=normOther(i); c.set(k,(c.get(k)||0)+1); }); });
+  return [...c.entries()].sort((a,b)=>b[1]-a[1]);
+}
+
+/* ---------- dashboard ---------- */
+let unsub=null, allRows=[], classFilter="__all", selectedStudent="";
+function stopData(){ if(unsub){ unsub(); unsub=null; } }
+function renderData(){
+  if(false){
+    $("#view").innerHTML = `<section class="gate"><h2 style="font-size:1.5rem">כניסת צוות</h2><p class="muted" style="margin:0">הנתונים, ההשוואות והייצוא ל־Excel פתוחים לצוות בלבד.</p>
+      <label for="code" class="lbl" style="font-weight:700">קוד צוות</label>
+      <div class="row"><input id="code" type="password" autocomplete="off"><button class="btn" type="button" id="enter">כניסה</button></div><div id="gatemsg"></div></section>`;
+    const go=()=>{ if($("#code").value.trim().toLowerCase()===STAFF_CODE){ unlocked=true; renderData(); } else $("#gatemsg").innerHTML=`<div class="msg err">הקוד לא נכון.</div>`; };
+    $("#enter").onclick=go; $("#code").onkeydown=e=>{ if(e.key==="Enter") go(); };
+    $("#code").focus(); return;
+  }
+  $("#view").innerHTML = `<div class="dash"><div class="toolbar"><span></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="print-view0">🖨️ הדפסה לפי כיתה</button><button class="btn ghost" type="button" id="edit-texts0">✏️ עריכת נוסחים</button></div></div><div class="empty" id="loading">טוען נתונים…</div></div>`;
+  $("#edit-texts0").onclick=()=>requirePass(()=>{ pendingEdits={}; renderEditor(); });
+  $("#print-view0").onclick=renderPrint;
+  subscribe();
+}
+async function subscribe(){
+  stopData();
+  const db = await getDb();
+  if(!db){ $("#view").innerHTML=`<div class="empty">אין חיבור למאגר הנתונים. בודקים את החיבור לאינטרנט ומרעננים.</div>`; return; }
+  unsub = db.collection("responses").orderBy("createdAt").limit(1000).onSnapshot(snap=>{
+    allRows = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    if(currentTab==="data") drawDash();
+  }, err=>{ $("#view").innerHTML=`<div class="empty">טעינת הנתונים נעצרה. עוברים ללשונית אחרת וחוזרים כדי לטעון מחדש.</div>`; });
+}
+const typeLabel = r => r.type==="staff"?"צוות":r.type==="visual"?"חזותי":"מילולי";
+function drawDash(){
+  const classes = [...new Set(allRows.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"he"));
+  const rows = classFilter==="__all"? allRows : allRows.filter(r=>r.className===classFilter);
+  const students = buildModel(rows);
+  const comps = students.reduce((n,s)=>n+TP_ORDER.filter(t=>s.self[t]&&s.staff[t]).length,0);
+  const avgs = domainAverages(students);
+  const climAll = avg(students.map(s=>latestSelf(s)?.school_climate_score));
+  const oldCount = rows.filter(r=>!isV2(r)).length;
+  if(!students.find(s=>s.key===selectedStudent)) selectedStudent = students[0]?.key || "";
+  let h = `<div class="dash">
+  <div class="toolbar">
+    <div class="field"><label for="cf">הצגת נתונים</label><select id="cf"><option value="__all">כל הכיתות</option>${classes.map(c=>`<option ${c===classFilter?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="xlsx">ייצוא ל־Excel חכם</button><button class="btn" type="button" id="print-view">🖨️ הדפסה לפי כיתה</button><button class="btn ghost" type="button" id="edit-texts">✏️ עריכת נוסחים</button><button class="btn ghost" type="button" id="lock" ${adminPass?"":"hidden"}>🔓 יציאה מניהול</button></div>
+  </div><div id="xmsg"></div>
+  <div class="kpis"><div class="kpi"><b>${students.length}</b><span>תלמידים</span></div><div class="kpi"><b>${rows.length}</b><span>מילויים</span></div><div class="kpi"><b>${comps}</b><span>השוואות תלמיד–צוות</span></div><div class="kpi"><b>${f2(climAll)}</b><span>ממוצע אקלים בית־ספרי</span></div></div>
+  ${oldCount? `<p class="muted" style="margin:0">${oldCount} מילויים מגרסה קודמת של השאלון נשמרו ומופיעים רק בלשונית "כל הנתונים" ב־Excel.</p>` : ""}`;
+  if(!students.length){
+    h += `<div class="empty">עוד לא נשמרו שאלונים. ממלאים שאלון באחת הלשוניות למעלה, והוא יופיע כאן מיד.</div></div>`;
+    $("#view").innerHTML=h; bindDash(); return;
+  }
+  h += `<section class="panel"><h3>ממוצעים לפי תחום ולאורך השנה</h3><p class="sub">ציון 1–3. "תלמיד" = הערכה עצמית, "צוות" = התרשמות הצוות. אקלים בית־ספרי מוצג בנפרד ואינו חלק מהתפיסה העצמית.</p><div class="tablewrap"><table><thead><tr><th>תחום</th>${TP_ORDER.map(t=>`<th>${TP[t]} · תלמיד</th><th>${TP[t]} · צוות</th>`).join("")}</tr></thead><tbody>
+    ${DOMAINS.map(d=>`<tr><td class="dn"><span class="dot" style="background:var(--${d.k})"></span>${d.name}</td>${TP_ORDER.map(t=>`<td>${scoreCell(avgs[t].self[d.k])}</td><td class="muted">${f2(avgs[t].staff[d.k])}</td>`).join("")}</tr>`).join("")}
+    <tr><td class="dn"><span class="dot" style="background:var(--teal)"></span>אקלים בית־ספרי</td>${TP_ORDER.map(t=>`<td>${scoreCell(avgs[t].climate)}</td><td class="muted">—</td>`).join("")}</tr>
+  </tbody></table></div></section>`;
+  const s = students.find(x=>x.key===selectedStudent);
+  h += `<section class="panel"><div class="toolbar"><h3>פרופיל תלמיד/ה</h3><div class="field"><label for="sf">בחירת תלמיד/ה</label><select id="sf">${students.map(x=>`<option value="${esc(x.key)}" ${x.key===selectedStudent?"selected":""}>${esc(x.name)} · ${esc(x.className)}</option>`).join("")}</select></div></div>`;
+  if(s){
+    h += profileChart(s);
+    h += `<div class="tablewrap"><table><thead><tr><th>תחום</th>${TP_ORDER.map(t=>`<th>${TP[t]}<br><span class="muted">תלמיד · צוות · פער</span></th>`).join("")}<th>שינוי בהערכה העצמית</th></tr></thead><tbody>
+      ${DOMAINS.map(d=>`<tr><td class="dn"><span class="dot" style="background:var(--${d.k})"></span>${d.name}</td>${TP_ORDER.map(t=>{ const a=dscore(s.self[t],d.k), b=dscore(s.staff[t],d.k), g=(a!=null&&b!=null)?Math.round((a-b)*100)/100:null; return `<td>${f2(a)} · <span class="muted">${f2(b)}</span> · ${g==null?'<span class="muted">—</span>':Math.abs(g)>=GAP_FLAG?`<span class="gap-big">${sgn(g)}</span>`:sgn(g)}</td>`; }).join("")}<td>${sgn(change(s,r=>dscore(r,d.k)))}</td></tr>`).join("")}
+      <tr><td class="dn"><span class="dot" style="background:var(--teal)"></span>אקלים בית־ספרי</td>${TP_ORDER.map(t=>`<td>${f2(s.self[t]?.school_climate_score)}</td>`).join("")}<td>${sgn(change(s,r=>r.school_climate_score))}</td></tr>
+    </tbody></table></div>`;
+    const ls=latestSelf(s), lt=latestStaff(s);
+    h += `<h4 style="margin:4px 0 0">תובנות</h4><ul class="insights">${(s.insights.length? s.insights : ["עדיין אין מספיק נתונים לתובנות. אחרי מילוי תלמיד ומילוי צוות יופיעו כאן השוואות."]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+      <div class="tablewrap"><table><tbody>
+      ${goalsOf(ls).map(([k,v])=>`<tr><th>🎯 מטרה – ${DNAME[k]}</th><td style="white-space:normal">${esc(v||"—")}</td></tr>`).join("")}
+      <tr><th>במה מרגיש/ה טוב/ה</th><td style="white-space:normal">${esc((ls?.perceived_strengths||[]).join(" · ")||"—")}</td></tr>
+      <tr><th>מה עוזר כשקשה</th><td style="white-space:normal">${esc((ls?.supports_that_help||[]).join(" · ")||"—")}</td></tr>
+      <tr><th>מה אוהב/ת לעשות</th><td style="white-space:normal">${esc((ls?.interests_and_empowerment||[]).join(" · ")||"—")}</td></tr>
+      <tr><th>צוות: חוזק נצפה</th><td>${esc(lt?.teacher_strength||"—")}</td></tr>
+      <tr><th>צוות: נדרש חיזוק</th><td>${esc(lt?.teacher_need||"—")}</td></tr>
+      <tr><th>צוות: מה עשוי לעזור</th><td style="white-space:normal">${esc((lt?.teacher_supports||[]).join(" · ")||"—")}</td></tr>
+      ${STAFF_OBS.map(o=>`<tr><th>צוות: ${o.label}</th><td>${obsLabel(lt?.[o.k])}</td></tr>`).join("")}
+      <tr><th>הערה מקצועית</th><td style="white-space:normal">${esc(lt?.teacher_note||"—")}</td></tr>
+      </tbody></table></div>`;
+  }
+  h += `</section>`;
+  const ic = interestCounts(students), mx = Math.max(1,...ic.map(x=>x[1]));
+  h += `<section class="panel"><h3>תחומי עניין והעצמה</h3><p class="sub">מספר התלמידים שבחרו כל תחום (לפי המילוי האחרון של כל תלמיד/ה).</p>
+    ${ic.length? ic.map(([k,n])=>`<div class="ibar"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${n/mx*100}%"></div></div><b style="font-variant-numeric:tabular-nums">${n}</b></div>`).join("") : `<p class="muted" style="margin:0">עוד לא נבחרו תחומי עניין.</p>`}</section>`;
+  h += `<section class="panel"><h3>כל המילויים</h3><div class="tablewrap"><table><thead><tr><th>תאריך</th><th>שם</th><th>כיתה</th><th>מועד</th><th>שאלון</th>${DOMAINS.map(d=>`<th>${d.name}</th>`).join("")}<th>אקלים</th><th></th></tr></thead><tbody>
+    ${[...rows].reverse().map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.name)}</td><td>${esc(r.className)}</td><td>${TP[r.timepoint]||""}</td><td><span class="pill">${typeLabel(r)}${isV2(r)?"":" · גרסה קודמת"}</span></td>${DOMAINS.map(d=>`<td>${f2(dscore(r,d.k))}</td>`).join("")}<td>${f2(r.school_climate_score)}</td><td><button class="linkbtn" type="button" data-del="${esc(r.id)}">מחיקה</button></td></tr>`).join("")}
+  </tbody></table></div></section></div>`;
+  $("#view").innerHTML = h; bindDash();
+}
+const obsLabel = v => v==null? "—" : (SCALE.staff.find(x=>x.v===v)?.l || v);
+
+const DCOL_HEX = {social:"#3D6FD1", learning:"#2E9E6B", emotion:"#D94A7A", indep:"#7A5BD0", climate:"#13879A"};
+function profileChart(s){
+  const groups = [...DOMAINS.map(d=>({k:d.k,name:d.name,self:t=>dscore(s.self[t],d.k),staff:t=>dscore(s.staff[t],d.k)})), {k:"climate",name:"אקלים",self:t=>s.self[t]?.school_climate_score??null,staff:()=>null}];
+  const W=660, PAD=30, H=250, top=18, base=200, gw=(W-PAD)/groups.length, bw=22, op=[.38,.66,1];
+  const y = v => base - (v-0)/3*(base-top);
+  let g = `<g class="grid">${[1,2,3].map(v=>`<line x1="0" x2="${W-PAD}" y1="${y(v)}" y2="${y(v)}"/><text x="${W-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`).join("")}</g>`;
+  groups.forEach((d,i)=>{
+    const cx = W - PAD - (i+0.5)*gw; /* RTL: first group on the right */
+    TP_ORDER.forEach((t,j)=>{
+      const x = cx + (1-j)*(bw+6) - bw/2, v = d.self(t), st = d.staff(t);
+      if(v!=null) g += `<rect x="${x}" y="${y(v)}" width="${bw}" height="${base-y(v)}" rx="5" fill="${DCOL_HEX[d.k]}" fill-opacity="${op[j]}"><title>${d.name} · ${TP[t]}: ${f2(v)}</title></rect><text class="val" x="${x+bw/2}" y="${y(v)-5}" text-anchor="middle">${v.toFixed(1)}</text>`;
+      else g += `<rect x="${x}" y="${base-3}" width="${bw}" height="3" rx="1.5" fill="#DCE2EE"/>`;
+      if(st!=null) g += `<line class="staffmark" x1="${x-4}" x2="${x+bw+4}" y1="${y(st)}" y2="${y(st)}"><title>צוות · ${TP[t]}: ${f2(st)}</title></line>`;
+    });
+    g += `<text class="lab" x="${cx}" y="${base+22}" text-anchor="middle">${d.name}</text>`;
+  });
+  return `<figure class="pchart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="ציוני התלמיד/ה לפי תחום ומועד">${g}</svg>
+    <figcaption><span><i class="sw" style="opacity:.38"></i>תחילת שנה</span><span><i class="sw" style="opacity:.66"></i>אמצע שנה</span><span><i class="sw"></i>סוף שנה</span><span><i class="sm"></i>התרשמות הצוות</span></figcaption></figure>`;
+}
+function scoreCell(v){ return v==null? '<span class="muted">—</span>' : `<span class="score"><span class="bar" style="width:${Math.round(v/3*48)}px"></span>${f2(v)}</span>`; }
+function bindDash(){
+  const cf=$("#cf"); if(cf) cf.onchange=e=>{ classFilter=e.target.value; drawDash(); };
+  const sf=$("#sf"); if(sf) sf.onchange=e=>{ selectedStudent=e.target.value; drawDash(); };
+  $("#lock").onclick=()=>{ adminPass=""; try{ sessionStorage.removeItem("sm_pass"); }catch(e){} drawDash(); };
+  $("#xlsx").onclick=()=>requirePass(exportExcel);
+  $("#edit-texts").onclick=()=>requirePass(()=>{ pendingEdits={}; renderEditor(); });
+  $("#print-view").onclick=renderPrint;
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
+    if(!adminPass){ requirePass(()=>drawDash()); return; }
+    if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="ללחוץ שוב למחיקה"; setTimeout(()=>{ if(b.isConnected){ b.dataset.armed=""; b.textContent="מחיקה"; } },4000); return; }
+    const db=await getDb(); try{ await db.doc("responses/"+b.dataset.del).delete(); }catch(e){ $("#xmsg").innerHTML=`<div class="msg err">המחיקה לא הצליחה. נסו שוב.</div>`; }
+  });
+}
+
+/* ---------- Excel ---------- */
+const XH = {font:{bold:true,color:{rgb:"FFFFFF"},name:"Arial"},fill:{fgColor:{rgb:"1F2A44"}},alignment:{horizontal:"center",vertical:"center",wrapText:true,readingOrder:2},border:{bottom:{style:"thin",color:{rgb:"9AA3BC"}}}};
+const XT = {font:{bold:true,sz:16,color:{rgb:"1F2A44"},name:"Arial"},alignment:{horizontal:"right",readingOrder:2}};
+const XC = {font:{name:"Arial"},alignment:{horizontal:"right",vertical:"top",wrapText:true,readingOrder:2},border:{bottom:{style:"hair",color:{rgb:"DDE2EE"}}}};
+const DCOL = {social:"D6E4FA",learning:"D2EFE1",emotion:"FBD7E2",indep:"E2D9F6",climate:"CBEEF3",goal:"FFF1BF"};
+const sheetName = (n,used)=>{ let b=String(n).replace(/[\[\]\*\?\/\\:]/g,"").slice(0,31)||"גיליון"; let x=b,i=2; while(used.has(x)){ x=b.slice(0,28)+" "+i++; } used.add(x); return x; };
+function makeSheet(aoa, {headerRows=[], titleRows=[], widths=[], gapCols=[], domainCols={}, freeze=true}={}){
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const range = XLSX.utils.decode_range(ws["!ref"]||"A1:A1");
+  for(let r=range.s.r;r<=range.e.r;r++) for(let c=range.s.c;c<=range.e.c;c++){
+    const ref=XLSX.utils.encode_cell({r,c}); const cell=ws[ref]; if(!cell) continue;
+    if(titleRows.includes(r)) cell.s=XT;
+    else if(headerRows.includes(r)) cell.s = domainCols[c]? {...XH, fill:{fgColor:{rgb:domainCols[c]}}, font:{...XH.font,color:{rgb:"1F2A44"}}} : XH;
+    else {
+      let s={...XC};
+      if(typeof cell.v==="number"){ s={...XC, alignment:{...XC.alignment,horizontal:"center"}}; cell.z="0.00"; }
+      if(gapCols.includes(c) && typeof cell.v==="number" && Math.abs(cell.v)>=GAP_FLAG) s={...s, fill:{fgColor:{rgb:"FDEBDD"}}, font:{name:"Arial",bold:true,color:{rgb:"B4541A"}}};
+      cell.s=s;
+    }
+  }
+  ws["!cols"] = widths.map(w=>({wch:w}));
+  return ws;
+}
+const ITEM_IDS = DOMAINS.flatMap(d=>[1,2,3].map(i=>d.k+i));
+const CLIM_IDS = [1,2,3,4].map(i=>"climate"+i);
+const ansLabel = (r,id)=>{ const v=r.answers?.[id]; if(v==null) return ""; const sc = id.startsWith("climate")? SCALE.climate : r.type==="staff"? SCALE.staff : SCALE[r.type]||SCALE.high; return sc.find(x=>x.v===v)?.l||v; };
+const num = v => typeof v==="number"? v : "";
+function rawSheet(rows){
+  const head = ["גרסה","תאריך","מועד","סוג שאלון","שם התלמיד/ה","כיתה",
+    ...ITEM_IDS.map(id=>`${DNAME[id.slice(0,-1)]} ${id.slice(-1)}`),
+    "social_score","learning_score","emotion_score","independence_score",
+    ...CLIM_IDS.map((_,i)=>`אקלים ${i+1}`),"school_climate_score",
+    "improvement_goal_social","improvement_goal_learning","improvement_goal_emotion","improvement_goal_independence",
+    "perceived_strengths","supports_that_help","interests_and_empowerment",
+    "teacher_strength","teacher_need","teacher_supports","teacher_note","teacher_observation_entry","teacher_observation_contact","נשמר ב־"];
+  const body = [...rows].sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt))).map(r=>[
+    r.version||"version_1", r.date, TP[r.timepoint]||"", TYPE_LABEL[r.type]||r.type, r.name, r.className,
+    ...ITEM_IDS.map(id=>ansLabel(r,id)),
+    ...DOMAINS.map(d=>num(dscore(r,d.k))),
+    ...CLIM_IDS.map(id=>ansLabel(r,id)), num(r.school_climate_score),
+    ...DOMAINS.map(d=>r[GOAL_FIELD[d.k]]||""),
+    (r.perceived_strengths||[]).join(", "),(r.supports_that_help||[]).join(", "),(r.interests_and_empowerment||[]).join(", "),
+    r.teacher_strength||"", r.teacher_need||"", (r.teacher_supports||[]).join(", "), r.teacher_note||"", obsLabel(r.teacher_observation_entry)==="—"?"":obsLabel(r.teacher_observation_entry), obsLabel(r.teacher_observation_contact)==="—"?"":obsLabel(r.teacher_observation_contact),
+    r.createdAt? new Date(r.createdAt).toLocaleString("he-IL") : ""]);
+  const dc={}; let c=6;
+  DOMAINS.forEach(d=>{ for(let j=0;j<3;j++) dc[c++]=DCOL[d.k]; });
+  DOMAINS.forEach(d=>dc[c++]=DCOL[d.k]);
+  for(let j=0;j<5;j++) dc[c++]=DCOL.climate;
+  for(let j=0;j<4;j++) dc[c++]=DCOL.goal;
+  return makeSheet([head,...body],{headerRows:[0],domainCols:dc,widths:[11,11,11,20,18,14,...ITEM_IDS.map(()=>14),13,13,13,15,...CLIM_IDS.map(()=>11),15,24,24,24,24,26,30,30,16,16,28,36,16,16,18]});
+}
+function buildWorkbook(rows){
+  const wb = XLSX.utils.book_new(); wb.Workbook={Views:[{RTL:true}]}; const used=new Set();
+  const students = buildModel(rows), avgs = domainAverages(students);
+  const v2 = rows.filter(isV2);
+  const comps = students.reduce((n,s)=>n+TP_ORDER.filter(t=>s.self[t]&&s.staff[t]).length,0);
+  /* dashboard */
+  const d = [["מיפוי עצמי – דשבורד"],[`הופק ב־${new Date().toLocaleDateString("he-IL")}. ציונים בסולם 1–3. כלי מיפוי בית־ספרי, לא כלי אבחוני. אקלים בית־ספרי מחושב בנפרד ואינו חלק מהתפיסה העצמית.`],[],
+    ["מדד","ערך"],["מספר תלמידים",students.length],["מספר מילויים",rows.length],["מילויי תלמידים",v2.filter(r=>isStudentType(r.type)).length],["מילויי צוות",v2.filter(r=>r.type==="staff").length],["השוואות תלמיד–צוות",comps],["ממוצע אקלים בית־ספרי (מילוי אחרון)",avg(students.map(s=>latestSelf(s)?.school_climate_score))??""],
+    ...(rows.length>v2.length? [["מילויים מגרסה קודמת (לא נכללים בניתוח)",rows.length-v2.length]] : []),[]];
+  const ttl=[0,d.length]; d.push(["ממוצעים לפי תחום ומועד"]);
+  const hdr=[3,d.length]; d.push(["תחום",...TP_ORDER.flatMap(t=>[`${TP[t]} – תלמיד`,`${TP[t]} – צוות`]),"שינוי בהערכה העצמית (ראשון→אחרון)"]);
+  const chg = vals => { const v=vals.filter(x=>x!=null); return v.length>=2? Math.round((v.at(-1)-v[0])*100)/100 : ""; };
+  DOMAINS.forEach(dm=>d.push([dm.name,...TP_ORDER.flatMap(t=>[avgs[t].self[dm.k]??"",avgs[t].staff[dm.k]??""]), chg(TP_ORDER.map(t=>avgs[t].self[dm.k]))]));
+  d.push(["אקלים בית־ספרי",...TP_ORDER.flatMap(t=>[avgs[t].climate??"",""]), chg(TP_ORDER.map(t=>avgs[t].climate))]);
+  d.push([]); ttl.push(d.length); d.push(["מקרא שאלות"]); hdr.push(d.length); d.push(["עמודה","תלמיד/ה – מילולי","תלמיד/ה – חזותי","צוות"]);
+  ITEM_IDS.forEach(id=>{ const k=id.slice(0,-1), i=+id.slice(-1)-1; d.push([`${DNAME[k]} ${i+1}`,ITEMS.high[k][i],ITEMS.visual[k][i],ITEMS.staff[k][i]]); });
+  CLIM_IDS.forEach((_,i)=>d.push([`אקלים ${i+1}`,CLIMATE.high[i],CLIMATE.visual[i],"—"]));
+  STAFF_OBS.forEach(o=>d.push([o.k,"—","—",o.t]));
+  XLSX.utils.book_append_sheet(wb, makeSheet(d,{headerRows:hdr,titleRows:ttl,widths:[34,40,30,50,16,16,16,22]}), sheetName("דשבורד",used));
+  /* raw */
+  XLSX.utils.book_append_sheet(wb, rawSheet(rows), sheetName("כל הנתונים",used));
+  /* student–staff comparison */
+  const c=[["כיתה","שם התלמיד/ה","מועד",...DOMAINS.flatMap(dm=>[`${dm.name} – תלמיד`,`${dm.name} – צוות`,`${dm.name} – פער`]),"תחום הפער הגדול ביותר","ממוצע פער מוחלט","ניסוח"]];
+  const gapCols=DOMAINS.map((_,i)=>5+i*3); const cdc={}; DOMAINS.forEach((dm,i)=>[3,4,5].forEach(j=>cdc[i*3+j]=DCOL[dm.k]));
+  students.forEach(s=>TP_ORDER.forEach(t=>{ if(!s.self[t]&&!s.staff[t]) return; const g=gapsAt(s,t), big=biggestGap(g);
+    const flagged = g? Object.entries(g).filter(x=>x[1]!=null&&Math.abs(x[1])>=GAP_FLAG).map(x=>DNAME[x[0]]) : [];
+    c.push([s.className,s.name,TP[t],...DOMAINS.flatMap(dm=>[num(dscore(s.self[t],dm.k)),num(dscore(s.staff[t],dm.k)),g?.[dm.k]??""]),
+      big? `${DNAME[big[0]]} (${sgn(big[1])})` : "", meanAbsGap(g)??"",
+      !g? "חסר מילוי תלמיד או צוות במועד זה" : flagged.length? `קיים פער בין תפיסת התלמיד/ה לבין התרשמות הצוות בתחום ${flagged.join(", ")}.` : "קיימת התאמה גבוהה בין תפיסת התלמיד/ה לבין התרשמות הצוות."]); }));
+  XLSX.utils.book_append_sheet(wb, makeSheet(c,{headerRows:[0],widths:[14,18,12,...DOMAINS.flatMap(()=>[11,11,11]),24,14,52],gapCols,domainCols:cdc}), sheetName("השוואת תלמיד–צוות",used));
+  /* tracking over the year */
+  const tr=[["כיתה","שם התלמיד/ה","תחום",...TP_ORDER.map(t=>TP[t]),"שינוי (ראשון→אחרון)"]];
+  students.forEach(s=>{
+    DOMAINS.forEach(dm=>tr.push([s.className,s.name,dm.name,...TP_ORDER.map(t=>num(dscore(s.self[t],dm.k))), change(s,r=>dscore(r,dm.k))??""]));
+    tr.push([s.className,s.name,"אקלים בית־ספרי (נפרד)",...TP_ORDER.map(t=>num(s.self[t]?.school_climate_score)), change(s,r=>r.school_climate_score)??""]);
+  });
+  XLSX.utils.book_append_sheet(wb, makeSheet(tr,{headerRows:[0],widths:[14,18,24,13,13,13,20]}), sheetName("מעקב לאורך השנה",used));
+  /* school climate */
+  const cl=[["כיתה","שם התלמיד/ה","מועד",...CLIMATE.high,"school_climate_score","צוות: כניסה לשגרה","צוות: פנייה לאיש צוות"]];
+  students.forEach(s=>TP_ORDER.forEach(t=>{ const r=s.self[t], st=s.staff[t]; if(!r&&!st) return;
+    cl.push([s.className,s.name,TP[t],...CLIM_IDS.map(id=>r? ansLabel(r,id):""), num(r?.school_climate_score), st? obsLabel(st.teacher_observation_entry).replace("—","") : "", st? obsLabel(st.teacher_observation_contact).replace("—","") : ""]); }));
+  cl.push([]); cl.push(["שאלות התצפית של הצוות הן מידע משלים בלבד ואינן מושוות לציון האקלים של התלמיד/ה."]);
+  XLSX.utils.book_append_sheet(wb, makeSheet(cl,{headerRows:[0],widths:[14,18,12,22,22,26,30,16,18,20]}), sheetName("אקלים בית־ספרי",used));
+  /* personal goals */
+  const gl=[["כיתה","שם התלמיד/ה","מועד",...DOMAINS.map(dm=>`מטרה – ${dm.name}`)]];
+  students.forEach(s=>TP_ORDER.forEach(t=>{ const r=s.self[t]; if(!r) return; gl.push([s.className,s.name,TP[t],...DOMAINS.map(dm=>r[GOAL_FIELD[dm.k]]||"")]); }));
+  const gdc={}; [3,4,5,6].forEach((ci,i)=>gdc[ci]=DCOL[DOMAINS[i].k]);
+  XLSX.utils.book_append_sheet(wb, makeSheet(gl,{headerRows:[0],domainCols:gdc,widths:[14,18,12,28,28,28,30]}), sheetName("מטרות אישיות",used));
+  /* insights */
+  const ins=[["כיתה","שם התלמיד/ה","תובנות","מטרות אישיות","במה מרגיש/ה טוב/ה","מה עוזר כשקשה","מה אוהב/ת לעשות","ציון אקלים","צוות: חוזק נצפה","צוות: נדרש חיזוק","צוות: מה עשוי לעזור"]];
+  students.forEach(s=>{ const ls=latestSelf(s), lt=latestStaff(s); ins.push([s.className,s.name,s.insights.join("\n")||"אין עדיין מספיק נתונים",goalsText(ls).join("\n"),(ls?.perceived_strengths||[]).join(", "),(ls?.supports_that_help||[]).join(", "),(ls?.interests_and_empowerment||[]).join(", "),num(ls?.school_climate_score),lt?.teacher_strength||"",lt?.teacher_need||"",(lt?.teacher_supports||[]).join(", ")]); });
+  XLSX.utils.book_append_sheet(wb, makeSheet(ins,{headerRows:[0],widths:[14,18,70,40,22,26,30,11,16,16,28]}), sheetName("תובנות לפי תלמיד",used));
+  /* interests */
+  const ic = interestCounts(students);
+  const has = (s,k)=>(latestSelf(s)?.interests_and_empowerment||[]).some(i=>normOther(i)===k);
+  const it=[["תחום עניין","מספר תלמידים","שמות התלמידים"]];
+  ic.forEach(([k])=>{ const who=students.filter(s=>has(s,k)); it.push([k, who.length, who.map(s=>`${s.name} (${s.className})`).join(", ")]); });
+  it.push([]); const h2=it.length; it.push(["שם התלמיד/ה","כיתה","מה אוהב/ת לעשות (מילוי אחרון)"]);
+  students.forEach(s=>it.push([s.name,s.className,(latestSelf(s)?.interests_and_empowerment||[]).join(", ")]));
+  XLSX.utils.book_append_sheet(wb, makeSheet(it,{headerRows:[0,h2],widths:[24,16,70]}), sheetName("תחומי עניין והעצמה",used));
+  /* per class */
+  [...new Set(rows.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"he")).forEach(cl2=>XLSX.utils.book_append_sheet(wb, rawSheet(rows.filter(r=>r.className===cl2)), sheetName(cl2,used)));
+  return wb;
+}
+async function exportExcel(){
+  const m=$("#xmsg"); m.innerHTML="";
+  if(!window.ExcelJS){ m.innerHTML=`<div class="msg err">רכיב ה־Excel לא נטען. מרעננים את הדף ומנסים שוב.</div>`; return; }
+  const rows = classFilter==="__all"? allRows : allRows.filter(r=>r.className===classFilter);
+  if(!rows.length){ m.innerHTML=`<div class="msg err">אין עדיין נתונים לייצוא.</div>`; return; }
+  const btn=$("#xlsx"); btn.disabled=true; btn.textContent="מכין את הקובץ…";
+  try{
+    const wb = buildSmartWorkbook(ExcelJS, rows, classFilter==="__all"? "כל הכיתות" : classFilter);
+    const buf = await wb.xlsx.writeBuffer();
+    const dl = downloadsAdapter;
+    if(!dl){ m.innerHTML=`<div class="msg err">הורדת קבצים לא זמינה בתצוגה הזו. מנסים שוב.</div>`; return; }
+    try{ await dl.save({filename:`מיפוי-עצמי-${classFilter==="__all"?"כל-הכיתות":classFilter}-${today()}.xlsx`, data:new Uint8Array(buf)}); }
+    catch(e){ if(e?.code!=="cancelled" && e?.code!=="declined") m.innerHTML=`<div class="msg err">השמירה לא הושלמה. לוחצים שוב על ייצוא.</div>`; }
+  } finally { btn.disabled=false; btn.textContent="ייצוא ל־Excel חכם"; }
+}
+/* ---------- smart Excel (ExcelJS, formula-driven) ---------- */
+function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "מיפוי עצמי"; wb.created = new Date(); wb.calcProperties = {fullCalcOnLoad:true};
+  const FONT = "Arial";
+  const C = {navy:"FF1E2A4F", ink:"FF1E2A4F", muted:"FF5B6584", white:"FFFFFFFF", line:"FFDCE2EE", paper:"FFF7F9FD",
+    social:["FFD6E4FA","FF24448F"], learning:["FFD2EFE1","FF17775A"], emotion:["FFFBD7E2","FFC2295A"], indep:["FFE2D9F6","FF5B3FB8"],
+    climate:["FFCBEEF3","FF13879A"], orange:["FFFCDCC3","FFDC6A1E"], yellow:["FFFFF1BF","FFB88700"], pink:["FFFBDCE5","FFC42550"], mint:["FFD7F2E3","FF1E8A5E"],
+    good:"FFB9E8C5", mid:"FFFFF1BF", low:"FFF8C4C6", warn:"FFFDEBDD", warnText:"FFB4541A"};
+  const DCOLOR = {social:C.social, learning:C.learning, emotion:C.emotion, indep:C.indep, climate:C.climate};
+  const fill = argb => ({type:"pattern", pattern:"solid", fgColor:{argb}});
+  const thin = {style:"thin", color:{argb:C.line}};
+  const box = {top:thin,left:thin,bottom:thin,right:thin};
+  const MAXR = 1000;
+  const TPN = TP_ORDER.map(t=>TP[t]);
+
+  const v2 = allRowsIn.filter(isV2).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
+  const old = allRowsIn.filter(r=>!isV2(r));
+
+  /* ---- sheet helpers ---- */
+  function sheet(name, tab, widths){
+    const ws = wb.addWorksheet(name, {views:[{rightToLeft:true, showGridLines:false}], properties:{tabColor:{argb:tab}}});
+    ws.pageSetup = {orientation:"landscape", fitToPage:true, fitToWidth:1, fitToHeight:0, paperSize:9, margins:{left:0.4,right:0.4,top:0.5,bottom:0.5,header:0.2,footer:0.2}};
+    (widths||[]).forEach((w,i)=>ws.getColumn(i+1).width=w);
+    return ws;
+  }
+  function banner(ws, cols, title, sub, color){
+    const last = ws.getColumn(cols).letter;
+    ws.mergeCells(`A1:${last}2`);
+    const c = ws.getCell("A1"); c.value = title;
+    c.font = {name:FONT, size:22, bold:true, color:{argb:C.white}};
+    c.fill = fill(color||C.navy); c.alignment = {horizontal:"center", vertical:"middle", readingOrder:"rtl"};
+    ws.getRow(1).height = 26; ws.getRow(2).height = 26;
+    ws.mergeCells(`A3:${last}3`);
+    const s = ws.getCell("A3"); s.value = sub;
+    s.font = {name:FONT, size:10, italic:true, color:{argb:C.muted}}; s.alignment = {horizontal:"center", readingOrder:"rtl", wrapText:true};
+    ws.getRow(3).height = 20;
+  }
+  function headerRow(ws, r, labels, colors){
+    labels.forEach((l,i)=>{ const c=ws.getCell(r,i+1); c.value=l;
+      const col = colors?.[i];
+      c.font = {name:FONT, bold:true, size:10, color:{argb: col? C.ink : C.white}};
+      c.fill = fill(col || C.navy);
+      c.alignment = {horizontal:"center", vertical:"middle", wrapText:true, readingOrder:"rtl"}; c.border = box; });
+    ws.getRow(r).height = 32;
+  }
+  function section(ws, r, cols, title, color){
+    const last = ws.getColumn(cols).letter;
+    ws.mergeCells(`A${r}:${last}${r}`);
+    const c = ws.getCell(`A${r}`); c.value = title;
+    c.font = {name:FONT, size:13, bold:true, color:{argb:color?.[1]||C.ink}};
+    c.fill = fill(color?.[0]||C.paper); c.alignment = {horizontal:"right", vertical:"middle", readingOrder:"rtl", indent:1};
+    ws.getRow(r).height = 24;
+  }
+  function cell(ws, r, c, v, opt={}){
+    const x = ws.getCell(r,c);
+    x.value = (typeof v==="string" && v.startsWith("="))? {formula:v.slice(1)} : v;
+    x.font = {name:FONT, size:opt.size||10, bold:!!opt.bold, color:{argb:opt.color||C.ink}};
+    x.alignment = {horizontal:opt.h||"right", vertical:"middle", wrapText:opt.wrap!==false, readingOrder:"rtl"};
+    if(opt.fill) x.fill = fill(opt.fill);
+    if(opt.num) x.numFmt = opt.num;
+    if(opt.border!==false) x.border = box;
+    return x;
+  }
+  const scaleCF = (ws, ref) => ws.addConditionalFormatting({ref, rules:[{type:"colorScale", priority:1, cfvo:[{type:"num",value:1},{type:"num",value:2},{type:"num",value:3}], color:[{argb:C.low},{argb:C.mid},{argb:C.good}]}]});
+  const arrowsCF = (ws, ref) => ws.addConditionalFormatting({ref, rules:[{type:"iconSet", priority:1, iconSet:"3Arrows", cfvo:[{type:"num",value:-100},{type:"num",value:-0.009},{type:"num",value:0.01}]}]});
+  const gapCF = (ws, ref, tl) => ws.addConditionalFormatting({ref, rules:[{type:"expression", priority:1, formulae:[`AND(ISNUMBER(${tl}),ABS(${tl})>=${GAP_FLAG})`], style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:C.warn}}, font:{bold:true,color:{argb:C.warnText}}}}]});
+  const barCF = (ws, ref, color, max) => ws.addConditionalFormatting({ref, rules:[{type:"dataBar", priority:1, minLength:0, maxLength:100, gradient:false, cfvo:[{type:"num",value:0}, max==null?{type:"max"}:{type:"num",value:max}], color:{argb:color}}]});
+
+  /* ---- 1. data sheet (built first so we know the columns) ---- */
+  const COLS = [];
+  const add = (key, label, w, color) => { COLS.push({key,label,w,color}); return COLS.length; };
+  add("version","גרסה",10); add("date","תאריך",11); add("tp","מועד",11); add("qtype","סוג שאלון",18); add("name","שם התלמיד/ה",18); add("class","כיתה",14);
+  ITEM_IDS.forEach(id=>add("i_"+id, `${DNAME[id.slice(0,-1)]} ${id.slice(-1)}`, 9, DCOLOR[id.slice(0,-1)][0]));
+  DOMAINS.forEach(d=>add("s_"+d.k, d.field, 12, DCOLOR[d.k][0]));
+  CLIM_IDS.forEach((id,i)=>add("i_"+id, `אקלים ${i+1}`, 9, C.climate[0]));
+  add("s_climate","school_climate_score",13,C.climate[0]);
+  DOMAINS.forEach(d=>add("g_"+d.k, GOAL_FIELD[d.k], 24, C.yellow[0]));
+  add("strengths","perceived_strengths",22); add("supports","supports_that_help",26); add("interests","interests_and_empowerment",28);
+  add("t_strength","teacher_strength",14,C.orange[0]); add("t_need","teacher_need",14,C.orange[0]); add("t_supports","teacher_supports",26,C.orange[0]); add("t_note","teacher_note",30,C.orange[0]);
+  add("obs_entry","teacher_observation_entry",12,C.orange[0]); add("obs_contact","teacher_observation_contact",12,C.orange[0]);
+  add("texts","גרסת נוסחים",14);
+  add("key","מפתח תלמיד (עזר)",24,"FFE9ECF4"); add("grp","קבוצה (עזר)",10,"FFE9ECF4"); add("tpo","סדר מועד (עזר)",9,"FFE9ECF4"); add("rown","שורה (עזר)",8,"FFE9ECF4"); add("latest","מילוי אחרון (עזר)",10,"FFE9ECF4"); add("lkey","מפתח אחרון (עזר)",30,"FFE9ECF4");
+  const ci = k => COLS.findIndex(c=>c.key===k)+1;
+  const colLetter = n => { let s=""; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
+  const L = k => colLetter(ci(k));
+  const DS = "'נתונים'";
+  const R = k => `${DS}!$${L(k)}$2:$${L(k)}$${MAXR}`;
+
+  /* lookup formulas reused by other sheets */
+  const avgIfs = (scoreKey, crit) => `IFERROR(AVERAGEIFS(${R(scoreKey)},${crit}),"")`;
+  const latestVal = (k, keyRef, grp) => `IFERROR(INDEX(${R(k)},MATCH(${keyRef}&"|${grp}|1",${R("lkey")},0)),"")`;
+  const txt = v => `IF(${v}="","—",${v})`;
+
+  /* ---- create sheets in display order ---- */
+  const wsDash = sheet("דשבורד", C.navy, [22,13,13,13,13,13,13,16,4,22,12]);
+  const wsProf = sheet("פרופיל תלמיד", C.pink[1], [22,11,11,10,11,11,10,11,11,10,15]);
+  const wsTrack = sheet("מעקב שנתי", C.learning[1], [20,14,22,12,12,12,13]);
+  const wsGap = sheet("תלמיד–צוות", C.social[1], [20,14,11,...DOMAINS.flatMap(()=>[9,9,9]),22,12,46]);
+  const wsClim = sheet("אקלים בית־ספרי", C.climate[1], [20,14,12,12,12,13,18,18]);
+  const wsGoals = sheet("מטרות אישיות", C.yellow[1], [20,14,28,28,28,28]);
+  const wsInt = sheet("תחומי עניין והעצמה", C.mint[1], [26,13,4,26,13]);
+  const classes = [...new Set(v2.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"he"));
+  const wsClasses = classes.map(cl=>({cl, ws: sheet(String(cl).replace(/[\[\]\*\?\/\\:]/g,"").slice(0,31), C.indep[1], [22,12,12,12,12,12,12,14])}));
+  const wsData = sheet("נתונים", C.muted, COLS.map(c=>c.w));
+  const wsStu = sheet("תלמידים", C.muted, [28,18,14,12,12]);
+  const wsLegend = sheet("מקרא והסבר", C.orange[1], [26,48,40,48]);
+
+  /* ---- data rows ---- */
+  headerRow(wsData, 1, COLS.map(c=>c.label), COLS.map(c=>c.color));
+  wsData.views = [{rightToLeft:true, state:"frozen", xSplit:6, ySplit:1, showGridLines:false}];
+  v2.forEach((r,ix)=>{
+    const n = ix+2;
+    const val = {version:r.version, date:r.date, tp:TP[r.timepoint]||"", qtype:TYPE_LABEL[r.type]||r.type, name:r.name, class:r.className,
+      strengths:(r.perceived_strengths||[]).join(", "), supports:(r.supports_that_help||[]).join(", "), interests:(r.interests_and_empowerment||[]).join(", "),
+      t_strength:r.teacher_strength||"", t_need:r.teacher_need||"", t_supports:(r.teacher_supports||[]).join(", "), t_note:r.teacher_note||"",
+      obs_entry:r.teacher_observation_entry??null, obs_contact:r.teacher_observation_contact??null, texts:r.texts_version||""};
+    [...ITEM_IDS,...CLIM_IDS].forEach(id=>val["i_"+id]=r.answers?.[id]??null);
+    DOMAINS.forEach(d=>val["g_"+d.k]=r[GOAL_FIELD[d.k]]||"");
+    COLS.forEach((c,i)=>{ if(c.key in val){ const x=wsData.getCell(n,i+1); x.value = val[c.key]===""? null : val[c.key]; } });
+    DOMAINS.forEach(d=>{ const a=L("i_"+d.k+"1"), b=L("i_"+d.k+"3"); wsData.getCell(n,ci("s_"+d.k)).value={formula:`IF(COUNT(${a}${n}:${b}${n})=0,"",ROUND(AVERAGE(${a}${n}:${b}${n}),2))`}; });
+    { const a=L("i_climate1"), b=L("i_climate4"); wsData.getCell(n,ci("s_climate")).value={formula:`IF(COUNT(${a}${n}:${b}${n})=0,"",ROUND(AVERAGE(${a}${n}:${b}${n}),2))`}; }
+    wsData.getCell(n,ci("key")).value = {formula:`${L("class")}${n}&" | "&${L("name")}${n}`};
+    wsData.getCell(n,ci("grp")).value = {formula:`IF(${L("qtype")}${n}="${TYPE_LABEL.staff}","צוות","תלמיד")`};
+    wsData.getCell(n,ci("tpo")).value = {formula:`IF(${L("tp")}${n}="${TPN[0]}",1,IF(${L("tp")}${n}="${TPN[1]}",2,IF(${L("tp")}${n}="${TPN[2]}",3,0)))`};
+    wsData.getCell(n,ci("rown")).value = {formula:`ROW()`};
+    wsData.getCell(n,ci("latest")).value = {formula:`IF(COUNTIFS(${R("key")},${L("key")}${n},${R("grp")},${L("grp")}${n},${R("tpo")},">"&${L("tpo")}${n})+COUNTIFS(${R("key")},${L("key")}${n},${R("grp")},${L("grp")}${n},${R("tpo")},${L("tpo")}${n},${R("rown")},">"&${L("rown")}${n})=0,1,0)`};
+    wsData.getCell(n,ci("lkey")).value = {formula:`${L("key")}${n}&"|"&${L("grp")}${n}&"|"&${L("latest")}${n}`};
+    COLS.forEach((c,i)=>{ const x=wsData.getCell(n,i+1); x.font={name:FONT,size:10,color:{argb:c.key==="key"||c.color==="FFE9ECF4"?C.muted:C.ink}}; x.alignment={horizontal:"right",vertical:"top",wrapText:true,readingOrder:"rtl"}; x.border=box; if(c.key.startsWith("s_")) x.numFmt="0.00"; });
+  });
+  const lastData = Math.max(2, v2.length+1);
+  wsData.autoFilter = {from:{row:1,column:1}, to:{row:1,column:COLS.length}};
+  if(v2.length){
+    wsData.addConditionalFormatting({ref:`A2:${L("texts")}${lastData}`, rules:[{type:"expression",priority:2,formulae:["MOD(ROW(),2)=0"],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFF5F7FC"}}}}]});
+    scaleCF(wsData, `${L("s_social")}2:${L("s_indep")}${lastData}`);
+    scaleCF(wsData, `${L("s_climate")}2:${L("s_climate")}${lastData}`);
+  }
+
+  /* ---- students list ---- */
+  const studs = []; const seen=new Set();
+  v2.forEach(r=>{ const k=`${r.className} | ${r.name}`; if(!seen.has(k)){ seen.add(k); studs.push({k,name:r.name,cl:r.className}); } });
+  studs.sort((a,b)=>a.cl.localeCompare(b.cl,"he")||a.name.localeCompare(b.name,"he"));
+  headerRow(wsStu, 1, ["מפתח (כיתה | שם)","שם התלמיד/ה","כיתה","מילויי תלמיד","מילויי צוות"]);
+  studs.forEach((s,i)=>{ const n=i+2;
+    cell(wsStu,n,1,s.k); cell(wsStu,n,2,s.name); cell(wsStu,n,3,s.cl);
+    cell(wsStu,n,4,`=COUNTIFS(${R("key")},A${n},${R("grp")},"תלמיד")`,{h:"center"});
+    cell(wsStu,n,5,`=COUNTIFS(${R("key")},A${n},${R("grp")},"צוות")`,{h:"center"}); });
+  const stuLast = Math.max(2, studs.length+1);
+
+  /* ---- 2. dashboard ---- */
+  banner(wsDash, 11, "מיפוי עצמי – דשבורד", `${scopeLabel} · הופק ב־${new Date().toLocaleDateString("he-IL")} · כל המספרים מחושבים בנוסחאות מגיליון "נתונים" · סולם 1–3 · כלי מיפוי, לא כלי אבחוני`);
+  const kpis = [
+    ["תלמידים", `=COUNTA('תלמידים'!A2:A${MAXR})`, C.social, "0"],
+    ["מילויים", `=COUNTA(${R("name")})`, C.learning, "0"],
+    ["השוואות תלמיד–צוות", `=SUMPRODUCT((${R("grp")}="תלמיד")*(COUNTIFS(${R("key")},${R("key")},${R("grp")},"צוות",${R("tp")},${R("tp")})>0))`, C.emotion, "0"],
+    ["ממוצע אקלים בית־ספרי", `=IFERROR(AVERAGEIFS(${R("s_climate")},${R("latest")},1,${R("grp")},"תלמיד"),"—")`, C.climate, "0.00"],
+    ["מטרות אישיות שנבחרו", `=COUNTIFS(${R("g_social")},"?*")+COUNTIFS(${R("g_learning")},"?*")+COUNTIFS(${R("g_emotion")},"?*")+COUNTIFS(${R("g_indep")},"?*")`, C.yellow, "0"]
+  ];
+  const kpiCols = [[1,1],[2,3],[4,5],[6,7],[8,8]];
+  kpis.forEach((k,i)=>{ const [a,b]=kpiCols[i], la=wsDash.getColumn(a).letter, lb=wsDash.getColumn(b).letter;
+    wsDash.mergeCells(`${la}5:${lb}5`); wsDash.mergeCells(`${la}6:${lb}7`);
+    const t=wsDash.getCell(`${la}5`); t.value=k[0]; t.font={name:FONT,size:10,bold:true,color:{argb:k[2][1]}}; t.fill=fill(k[2][0]); t.alignment={horizontal:"center",vertical:"middle",readingOrder:"rtl"};
+    const v=wsDash.getCell(`${la}6`); v.value={formula:k[1].slice(1)}; v.font={name:FONT,size:26,bold:true,color:{argb:k[2][1]}}; v.fill=fill(k[2][0]); v.alignment={horizontal:"center",vertical:"middle"}; v.numFmt=k[3]; });
+  wsDash.getRow(5).height=22; wsDash.getRow(6).height=26; wsDash.getRow(7).height=26;
+  section(wsDash, 9, 8, "📊 ממוצעים לפי תחום ולאורך השנה (תלמיד = הערכה עצמית · צוות = התרשמות הצוות)", C.social);
+  headerRow(wsDash, 10, ["תחום",...TPN.flatMap(t=>[`${t}\nתלמיד`,`${t}\nצוות`]),"שינוי בהערכה העצמית"]);
+  const domRows = [...DOMAINS.map(d=>({k:d.k,name:d.name,score:"s_"+d.k,staff:true})), {k:"climate",name:"אקלים בית־ספרי (נפרד)",score:"s_climate",staff:false}];
+  domRows.forEach((d,i)=>{ const n=11+i;
+    cell(wsDash,n,1,d.name,{bold:true,fill:DCOLOR[d.k][0]});
+    TPN.forEach((t,j)=>{
+      cell(wsDash,n,2+j*2,`=${avgIfs(d.score,`${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00",size:11,bold:true});
+      cell(wsDash,n,3+j*2, d.staff? `=${avgIfs(d.score,`${R("grp")},"צוות",${R("tp")},"${t}"`)}` : "—",{h:"center",num:"0.00",color:C.muted});
+    });
+    cell(wsDash,n,8,`=IF(COUNT(B${n},D${n},F${n})<2,"",IF(ISNUMBER(F${n}),F${n},D${n})-IF(ISNUMBER(B${n}),B${n},D${n}))`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+    wsDash.getRow(n).height=22;
+  });
+  scaleCF(wsDash, "B11:G15"); arrowsCF(wsDash, "H11:H15");
+  /* interests & supports */
+  const intRow = 18;
+  section(wsDash, intRow, 8, "🎨 מה התלמידים אוהבים לעשות · 🤲 מה עוזר להם כשקשה (לפי המילוי האחרון)", C.mint);
+  headerRow(wsDash, intRow+1, ["תחום עניין","תלמידים"]);
+  [["מה עוזר",5],["תלמידים",6]].forEach(([l,c])=>{ const x=wsDash.getCell(intRow+1,c); x.value=l; x.font={name:FONT,bold:true,size:10,color:{argb:C.white}}; x.fill=fill(C.navy); x.alignment={horizontal:"center",vertical:"middle",readingOrder:"rtl"}; x.border=box; });
+  const cntLatest = (k, word) => `=SUMPRODUCT((${R("latest")}=1)*(${R("grp")}="תלמיד")*ISNUMBER(SEARCH("${word}",${R(k)})))`;
+  const intList = [...INTERESTS.map(x=>x[0]),"אחר"], supList = [...HELPS.map(x=>x[0]),"אחר"];
+  for(let i=0;i<Math.max(intList.length,supList.length);i++){ const n=intRow+2+i;
+    if(intList[i]){ cell(wsDash,n,1,intList[i]); cell(wsDash,n,2,cntLatest("interests",intList[i]),{h:"center",bold:true}); }
+    if(supList[i]){ cell(wsDash,n,5,supList[i]); cell(wsDash,n,6,cntLatest("supports",supList[i]),{h:"center",bold:true}); }
+  }
+  barCF(wsDash, `B${intRow+2}:B${intRow+1+intList.length}`, "FF4CB66A");
+  barCF(wsDash, `F${intRow+2}:F${intRow+1+supList.length}`, "FF3D8BE0");
+  wsDash.getColumn(5).width = 20;
+
+  /* ---- 3. student profile ---- */
+  banner(wsProf, 11, "פרופיל תלמיד/ה", "בוחרים תלמיד/ה ברשימה הנפתחת (התא הצהוב) – כל הטבלה, התובנות והמטרות מתעדכנים אוטומטית", C.pink[1]);
+  wsProf.mergeCells("A5:A5"); cell(wsProf,5,1,"👈 בחירת תלמיד/ה:",{bold:true,size:12,border:false});
+  wsProf.mergeCells("B5:F5");
+  const sel = wsProf.getCell("B5"); sel.value = studs[0]?.k || "";
+  sel.font={name:FONT,size:14,bold:true,color:{argb:C.ink}}; sel.fill=fill("FFFFE07A"); sel.alignment={horizontal:"center",vertical:"middle",readingOrder:"rtl"};
+  sel.border={top:{style:"medium",color:{argb:"FFE3A900"}},bottom:{style:"medium",color:{argb:"FFE3A900"}},left:{style:"medium",color:{argb:"FFE3A900"}},right:{style:"medium",color:{argb:"FFE3A900"}}};
+  sel.dataValidation = {type:"list", allowBlank:false, showErrorMessage:true, errorTitle:"בחירת תלמיד/ה", error:"בוחרים שם מהרשימה", formulae:[`'תלמידים'!$A$2:$A$${stuLast}`]};
+  wsProf.getRow(5).height = 30;
+  const K = "$B$5";
+  headerRow(wsProf, 7, ["תחום",...TPN.flatMap(t=>[`${t}\nתלמיד`,"צוות","פער"]),"שינוי בהערכה העצמית"]);
+  domRows.forEach((d,i)=>{ const n=8+i;
+    cell(wsProf,n,1,d.name,{bold:true,fill:DCOLOR[d.k][0]});
+    TPN.forEach((t,j)=>{ const c0=2+j*3, a=wsProf.getColumn(c0).letter, b=wsProf.getColumn(c0+1).letter;
+      cell(wsProf,n,c0,`=${avgIfs(d.score,`${R("key")},${K},${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00",bold:true,size:11});
+      cell(wsProf,n,c0+1, d.staff? `=${avgIfs(d.score,`${R("key")},${K},${R("grp")},"צוות",${R("tp")},"${t}"`)}` : "—",{h:"center",num:"0.00",color:C.muted});
+      cell(wsProf,n,c0+2, d.staff? `=IF(AND(ISNUMBER(${a}${n}),ISNUMBER(${b}${n})),${a}${n}-${b}${n},"")` : "—",{h:"center",num:"+0.00;-0.00;0.00"});
+    });
+    cell(wsProf,n,11,`=IF(COUNT(B${n},E${n},H${n})<2,"",IF(ISNUMBER(H${n}),H${n},E${n})-IF(ISNUMBER(B${n}),B${n},E${n}))`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+    /* hidden helpers: M latest self, N latest gap, O abs latest gap, P/Q/R abs gaps per TP */
+    if(d.staff){
+      wsProf.getCell(n,13).value={formula:`IF(ISNUMBER(H${n}),H${n},IF(ISNUMBER(E${n}),E${n},IF(ISNUMBER(B${n}),B${n},"")))`};
+      wsProf.getCell(n,14).value={formula:`IF(ISNUMBER(J${n}),J${n},IF(ISNUMBER(G${n}),G${n},IF(ISNUMBER(D${n}),D${n},"")))`};
+      wsProf.getCell(n,15).value={formula:`IF(ISNUMBER(N${n}),ABS(N${n}),"")`};
+      ["D","G","J"].forEach((g,j)=>wsProf.getCell(n,16+j).value={formula:`IF(ISNUMBER(${g}${n}),ABS(${g}${n}),"")`});
+    }
+    wsProf.getRow(n).height=24;
+  });
+  wsProf.getCell("S8").value={formula:'IF(COUNT(P8:P11)>0,AVERAGE(P8:P11),IF(COUNT(Q8:Q11)>0,AVERAGE(Q8:Q11),0))'};
+  wsProf.getCell("S9").value={formula:'IF(COUNT(R8:R11)>0,AVERAGE(R8:R11),IF(COUNT(Q8:Q11)>0,AVERAGE(Q8:Q11),0))'};
+  wsProf.getCell("S10").value={formula:'(COUNT(P8:P11)>0)+(COUNT(Q8:Q11)>0)+(COUNT(R8:R11)>0)'};
+  [13,14,15,16,17,18,19].forEach(c=>wsProf.getColumn(c).hidden=true);
+  ["B","C","E","F","H","I"].forEach(c=>scaleCF(wsProf, `${c}8:${c}12`));
+  ["D","G","J"].forEach(c=>gapCF(wsProf, `${c}8:${c}11`, `${c}8`));
+  arrowsCF(wsProf, "K8:K12");
+  section(wsProf, 14, 11, "💡 תובנות (מחושבות אוטומטית)", C.yellow);
+  const insightF = [
+    `=IF(COUNT(M8:M11)=0,"אין עדיין מילוי תלמיד/ה","התחום שבו התלמיד/ה מעריך/ה את עצמו/ה הכי גבוה: "&INDEX(A8:A11,MATCH(MAX(M8:M11),M8:M11,0))&" ("&TEXT(MAX(M8:M11),"0.00")&")")`,
+    `=IF(COUNT(M8:M11)=0,"","התלמיד/ה מעריך/ה את עצמו/ה נמוך יחסית בתחום "&INDEX(A8:A11,MATCH(MIN(M8:M11),M8:M11,0))&" ("&TEXT(MIN(M8:M11),"0.00")&")"&IF(MIN(M8:M11)<=1.67," · תחום שכדאי לבדוק לעומק",""))`,
+    `=IF(COUNT(K8:K11)=0,"עוד אין שני מועדים להשוואה",IF(MAX(K8:K11)>0,"ניכר שיפור בתפיסת המסוגלות בתחום "&INDEX(A8:A11,MATCH(MAX(K8:K11),K8:K11,0))&" ("&TEXT(MAX(K8:K11),"+0.00")&")","לא נמדד שיפור בין המועדים"))`,
+    `=IF(COUNT(O8:O11)=0,"אין עדיין השוואה לצוות באותו מועד",IF(MAX(O8:O11)>=${GAP_FLAG},"קיים פער בין תפיסת התלמיד/ה לבין התרשמות הצוות בתחום "&INDEX(A8:A11,MATCH(MAX(O8:O11),O8:O11,0)),"קיימת התאמה גבוהה בין תפיסת התלמיד/ה לבין התרשמות הצוות"))`,
+    `=IF(S10<2,"",IF(S8-S9>=0.3,"ניכר צמצום בפער בין תפיסת התלמיד/ה לבין התרשמות הצוות ("&TEXT(S8,"0.00")&" → "&TEXT(S9,"0.00")&")",IF(S9-S8>=0.3,"הפער בין תפיסת התלמיד/ה לבין התרשמות הצוות גדל – נושא שכדאי לבדוק לעומק","הפער בין התלמיד/ה לצוות נשאר דומה לאורך השנה")))`,
+    `=IF(ISNUMBER(IF(ISNUMBER(H12),H12,IF(ISNUMBER(E12),E12,B12))),"ציון אקלים בית־ספרי (אחרון): "&TEXT(IF(ISNUMBER(H12),H12,IF(ISNUMBER(E12),E12,B12)),"0.00"),"")`
+  ];
+  insightF.forEach((f,i)=>{ const n=15+i; wsProf.mergeCells(`A${n}:K${n}`); cell(wsProf,n,1,f,{size:11}); wsProf.getRow(n).height=22; });
+  section(wsProf, 22, 11, "🎯 מטרות, חוזקות ותמיכות (מהמילוי האחרון)", C.pink);
+  const info = [
+    ...DOMAINS.map(d=>[`מטרה – ${d.name}`, `=${txt(latestVal("g_"+d.k,K,"תלמיד"))}`, DCOLOR[d.k][0]]),
+    ["במה מרגיש/ה טוב/ה", `=${txt(latestVal("strengths",K,"תלמיד"))}`, C.pink[0]],
+    ["מה עוזר כשקשה", `=${txt(latestVal("supports",K,"תלמיד"))}`, C.social[0]],
+    ["מה אוהב/ת לעשות", `=${txt(latestVal("interests",K,"תלמיד"))}`, C.mint[0]],
+    ["צוות: תחום חוזק נצפה", `=${txt(latestVal("t_strength",K,"צוות"))}`, C.orange[0]],
+    ["צוות: נדרש חיזוק", `=${txt(latestVal("t_need",K,"צוות"))}`, C.orange[0]],
+    ["צוות: מה עשוי לעזור", `=${txt(latestVal("t_supports",K,"צוות"))}`, C.orange[0]],
+    ...STAFF_OBS.map(o=>[`צוות: ${o.label}`, `=IFERROR(CHOOSE(${latestVal(o.k==="teacher_observation_entry"?"obs_entry":"obs_contact",K,"צוות")},"נדרש סיוע","לפעמים","רוב הזמן"),"—")`, C.orange[0]]),
+    ["הערה מקצועית", `=${txt(latestVal("t_note",K,"צוות"))}`, C.orange[0]]
+  ];
+  info.forEach((x,i)=>{ const n=23+i; cell(wsProf,n,1,x[0],{bold:true,fill:x[2]}); wsProf.mergeCells(`B${n}:K${n}`); cell(wsProf,n,2,x[1]); wsProf.getRow(n).height=20; });
+
+  /* ---- 4. yearly tracking ---- */
+  banner(wsTrack, 7, "מעקב שנתי", "שינוי בתפיסה העצמית בכל תחום לאורך השנה · חיצים = כיוון השינוי · צבע = רמה (אדום 1 · צהוב 2 · ירוק 3)", C.learning[1]);
+  headerRow(wsTrack, 5, ["שם התלמיד/ה","כיתה","תחום",...TPN,"שינוי"]);
+  let tr = 6;
+  studs.forEach(s=>{ domRows.forEach((d,j)=>{
+    cell(wsTrack,tr,1,j===0? s.name : "",{bold:true}); cell(wsTrack,tr,2,j===0? s.cl : "",{color:C.muted});
+    cell(wsTrack,tr,3,d.name,{fill:DCOLOR[d.k][0]});
+    TPN.forEach((t,k)=>cell(wsTrack,tr,4+k,`=${avgIfs(d.score,`${R("key")},"${s.k.replace(/"/g,'""')}",${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00"}));
+    cell(wsTrack,tr,7,`=IF(COUNT(D${tr}:F${tr})<2,"",IF(ISNUMBER(F${tr}),F${tr},E${tr})-IF(ISNUMBER(D${tr}),D${tr},E${tr}))`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+    tr++; });
+    wsTrack.getRow(tr-1).getCell(1).border={...box,bottom:{style:"medium",color:{argb:C.muted}}};
+  });
+  if(tr>6){ scaleCF(wsTrack, `D6:F${tr-1}`); arrowsCF(wsTrack, `G6:G${tr-1}`); }
+  wsTrack.views=[{rightToLeft:true,state:"frozen",ySplit:5,showGridLines:false}];
+
+  /* ---- 5. student–staff ---- */
+  banner(wsGap, 3+DOMAINS.length*3+3, "השוואת תלמיד–צוות", `פער = תלמיד פחות צוות · פער של ${GAP_FLAG} ומעלה מסומן בכתום · אין כאן "נכון" ו"לא נכון", רק שתי נקודות מבט`, C.social[1]);
+  headerRow(wsGap, 5, ["שם התלמיד/ה","כיתה","מועד",...DOMAINS.flatMap(d=>[`${d.name}\nתלמיד`,"צוות","פער"]),"תחום הפער הגדול ביותר","ממוצע פער מוחלט","ניסוח"],
+    [null,null,null,...DOMAINS.flatMap(d=>[DCOLOR[d.k][0],DCOLOR[d.k][0],DCOLOR[d.k][0]])]);
+  let gr=6; const gapC0=4, nameCol=4+DOMAINS.length*3;
+  const hiddenBase = nameCol+4; /* abs gaps helper */
+  studs.forEach(s=>TPN.forEach(t=>{
+    const kq = `"${s.k.replace(/"/g,'""')}"`;
+    cell(wsGap,gr,1,s.name,{bold:true}); cell(wsGap,gr,2,s.cl,{color:C.muted}); cell(wsGap,gr,3,t);
+    DOMAINS.forEach((d,j)=>{ const c0=gapC0+j*3, a=wsGap.getColumn(c0).letter, b=wsGap.getColumn(c0+1).letter;
+      cell(wsGap,gr,c0,`=${avgIfs("s_"+d.k,`${R("key")},${kq},${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00"});
+      cell(wsGap,gr,c0+1,`=${avgIfs("s_"+d.k,`${R("key")},${kq},${R("grp")},"צוות",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00",color:C.muted});
+      cell(wsGap,gr,c0+2,`=IF(AND(ISNUMBER(${a}${gr}),ISNUMBER(${b}${gr})),${a}${gr}-${b}${gr},"")`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+      wsGap.getCell(gr,hiddenBase+j).value={formula:`IF(ISNUMBER(${wsGap.getColumn(c0+2).letter}${gr}),ABS(${wsGap.getColumn(c0+2).letter}${gr}),"")`};
+    });
+    const hA=wsGap.getColumn(hiddenBase).letter, hD=wsGap.getColumn(hiddenBase+3).letter, rng=`${hA}${gr}:${hD}${gr}`;
+    const names = `{${DOMAINS.map(d=>`"${d.name}"`).join(",")}}`;
+    cell(wsGap,gr,nameCol,`=IF(COUNT(${rng})=0,"",INDEX(${names},MATCH(MAX(${rng}),${rng},0)))`,{h:"center"});
+    cell(wsGap,gr,nameCol+1,`=IF(COUNT(${rng})=0,"",AVERAGE(${rng}))`,{h:"center",num:"0.00"});
+    cell(wsGap,gr,nameCol+2,`=IF(COUNT(${rng})=0,"חסר מילוי תלמיד או צוות במועד זה",IF(MAX(${rng})>=${GAP_FLAG},"קיים פער בין תפיסת התלמיד/ה לבין התרשמות הצוות בתחום "&${wsGap.getColumn(nameCol).letter}${gr},"קיימת התאמה גבוהה בין תפיסת התלמיד/ה לבין התרשמות הצוות"))`,{color:C.muted});
+    gr++; }));
+  for(let j=0;j<4;j++) wsGap.getColumn(hiddenBase+j).hidden=true;
+  if(gr>6) DOMAINS.forEach((d,j)=>{ const g=wsGap.getColumn(gapC0+j*3+2).letter; gapCF(wsGap, `${g}6:${g}${gr-1}`, `${g}6`); scaleCF(wsGap, `${wsGap.getColumn(gapC0+j*3).letter}6:${wsGap.getColumn(gapC0+j*3+1).letter}${gr-1}`); });
+  wsGap.views=[{rightToLeft:true,state:"frozen",ySplit:5,xSplit:3,showGridLines:false}];
+
+  /* ---- 6. school climate ---- */
+  banner(wsClim, 8, "אקלים בית־ספרי", "מדד נפרד – לא נכלל בציוני התפיסה העצמית · שאלות התצפית של הצוות הן מידע משלים ואינן מושוות לציון האקלים", C.climate[1]);
+  section(wsClim, 5, 8, "ממוצע בית־ספרי לכל שאלה (מילוי אחרון של כל תלמיד/ה)", C.climate);
+  headerRow(wsClim, 6, ["שאלה","","","ממוצע"]);
+  CLIMATE.high.forEach((q,i)=>{ const n=7+i; wsClim.mergeCells(`A${n}:C${n}`); cell(wsClim,n,1,`${CLIMATE.icons[i]} ${q}`);
+    cell(wsClim,n,4,`=IFERROR(AVERAGEIFS(${R("i_climate"+(i+1))},${R("latest")},1,${R("grp")},"תלמיד"),"")`,{h:"center",num:"0.00",bold:true}); });
+  barCF(wsClim, "D7:D10", "FF13879A", 3);
+  section(wsClim, 12, 8, "לפי תלמיד/ה", C.orange);
+  headerRow(wsClim, 13, ["שם התלמיד/ה","כיתה",...TPN,"שינוי","צוות: כניסה לשגרה","צוות: פנייה לאיש צוות"]);
+  studs.forEach((s,i)=>{ const n=14+i, kq=`"${s.k.replace(/"/g,'""')}"`;
+    cell(wsClim,n,1,s.name,{bold:true}); cell(wsClim,n,2,s.cl,{color:C.muted});
+    TPN.forEach((t,k)=>cell(wsClim,n,3+k,`=${avgIfs("s_climate",`${R("key")},${kq},${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00"}));
+    cell(wsClim,n,6,`=IF(COUNT(C${n}:E${n})<2,"",IF(ISNUMBER(E${n}),E${n},D${n})-IF(ISNUMBER(C${n}),C${n},D${n}))`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+    ["obs_entry","obs_contact"].forEach((o,j)=>cell(wsClim,n,7+j,`=IFERROR(CHOOSE(${latestVal(o,kq,"צוות")},"נדרש סיוע","לפעמים","רוב הזמן"),"—")`,{h:"center"}));
+  });
+  if(studs.length){ scaleCF(wsClim, `C14:E${13+studs.length}`); arrowsCF(wsClim, `F14:F${13+studs.length}`); }
+
+  /* ---- 7. goals ---- */
+  banner(wsGoals, 6, "מטרות אישיות", "\"השנה הייתי רוצה לעבוד על...\" · המטרה שכל תלמיד/ה בחר/ה בכל תחום (מהמילוי האחרון) · לא נכנס לציון", C.yellow[1]);
+  headerRow(wsGoals, 5, ["שם התלמיד/ה","כיתה",...DOMAINS.map(d=>d.name)],[null,null,...DOMAINS.map(d=>DCOLOR[d.k][0])]);
+  studs.forEach((s,i)=>{ const n=6+i, kq=`"${s.k.replace(/"/g,'""')}"`;
+    cell(wsGoals,n,1,s.name,{bold:true}); cell(wsGoals,n,2,s.cl,{color:C.muted});
+    DOMAINS.forEach((d,j)=>cell(wsGoals,n,3+j,`=${txt(latestVal("g_"+d.k,kq,"תלמיד"))}`)); });
+  let gq = 8+studs.length;
+  section(wsGoals, gq, 6, "🏆 המטרות הפופולריות בכל תחום", C.yellow); gq++;
+  DOMAINS.forEach(d=>{
+    headerRow(wsGoals, gq, [d.name,"תלמידים"],[DCOLOR[d.k][0],DCOLOR[d.k][0]]); gq++;
+    const s0=gq;
+    [...IMPROVE[d.k].map(o=>o[0]),"אחר"].forEach(o=>{ cell(wsGoals,gq,1,o);
+      cell(wsGoals,gq,2, o==="אחר"? `=COUNTIFS(${R("g_"+d.k)},"אחר*",${R("latest")},1,${R("grp")},"תלמיד")` : `=COUNTIFS(${R("g_"+d.k)},"${o}",${R("latest")},1,${R("grp")},"תלמיד")`,{h:"center",bold:true}); gq++; });
+    barCF(wsGoals, `B${s0}:B${gq-1}`, DCOLOR[d.k][1]); gq++;
+  });
+
+  /* ---- 8. interests ---- */
+  banner(wsInt, 5, "תחומי עניין והעצמה", "\"מה אני אוהב/ת לעשות?\" · משמש לשיבוץ שיעורי העצמה · לא נכנס לשום ציון", C.mint[1]);
+  headerRow(wsInt, 5, ["תחום עניין","תלמידים"]);
+  [["מה עוזר כשקשה",4],["תלמידים",5]].forEach(([l,c])=>{ const x=wsInt.getCell(5,c); x.value=l; x.font={name:FONT,bold:true,size:10,color:{argb:C.white}}; x.fill=fill(C.navy); x.alignment={horizontal:"center",vertical:"middle",readingOrder:"rtl"}; x.border=box; });
+  for(let i=0;i<Math.max(intList.length,supList.length);i++){ const n=6+i;
+    if(intList[i]){ cell(wsInt,n,1,`${(INTERESTS[i]||["","✨"])[1]} ${intList[i]}`); cell(wsInt,n,2,cntLatest("interests",intList[i]),{h:"center",bold:true}); }
+    if(supList[i]){ cell(wsInt,n,4,`${(HELPS[i]||["","✨"])[1]} ${supList[i]}`); cell(wsInt,n,5,cntLatest("supports",supList[i]),{h:"center",bold:true}); }
+  }
+  barCF(wsInt, `B6:B${5+intList.length}`, "FF4CB66A"); barCF(wsInt, `E6:E${5+supList.length}`, "FF3D8BE0");
+  let ir = 8+Math.max(intList.length,supList.length);
+  section(wsInt, ir, 5, "לפי תלמיד/ה", C.mint); ir++;
+  headerRow(wsInt, ir, ["שם התלמיד/ה","כיתה"]); wsInt.mergeCells(`D${ir}:E${ir}`); { const x=wsInt.getCell(`D${ir}`); x.value="מה אוהב/ת לעשות"; x.font={name:FONT,bold:true,size:10,color:{argb:C.white}}; x.fill=fill(C.navy); x.alignment={horizontal:"center",vertical:"middle",readingOrder:"rtl"}; } ir++;
+  studs.forEach(s=>{ const kq=`"${s.k.replace(/"/g,'""')}"`; cell(wsInt,ir,1,s.name,{bold:true}); cell(wsInt,ir,2,s.cl,{color:C.muted});
+    wsInt.mergeCells(`D${ir}:E${ir}`); cell(wsInt,ir,4,`=${txt(latestVal("interests",kq,"תלמיד"))}`); ir++; });
+
+  /* ---- 9. per-class sheets ---- */
+  wsClasses.forEach(({cl,ws})=>{
+    const cq = `"${String(cl).replace(/"/g,'""')}"`;
+    banner(ws, 8, cl, "סיכום כיתתי – מחושב בנוסחאות מגיליון \"נתונים\"", C.indep[1]);
+    headerRow(ws, 5, ["תחום",...TPN.flatMap(t=>[`${t}\nתלמיד`,"צוות"]),"שינוי"]);
+    domRows.forEach((d,i)=>{ const n=6+i;
+      cell(ws,n,1,d.name,{bold:true,fill:DCOLOR[d.k][0]});
+      TPN.forEach((t,j)=>{ cell(ws,n,2+j*2,`=${avgIfs(d.score,`${R("class")},${cq},${R("grp")},"תלמיד",${R("tp")},"${t}"`)}`,{h:"center",num:"0.00",bold:true});
+        cell(ws,n,3+j*2, d.staff? `=${avgIfs(d.score,`${R("class")},${cq},${R("grp")},"צוות",${R("tp")},"${t}"`)}` : "—",{h:"center",num:"0.00",color:C.muted}); });
+      cell(ws,n,8,`=IF(COUNT(B${n},D${n},F${n})<2,"",IF(ISNUMBER(F${n}),F${n},D${n})-IF(ISNUMBER(B${n}),B${n},D${n}))`,{h:"center",num:"+0.00;-0.00;0.00",bold:true});
+    });
+    scaleCF(ws,"B6:G10"); arrowsCF(ws,"H6:H10");
+    section(ws, 12, 8, "תלמידי הכיתה – הערכה עצמית אחרונה", C.indep);
+    headerRow(ws, 13, ["שם התלמיד/ה",...DOMAINS.map(d=>d.name),"אקלים","מועד אחרון"],[null,...DOMAINS.map(d=>DCOLOR[d.k][0]),C.climate[0],null]);
+    studs.filter(s=>s.cl===cl).forEach((s,i)=>{ const n=14+i, kq=`"${s.k.replace(/"/g,'""')}"`;
+      cell(ws,n,1,s.name,{bold:true});
+      [...DOMAINS.map(d=>"s_"+d.k),"s_climate"].forEach((k,j)=>cell(ws,n,2+j,`=${latestVal(k,kq,"תלמיד")}`,{h:"center",num:"0.00"}));
+      cell(ws,n,7,`=${txt(latestVal("tp",kq,"תלמיד"))}`,{h:"center"});
+      scaleCF(ws,`B${n}:F${n}`); });
+  });
+
+  /* ---- 10. legend ---- */
+  banner(wsLegend, 4, "מקרא והסבר", "איך הקובץ עובד, מה כל עמודה אומרת, ואיך מוסיפים נתונים");
+  const how = [
+    ["איך זה עובד?","כל הגיליונות מחושבים בנוסחאות מתוך גיליון \"נתונים\". כשמשנים או מוסיפים שם שורה – הכול מתעדכן."],
+    ["פרופיל תלמיד/ה","בוחרים תלמיד/ה בתא הצהוב, והטבלה, התובנות והמטרות מתעדכנות מיד."],
+    ["הוספת נתונים","הדרך המומלצת: ייצוא חדש מהמערכת (לשונית \"נתונים ו־Excel\"). תלמיד/ה חדש/ה מצטרף/ת לרשימות בייצוא הבא."],
+    ["סולם","3 = מצליח/ה / רוב הזמן / כן · 2 = לפעמים · 1 = צריך/ה עזרה / נדרש סיוע / לא"],
+    ["צבעים","ירוק = 3 · צהוב = 2 · אדום = 1 · כתום = פער של "+GAP_FLAG+" ומעלה בין תלמיד/ה לצוות · חיצים = כיוון השינוי"],
+    ["חשוב","זהו כלי מיפוי בית־ספרי ולא כלי אבחוני. התובנות מנוסחות כנקודות לחשיבה מקצועית."]
+  ];
+  how.forEach((x,i)=>{ const n=5+i; cell(wsLegend,n,1,x[0],{bold:true,fill:C.yellow[0]}); wsLegend.mergeCells(`B${n}:D${n}`); cell(wsLegend,n,2,x[1]); wsLegend.getRow(n).height=30; });
+  let lr = 13;
+  headerRow(wsLegend, lr, ["עמודה","תלמיד/ה – מילולי","תלמיד/ה – חזותי","צוות"]); lr++;
+  ITEM_IDS.forEach(id=>{ const k=id.slice(0,-1), i=+id.slice(-1)-1; cell(wsLegend,lr,1,`${DNAME[k]} ${i+1}`,{fill:DCOLOR[k][0],bold:true}); cell(wsLegend,lr,2,ITEMS.high[k][i]); cell(wsLegend,lr,3,ITEMS.visual[k][i]); cell(wsLegend,lr,4,ITEMS.staff[k][i]); lr++; });
+  CLIMATE.high.forEach((q,i)=>{ cell(wsLegend,lr,1,`אקלים ${i+1}`,{fill:C.climate[0],bold:true}); cell(wsLegend,lr,2,q); cell(wsLegend,lr,3,CLIMATE.visual[i]); cell(wsLegend,lr,4,"—"); lr++; });
+  STAFF_OBS.forEach(o=>{ cell(wsLegend,lr,1,o.k,{fill:C.orange[0],bold:true}); cell(wsLegend,lr,2,"—"); cell(wsLegend,lr,3,"—"); cell(wsLegend,lr,4,o.t); lr++; });
+
+  /* old-version rows kept apart */
+  if(old.length){
+    const wo = sheet("גרסה קודמת", C.muted, [12,12,18,18,14,40]);
+    headerRow(wo,1,["תאריך","מועד","סוג שאלון","שם","כיתה","הערה"]);
+    old.forEach((r,i)=>{ const n=i+2; [r.date,TP[r.timepoint]||"",TYPE_LABEL[r.type]||r.type,r.name,r.className,"מילוי מגרסה קודמת – לא נכלל בניתוח"].forEach((v,j)=>cell(wo,n,j+1,v||"")); });
+  }
+  return wb;
+}
+
+
+renderForm("high");
+loadTexts();
+</script>
+</body></html>
