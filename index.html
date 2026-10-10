@@ -263,6 +263,19 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ro-card textarea{min-height:180px}
 #f-student{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:9px 12px;min-height:46px;width:100%}
 #f-student:not([hidden])+#f-name:not([hidden]){margin-top:6px}
+
+/* AAC symbols */
+.pic span{width:76px!important;height:76px!important;border-radius:12px;border:2.5px solid #1d1d1f!important;background:#fff;padding:3px;overflow:hidden}
+.pic span svg{width:100%;height:100%;display:block}
+.vgrid{grid-template-columns:88px minmax(0,1fr) repeat(3,var(--c))!important}
+.qtext .qsym{flex:none;width:40px;height:40px;border:2px solid #1d1d1f;border-radius:8px;background:#fff;padding:1px;line-height:0}
+.qtext .qsym svg{width:100%;height:100%}
+.chips.cards .chip .ce{width:72px!important;height:72px!important;border:2.5px solid #1d1d1f;border-radius:10px;background:#fff;padding:2px}
+.chips.cards .chip .ce svg{width:100%;height:100%;display:block}
+.chips.gp .chip .ce{width:40px;height:40px;border:2px solid #1d1d1f;border-radius:8px;background:#fff;padding:1px}
+.chips.gp .chip .ce svg{width:100%;height:100%;display:block}
+.chips.cards .chip{min-height:130px}
+@media (max-width:760px){ .vgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important} .pic span{width:64px!important;height:64px!important} }
 /* summary boxes */
 .sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .sbox{--sb:var(--pink-band);--ss:var(--pink-soft);--c:var(--pink);background:var(--ss);border:2px solid var(--sb);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
@@ -402,32 +415,32 @@ const DOMAINS = [
 ];
 const GOAL_FIELD = {social:"improvement_goal_social", learning:"improvement_goal_learning", emotion:"improvement_goal_emotion", indep:"improvement_goal_independence"};
 const DNAME = Object.fromEntries(DOMAINS.map(d=>[d.k,d.name]));
-const ITEM_ICONS = {social:["👥","💬","✋"], learning:["🪑","📝","✋"], emotion:["🙂","🧘","🛡️"], indep:["🎒","📦","👤"]};
+const ITEM_ICONS = {social:["group","talkplay","solve"], learning:["participate","keeptrying","askhelp"], emotion:["feel","calm","nohurt"], indep:["equipment","schedule","tryalone"]};
 const ITEMS = {
   high:{
-    social:["אני מרגיש/ה שאני חלק מהקבוצה.","אני מצליח/ה ליצור קשר עם אחרים.","כשיש לי קושי עם מישהו, אני מנסה להתמודד או מבקש/ת עזרה."],
-    learning:["אני משתתף/ת בשיעור בדרך שמתאימה לי.","אני ממשיך/ה לנסות גם כשהמשימה קשה לי.","אני מבקש/ת עזרה כשאני צריך/ה."],
-    emotion:["אני יודע/ת לזהות כשנעים לי וכשקשה לי.","כשקשה לי, אני משתמש/ת בדרך שעוזרת לי להירגע.","אני שומר/ת על גוף בטוח."],
-    indep:["אני מתארגן/ת לקראת השיעור או הפעילות.","אני שומר/ת על הדברים שלי.","אני מנסה לעשות דברים בעצמי לפני שאני מבקש/ת עזרה."]
+    social:["אני מרגיש/ה שאני חלק מהקבוצה.","אני מצליח/ה ליצור קשר עם אחרים.","כשיש לי ריב או קושי עם מישהו, אני מנסה לפתור או מבקש/ת עזרה."],
+    learning:["אני משתתף/ת בשיעור בדרך שמתאימה לי.","כשמשימה קשה לי, אני ממשיך/ה לנסות.","כשאני צריך/ה עזרה, אני מבקש/ת אותה."],
+    emotion:["אני יודע/ת לזהות כשנעים לי וכשקשה לי.","כשקשה לי, אני עושה משהו שעוזר לי להירגע.","גם כשאני כועס/ת, אני לא פוגע/ת באחרים או בעצמי."],
+    indep:["אני מכין/ה לבד את מה שצריך לשיעור.","אני יודע/ת מה עושים עכשיו לפי סדר היום.","אני מנסה לבד לפני שאני מבקש/ת עזרה."]
   },
   visual:{
-    social:["אני חלק מהקבוצה","אני מדבר/ת עם אחרים","כשקשה לי עם מישהו – אני מבקש/ת עזרה"],
-    learning:["אני משתתף/ת בשיעור","אני ממשיך/ה לנסות","אני מבקש/ת עזרה"],
-    emotion:["אני יודע/ת איך אני מרגיש/ה","אני משתמש/ת במשהו שעוזר לי להירגע","אני שומר/ת על גוף בטוח"],
-    indep:["אני מתארגן/ת","אני שומר/ת על הדברים שלי","אני מנסה לעשות לבד"]
+    social:["אני חלק מהקבוצה","אני מדבר/ת ומשחק/ת עם אחרים","כשיש ריב – אני מנסה לפתור או מבקש/ת עזרה"],
+    learning:["אני משתתף/ת בשיעור","כשמשימה קשה – אני ממשיך/ה לנסות","כשאני צריך/ה עזרה – אני מבקש/ת"],
+    emotion:["אני יודע/ת איך אני מרגיש/ה","כשקשה לי – אני עושה משהו שמרגיע אותי","כשאני כועס/ת – אני לא פוגע/ת באף אחד"],
+    indep:["אני מוציא/ה לבד את הציוד לשיעור","אני יודע/ת מה עכשיו לפי סדר היום","אני מנסה לבד, ואז מבקש/ת עזרה"]
   },
   staff:{
-    social:["התלמיד/ה משתלב/ת בקבוצה.","התלמיד/ה יוצר/ת קשר עם תלמידים אחרים.","כשיש קושי חברתי, התלמיד/ה מנסה להתמודד או פונה לעזרה."],
+    social:["התלמיד/ה משתלב/ת בקבוצה.","התלמיד/ה יוצר/ת קשר עם תלמידים אחרים.","כשיש קושי חברתי, התלמיד/ה מנסה לפתור או פונה לעזרה."],
     learning:["התלמיד/ה משתתף/ת בשיעור.","התלמיד/ה ממשיך/ה לנסות גם כשהמשימה קשה לו/לה.","התלמיד/ה פונה לעזרה כשצריך."],
-    emotion:["התלמיד/ה מזהה מתי נעים לו/לה ומתי קשה לו/לה.","כשקשה לתלמיד/ה, הוא/היא משתמש/ת בדרך שעוזרת לו/לה להירגע.","התלמיד/ה שומר/ת על גוף בטוח."],
-    indep:["התלמיד/ה מתארגן/ת לקראת שיעור או פעילות.","התלמיד/ה שומר/ת על הדברים שלו/ה.","התלמיד/ה מנסה לבצע דברים בעצמו/ה לפני שהוא/היא מבקש/ת עזרה."]
+    emotion:["התלמיד/ה מזהה מתי נעים לו/לה ומתי קשה לו/לה.","כשקשה לתלמיד/ה, הוא/היא משתמש/ת בדרך שעוזרת לו/לה להירגע.","גם בזמן כעס, התלמיד/ה לא פוגע/ת באחרים או בעצמו/ה."],
+    indep:["התלמיד/ה מכין/ה בעצמו/ה את הציוד לשיעור.","התלמיד/ה עובר/ת בין פעילויות לפי סדר היום.","התלמיד/ה מנסה לבצע דברים בעצמו/ה לפני שהוא/היא מבקש/ת עזרה."]
   }
 };
 const CLIMATE = {
   title:{high:"איך אני מרגיש/ה בבית הספר?", visual:"אני בבית הספר"},
   high:["אני אוהב/ת להגיע לבית הספר.","אני מרגיש/ה בטוח/ה בבית הספר.","יש בבית הספר מבוגר שאני יכול/ה לפנות אליו.","כשקשה לי בבית הספר, יש משהו או מישהו שעוזר לי."],
   visual:["נעים לי להגיע לבית הספר","אני מרגיש/ה בטוח/ה","יש מבוגר שאני יכול/ה לפנות אליו","יש מי שעוזר לי כשקשה"],
-  icons:["🏫","🛡️","👩‍🏫","🤲"]
+  icons:["cometoschool","safe","adult","helper"]
 };
 const STAFF_OBS = [
   {k:"teacher_observation_entry", id:"obs1", t:"התלמיד/ה נכנס/ת לשגרת בית הספר ברוב הימים.", label:"כניסה לשגרה", icon:"🚪"},
@@ -442,10 +455,10 @@ const SCALE = {
 };
 /* goal options: [stored value, short visual label, icon] */
 const IMPROVE = {
-  social:[["להכיר עוד חבר/ה","חבר/ה חדש/ה","🤝"],["להצטרף לפעילות עם אחרים","פעילות עם אחרים","🧩"],["לדבר/לתקשר עם אחרים","לדבר עם אחרים","💬"],["לבקש עזרה כשיש קושי","לבקש עזרה","✋"]],
-  learning:[["להתחיל משימה","להתחיל","▶️"],["לסיים חלק ממשימה","לסיים חלק","✅"],["להשתתף בשיעור","להשתתף","🙋"],["להמשיך לנסות גם כשקשה","להמשיך לנסות","💪"],["לבקש עזרה","לבקש עזרה","✋"]],
-  emotion:[["לדעת איך אני מרגיש/ה","לדעת מה אני מרגיש/ה","🙂"],["לבחור דרך להירגע","להירגע","🧘"],["לעצור לפני שאני מגיב/ה","לעצור לפני תגובה","🛑"],["לשמור על גוף בטוח","גוף בטוח","🛡️"],["להתמודד טוב יותר עם שינוי","שינוי","🔄"]],
-  indep:[["להתארגן לקראת שיעור או פעילות","להתארגן","🎒"],["לשמור על הדברים שלי","לשמור על הדברים","📦"],["להתחיל לבד","להתחיל לבד","🚀"],["לעשות יותר דברים לבד","לעשות לבד","👤"]]
+  social:[["להכיר חבר/ה חדש/ה","newfriend"],["לשחק עם אחרים","play"],["לדבר עם אחרים","talk"],["לפתור ריב או לבקש עזרה","solve"],["לשמור על מרחב אישי","space"]].map(x=>[x[0],x[0],x[1]]),
+  learning:[["להתחיל משימה לבד","start"],["לסיים משימה עד הסוף","finish"],["להשתתף יותר בשיעור","participate"],["להמשיך לנסות כשקשה","keeptrying"],["לבקש עזרה כשצריך","askhelp"],["להשתפר בקריאה","reading"],["להשתפר בחשבון","math"]].map(x=>[x[0],x[0],x[1]]),
+  emotion:[["לדעת איך אני מרגיש/ה","feel"],["להירגע כשקשה לי","calm"],["לעצור לפני שאני מגיב/ה","stop"],["לא לפגוע כשאני כועס/ת","nohurt"],["לקבל שינויים בקלות יותר","change"]].map(x=>[x[0],x[0],x[1]]),
+  indep:[["להכין לבד את הציוד","equipment"],["להתמצא בסדר היום","schedule"],["להתחיל משימה לבד","start"],["לעשות יותר דברים לבד","alone"]].map(x=>[x[0],x[0],x[1]])
 };
 const STRENGTHS = [["חברים","👥"],["למידה","📘"],["רגשות והתנהגות","❤️"],["עצמאות","⚙️"]];
 const HELPS = [["מקום שקט","🤫"],["הפסקה קצרה","⏸️"],["מבוגר שאני מכיר/ה","👩‍🏫"],["תנועה / הליכה","🚶"],["שמסבירים לי שוב","💬"],["קצת זמן לבד","🚪"],["מוזיקה","🎵"]];
@@ -552,12 +565,104 @@ ILL.eye = `<svg viewBox="0 0 64 44" aria-hidden="true"><g ${SK}><path d="M3 22C1
 function pic(ic){ return ic==="buoy"? BUOY : ic==="sad"? face("help") : face(ic); }
 function vpic(ic){ return ic==="yes"? THUMB : pic(ic); }
 
-function rowsGrid(ids, texts, scale){
-  return ids.map((id,i)=>`<div class="qtext" id="t-${id}">${esc(texts[i])}</div>
+/* Original AAC-style pictograms: thick outline, flat colours, simple figures. viewBox 0 0 100 100 */
+const SYM = (()=>{
+  const K="#1d1d1f", SW=2.6;
+  const st=`stroke="${K}" stroke-width="${SW}" stroke-linejoin="round" stroke-linecap="round"`;
+  const SKIN="#F6C9A0", HAIR="#5A3B22";
+  /* stick figure: cx = centre x, by = feet y, s = scale (1 ≈ 60px tall) */
+  function person(cx, by, s=1, o={}){
+    const lw=3.2*s+0.6, hr=10*s, H=60*s, hy=by-H+hr, neck=hy+hr, hip=neck+21*s, sh=neck+5*s;
+    const line=(d)=>`<path d="${d}" fill="none" stroke="${K}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const arm=(side,kind)=>{ const x0=cx, y0=sh; let p;
+      if(kind==="up") p=`M${x0} ${y0} L${x0+side*12*s} ${y0-5*s} L${x0+side*17*s} ${y0-17*s}`;
+      else if(kind==="side") p=`M${x0} ${y0} L${x0+side*11*s} ${y0+5*s} L${x0+side*19*s} ${y0+3*s}`;
+      else if(kind==="fwd") p=`M${x0} ${y0} L${x0+side*9*s} ${y0+8*s} L${x0+side*18*s} ${y0+7*s}`;
+      else if(kind==="hip") p=`M${x0} ${y0} L${x0+side*10*s} ${y0+8*s} L${x0+side*4*s} ${y0+15*s}`;
+      else if(kind==="face") p=`M${x0} ${y0} L${x0+side*9*s} ${y0+6*s} L${x0+side*6*s} ${hy+3*s}`;
+      else if(kind==="ears") p=`M${x0} ${y0} L${x0+side*12*s} ${y0-1*s} L${x0+side*10*s} ${hy}`;
+      else p=`M${x0} ${y0} L${x0+side*6*s} ${y0+10*s} L${x0+side*8*s} ${y0+19*s}`;
+      return line(p); };
+    let legs;
+    if(o.sit) legs=line(`M${cx} ${hip} L${cx+13*s} ${hip+1*s} L${cx+13*s} ${by}`);
+    else if(o.cross) legs=line(`M${cx} ${hip} L${cx-14*s} ${hip+6*s} L${cx+6*s} ${hip+8*s} M${cx} ${hip} L${cx+14*s} ${hip+6*s} L${cx-6*s} ${hip+8*s}`);
+    else legs=line(`M${cx} ${hip} L${cx-7*s} ${by} M${cx} ${hip} L${cx+7*s} ${by}`);
+    const body=line(`M${cx} ${neck} L${cx} ${hip}`);
+    const shirt=o.shirt && o.clothes? `<path d="M${cx-6*s} ${neck+2*s} h${12*s} l${2*s} ${16*s} h${-16*s}Z" fill="${o.shirt}" stroke="${K}" stroke-width="${lw*0.7}" stroke-linejoin="round"/>` : "";
+    const head=`<circle cx="${cx}" cy="${hy}" r="${hr}" fill="#E9BE8E" stroke="${K}" stroke-width="${lw*0.85}"/>`;
+    const f=o.face||"smile", ex=3.6*s, ey=hy-1.5*s, my=hy+4.2*s, fw=1.3*s+0.5;
+    let face=`<circle cx="${cx-ex}" cy="${ey}" r="${1.25*s+0.3}" fill="${K}"/><circle cx="${cx+ex}" cy="${ey}" r="${1.25*s+0.3}" fill="${K}"/>`;
+    if(f==="smile") face+=`<path d="M${cx-4*s} ${my-1*s} Q${cx} ${my+3.4*s} ${cx+4*s} ${my-1*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="flat") face+=`<path d="M${cx-3.4*s} ${my} h${6.8*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="sad") face+=`<path d="M${cx-4*s} ${my+2*s} Q${cx} ${my-2.2*s} ${cx+4*s} ${my+2*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="angry") face+=`<path d="M${cx-6.4*s} ${ey-4*s} l${4.4*s} ${2*s} M${cx+6.4*s} ${ey-4*s} l${-4.4*s} ${2*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3.6*s} ${my+1.6*s} Q${cx} ${my-1.8*s} ${cx+3.6*s} ${my+1.6*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="calm") face=`<path d="M${cx-5.4*s} ${ey} q${1.6*s} ${1.6*s} ${3.2*s} 0 M${cx+2.2*s} ${ey} q${1.6*s} ${1.6*s} ${3.2*s} 0" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3*s} ${my-0.6*s} Q${cx} ${my+2.2*s} ${cx+3*s} ${my-0.6*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="worried") face+=`<path d="M${cx-6*s} ${ey-3*s} l${4*s} ${-1.6*s} M${cx+6*s} ${ey-3*s} l${-4*s} ${-1.6*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3.4*s} ${my+1*s} q${1.7*s} ${-1.6*s} ${3.4*s} 0 q${1.7*s} ${1.6*s} ${3.4*s} 0" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    const hair = o.hair? `<path d="M${cx-hr} ${hy-1*s} Q${cx-hr+1*s} ${hy-hr-3*s} ${cx} ${hy-hr-1*s} Q${cx+hr-1*s} ${hy-hr-3*s} ${cx+hr} ${hy-1*s} Q${cx+4*s} ${hy-7*s} ${cx-hr} ${hy-1*s}Z" fill="${o.hair}" stroke="${K}" stroke-width="${lw*0.6}" stroke-linejoin="round"/>` : "";
+    return `<g>${shirt}${legs}${body}${arm(-1,o.l||"down")}${arm(1,o.r||"down")}${head}${hair}${face}</g>`;
+  }
+  const bubble=(x,y,w,h,tail="left",fill="#fff")=>{ const tx=tail==="left"? x+w*0.25 : x+w*0.75, dir=tail==="left"?-1:1;
+    return `<path d="M${x+6} ${y} h${w-12} q6 0 6 6 v${h-12} q0 6 -6 6 H${tx+4} l${dir*-1-4+dir*6} 9 l${-2-dir*2} -9 H${x+6} q-6 0 -6 -6 v${-(h-12)} q0 -6 6 -6Z" fill="${fill}" ${st}/>`; };
+  const thought=(x,y,w,h)=>`<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w/2}" ry="${h/2}" fill="#fff" ${st}/><circle cx="${x+w*0.2}" cy="${y+h+5}" r="3" fill="#fff" ${st}/><circle cx="${x+w*0.12}" cy="${y+h+11}" r="2" fill="#fff" ${st}/>`;
+  const mini=(cx,cy,r,kind,fill)=>{ let m=kind==="smile"?`<path d="M${cx-r*.45} ${cy+r*.15} Q${cx} ${cy+r*.6} ${cx+r*.45} ${cy+r*.15}" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>`:`<path d="M${cx-r*.45} ${cy+r*.5} Q${cx} ${cy+r*.05} ${cx+r*.45} ${cy+r*.5}" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>`;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${st}/><circle cx="${cx-r*.35}" cy="${cy-r*.2}" r="1.3" fill="${K}"/><circle cx="${cx+r*.35}" cy="${cy-r*.2}" r="1.3" fill="${K}"/>${m}`; };
+  const desk=(x,y,w)=>`<rect x="${x}" y="${y}" width="${w}" height="6" rx="2" fill="#C98B4E" ${st}/><path d="M${x+5} ${y+6} v18 M${x+w-5} ${y+6} v18" stroke="${K}" stroke-width="${SW+1}" stroke-linecap="round"/>`;
+  const paper=(x,y,w,h,lines=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#fff" ${st}/>${Array.from({length:lines},(_,i)=>`<path d="M${x+4} ${y+6+i*(h-10)/Math.max(1,lines-1)} h${w-8}" stroke="#9aa" stroke-width="1.8" stroke-linecap="round"/>`).join("")}`;
+  const check=(x,y,s=1,c="#2E9E57")=>`<circle cx="${x}" cy="${y}" r="${8*s}" fill="${c}" ${st}/><path d="M${x-4*s} ${y} l${3*s} ${3*s} l${5.5*s} ${-6*s}" fill="none" stroke="#fff" stroke-width="${2.8*s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const xmark=(x,y,s=1)=>`<circle cx="${x}" cy="${y}" r="${9*s}" fill="#E5484D" ${st}/><path d="M${x-4*s} ${y-4*s} l${8*s} ${8*s} M${x+4*s} ${y-4*s} l${-8*s} ${8*s}" stroke="#fff" stroke-width="${3*s}" stroke-linecap="round"/>`;
+  const arrow=(x1,y1,x2,y2,c=K)=>{ const a=Math.atan2(y2-y1,x2-x1), h=6; return `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${c}" stroke-width="3.4" stroke-linecap="round"/><path d="M${x2} ${y2} L${x2-h*Math.cos(a-0.5)} ${y2-h*Math.sin(a-0.5)} M${x2} ${y2} L${x2-h*Math.cos(a+0.5)} ${y2-h*Math.sin(a+0.5)}" stroke="${c}" stroke-width="3.4" stroke-linecap="round"/>`; };
+  const ball=(x,y,r=6)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#F6A43A" ${st}/><path d="M${x-r} ${y} Q${x} ${y-r*.5} ${x+r} ${y} M${x} ${y-r} Q${x+r*.5} ${y} ${x} ${y+r}" fill="none" stroke="${K}" stroke-width="1.6"/>`;
+  const heart=(x,y,s=1,c="#E5484D")=>`<path d="M${x} ${y+8*s} C${x-12*s} ${y} ${x-9*s} ${y-9*s} ${x} ${y-3*s} C${x+9*s} ${y-9*s} ${x+12*s} ${y} ${x} ${y+8*s}Z" fill="${c}" ${st}/>`;
+  const school=(x,y,w=38)=>`<path d="M${x} ${y+12} L${x+w/2} ${y} L${x+w} ${y+12}Z" fill="#E5484D" ${st}/><rect x="${x+3}" y="${y+12}" width="${w-6}" height="${w*0.62}" fill="#FFE8B0" ${st}/><rect x="${x+w/2-5}" y="${y+12+w*0.62-14}" width="10" height="14" fill="#8B5A2B" ${st}/><rect x="${x+7}" y="${y+17}" width="8" height="7" fill="#9FDCE6" ${st}/><rect x="${x+w-15}" y="${y+17}" width="8" height="7" fill="#9FDCE6" ${st}/><path d="M${x+w/2} ${y} v-8" stroke="${K}" stroke-width="2"/><path d="M${x+w/2} ${y-8} l8 2.5 l-8 2.5Z" fill="#4A86E8" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  const backpack=(x,y,s=1)=>`<rect x="${x}" y="${y}" width="${20*s}" height="${24*s}" rx="${6*s}" fill="#E5484D" ${st}/><rect x="${x+4*s}" y="${y+12*s}" width="${12*s}" height="${8*s}" rx="${2*s}" fill="#F27E8E" ${st}/><path d="M${x+6*s} ${y} q${4*s} ${-7*s} ${8*s} 0" fill="none" ${st}/>`;
+  const pencil=(x,y,ang=-35)=>`<g transform="rotate(${ang} ${x} ${y})"><rect x="${x-3}" y="${y-16}" width="6" height="20" fill="#FFD34D" ${st}/><path d="M${x-3} ${y+4} L${x} ${y+10} L${x+3} ${y+4}Z" fill="#F6C9A0" ${st}/></g>`;
+  const book=(x,y,w=26,c="#4A86E8")=>`<path d="M${x} ${y+3} q${w/4} -5 ${w/2} 0 v${w*0.7} q${-w/4} -5 ${-w/2} 0Z" fill="${c}" ${st}/><path d="M${x+w} ${y+3} q${-w/4} -5 ${-w/2} 0 v${w*0.7} q${w/4} -5 ${w/2} 0Z" fill="${c}" ${st}/>`;
+  const board=(x,y,w,h,content="")=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#2F6B4F" stroke="#8B5A2B" stroke-width="3.5"/>${content}`;
+  const zig=(x1,y1,x2,y2)=>{ const n=4, dx=(x2-x1)/n, dy=(y2-y1)/n; let d=`M${x1} ${y1}`; for(let i=1;i<=n;i++) d+=` L${x1+dx*i+(i%2?3:-3)} ${y1+dy*i+(i%2?-5:5)}`; return `<path d="${d}" fill="none" stroke="#E5484D" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`; };
+  const svg = body => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${body}</svg>`;
+  const S = {};
+  /* ---------- social ---------- */
+  S.group = svg(`<circle cx="50" cy="56" r="40" fill="#E3EEFF" stroke="#9DB9E8" stroke-width="2" stroke-dasharray="4 4"/>${person(24,88,.82,{shirt:"#F6A43A"})}${person(76,88,.82,{shirt:"#2E9E57"})}${person(50,92,.95,{shirt:"#4A86E8",l:"side",r:"side"})}`);
+  S.talkplay = svg(`${person(26,92,.9,{shirt:"#4A86E8",r:"fwd"})}${person(74,92,.9,{shirt:"#F6A43A",l:"fwd",hair:"#2b2b2b"})}${ball(50,80,6)}${bubble(30,6,22,16,"left")}<path d="M35 14 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${bubble(56,10,22,16,"right")}<path d="M61 18 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>`);
+  S.solve = svg(`${person(24,92,.85,{shirt:"#4A86E8",face:"flat",r:"fwd"})}${person(76,92,.85,{shirt:"#F6A43A",face:"flat",l:"fwd"})}${zig(40,30,60,30)}<path d="M40 62 q10 -8 20 0" fill="none" stroke="#2E9E57" stroke-width="3.4" stroke-linecap="round"/>${heart(50,50,.75,"#2E9E57")}`);
+  S.newfriend = svg(`${person(30,92,.9,{shirt:"#4A86E8",r:"side"})}${person(66,92,.9,{shirt:"#9B6BDF",l:"side",hair:"#2b2b2b"})}<circle cx="84" cy="22" r="10" fill="#2E9E57" ${st}/><path d="M84 16 v12 M78 22 h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>`);
+  S.play = svg(`${person(28,92,.9,{shirt:"#4A86E8",r:"up"})}${person(72,92,.9,{shirt:"#2E9E57",l:"up",hair:"#2b2b2b"})}${ball(50,20,9)}<path d="M38 34 q6 -10 4 -2 M62 34 q-6 -10 -4 -2" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round"/>`);
+  S.talk = svg(`${person(28,92,.9,{shirt:"#4A86E8"})}${person(72,92,.9,{shirt:"#F6A43A",hair:"#2b2b2b"})}${bubble(8,6,36,22,"right")}<path d="M15 14 h22 M15 20 h14" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${bubble(56,14,36,22,"left")}<path d="M63 22 h22 M63 28 h14" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>`);
+  S.space = svg(`<circle cx="50" cy="58" r="30" fill="#E8F7EC" stroke="#2E9E57" stroke-width="3" stroke-dasharray="6 5"/>${person(50,86,.8,{shirt:"#4A86E8",l:"side",r:"side"})}${person(10,92,.55,{shirt:"#F6A43A"})}${person(90,92,.55,{shirt:"#9B6BDF"})}`);
+  /* ---------- learning ---------- */
+  S.participate = svg(`${board(8,8,44,28,`<path d="M15 18 h16 M15 26 h26" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`)}${desk(46,72,46)}${person(70,92,.78,{shirt:"#4A86E8",r:"up",sit:true})}`);
+  S.keeptrying = svg(`${desk(10,70,56)}${paper(18,52,26,18,2)}${person(64,92,.8,{shirt:"#2E9E57",face:"flat",l:"fwd",sit:true})}<path d="M76 18 a12 12 0 1 1 -10 -4" fill="none" stroke="#F6A43A" stroke-width="4" stroke-linecap="round"/><path d="M62 9 l5 6 l-7 2" fill="none" stroke="#F6A43A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`);
+  S.askhelp = svg(`${person(30,92,.85,{shirt:"#4A86E8",r:"up"})}<circle cx="40" cy="14" r="9" fill="#FFD34D" ${st}/><text x="40" y="19" text-anchor="middle" font-size="14" font-weight="900" font-family="Arial" fill="#1d1d1f">?</text>${person(74,94,1.1,{hair:"#6B4A2B",l:"fwd"})}`);
+  S.start = svg(`${desk(8,70,56)}${paper(16,52,26,18,2)}${person(62,92,.8,{shirt:"#4A86E8",l:"fwd",sit:true})}<circle cx="80" cy="22" r="12" fill="#2E9E57" ${st}/><path d="M76 15 v14 l11 -7Z" fill="#fff"/>`);
+  S.finish = svg(`${paper(22,12,40,52,4)}${check(66,62,1.4)}${pencil(30,74,-40)}`);
+  S.reading = svg(`${person(50,94,.9,{shirt:"#2E9E57",l:"fwd",r:"fwd"})}${book(34,50,32,"#E5484D")}<text x="22" y="24" font-size="15" font-weight="900" font-family="Arial" fill="#4A86E8">א</text><text x="68" y="20" font-size="15" font-weight="900" font-family="Arial" fill="#E5484D">ב</text>`);
+  S.math = svg(`<rect x="12" y="14" width="76" height="72" rx="10" fill="#fff" ${st}/><text x="50" y="58" text-anchor="middle" direction="ltr" unicode-bidi="bidi-override" font-size="20" font-weight="900" font-family="Arial"><tspan fill="#4A86E8">2+1</tspan><tspan fill="#2E9E57">=3</tspan></text>`);
+  /* ---------- emotions ---------- */
+  S.feel = svg(`${person(36,94,.95,{shirt:"#9B6BDF",face:"flat"})}${thought(52,6,42,28)}${mini(64,20,8,"smile","#FFD34D")}${mini(83,20,8,"sad","#9DB9E8")}`);
+  S.calm = svg(`${person(50,90,.9,{shirt:"#2E9E57",face:"calm",cross:true,l:"hip",r:"hip"})}<path d="M14 30 q8 -6 16 0 M12 40 q8 -6 16 0 M70 30 q8 -6 16 0 M72 40 q8 -6 16 0" fill="none" stroke="#4A86E8" stroke-width="3" stroke-linecap="round"/>`);
+  S.nohurt = svg(`${person(40,94,.95,{shirt:"#E5484D",face:"angry"})}<path d="M12 22 l6 4 M8 32 l7 1 M70 22 l-6 4" stroke="#E5484D" stroke-width="3" stroke-linecap="round"/><g><rect x="66" y="52" width="20" height="16" rx="6" fill="#F6C9A0" ${st}/><path d="M71 52 v6 M76 52 v6 M81 52 v6" stroke="#1d1d1f" stroke-width="1.8" stroke-linecap="round"/></g><circle cx="76" cy="60" r="16" fill="none" stroke="#E5484D" stroke-width="4"/><path d="M65 71 L87 49" stroke="#E5484D" stroke-width="4" stroke-linecap="round"/>`);
+  S.stop = svg(`${person(34,94,.95,{shirt:"#4A86E8",face:"flat",r:"fwd"})}<path d="M66 18 l12 0 l9 9 v12 l-9 9 h-12 l-9 -9 v-12Z" fill="#E5484D" ${st}/><text x="72" y="38" text-anchor="middle" font-size="10" font-weight="900" font-family="Arial" fill="#fff">עצור</text><path d="M72 48 v40" stroke="#1d1d1f" stroke-width="3"/>`);
+  S.change = svg(`<rect x="10" y="22" width="30" height="38" rx="5" fill="#9DB9E8" ${st}/><rect x="60" y="22" width="30" height="38" rx="5" fill="#FFD34D" ${st}/>${arrow(42,34,58,34,"#2E9E57")}${arrow(58,50,42,50,"#2E9E57")}${mini(50,80,10,"smile","#FFD34D")}`);
+  /* ---------- independence ---------- */
+  S.equipment = svg(`${backpack(12,48,1.5)}${pencil(66,40,25)}${book(58,58,28,"#2E9E57")}${arrow(46,70,56,70,"#1d1d1f")}`);
+  S.schedule = svg(`<rect x="22" y="8" width="56" height="84" rx="6" fill="#fff" ${st}/>${[0,1,2].map(i=>`<rect x="30" y="${18+i*24}" width="28" height="16" rx="3" fill="${["#9DB9E8","#FFD34D","#F27E8E"][i]}" ${st}/>`).join("")}${check(66,26,.75)}${arrow(92,50,72,50,"#E5484D")}`);
+  S.tryalone = svg(`${person(28,92,.85,{shirt:"#4A86E8",l:"fwd",r:"fwd"})}<rect x="34" y="58" width="18" height="14" rx="2" fill="#C98B4E" ${st}/><text x="16" y="20" font-size="16" font-weight="900" font-family="Arial" fill="#2E9E57">1</text>${arrow(56,40,70,40)}${person(80,92,.75,{shirt:"#4A86E8",r:"up"})}<text x="70" y="20" font-size="16" font-weight="900" font-family="Arial" fill="#F6A43A">2</text>`);
+  S.alone = svg(`${person(50,92,1,{shirt:"#9B6BDF",l:"up",r:"up"})}<path d="M18 20 l4 4 M14 34 h6 M82 20 l-4 4 M86 34 h-6" stroke="#FFD34D" stroke-width="3.4" stroke-linecap="round"/>`);
+  /* ---------- climate ---------- */
+  S.cometoschool = svg(`${school(52,22,42)}${person(26,92,.9,{shirt:"#4A86E8",r:"side"})}${arrow(38,84,54,84,"#2E9E57")}`);
+  S.safe = svg(`<path d="M50 8 L84 20 V44 C84 66 68 82 50 92 C32 82 16 66 16 44 V20Z" fill="#CFE6FF" ${st}/>${person(50,84,.75,{shirt:"#2E9E57"})}`);
+  S.adult = svg(`${person(30,94,1.15,{hair:"#6B4A2B",r:"fwd"})}${person(72,94,.72,{shirt:"#4A86E8",l:"up"})}${bubble(56,6,30,18,"left")}${heart(71,15,.45)}`);
+  S.helper = svg(`${person(36,94,1.12,{hair:"#6B4A2B",r:"side"})}${person(66,94,.72,{shirt:"#4A86E8",face:"smile"})}${heart(52,18,.9)}`);
+  return S;
+})();
+
+const symHtml = k => SYM[k]? `<span class="sym">${SYM[k]}</span>` : "";
+function rowsGrid(ids, texts, scale, icons){
+  return ids.map((id,i)=>`<div class="qtext" id="t-${id}">${icons&&icons[i]? `<span class="qsym" aria-hidden="true">${SYM[icons[i]]||""}</span>` : ""}<span>${esc(texts[i])}</span></div>
     <div class="answers" role="group" aria-labelledby="t-${id}">${scale.map(s=>`<button type="button" class="ans" data-item="${id}" data-v="${s.v}" data-tone="${s.t}" aria-pressed="false" aria-label="${s.l}"><span class="r"></span><span class="l">${s.l}</span></button>`).join("")}</div>`).join("");
 }
 function rowsVis(ids, texts, icons, scale){
-  return ids.map((id,i)=>`<div class="pic"><span aria-hidden="true">${icons[i]}</span></div><div class="qtext" id="t-${id}">${esc(texts[i])}</div>
+  return ids.map((id,i)=>`<div class="pic"><span aria-hidden="true">${SYM[icons[i]]||""}</span></div><div class="qtext" id="t-${id}">${esc(texts[i])}</div>
     <div class="answers" role="group" aria-labelledby="t-${id}">${scale.map(s=>`<button type="button" class="ans" data-item="${id}" data-v="${s.v}" data-tone="${s.t}" aria-pressed="false" aria-label="${s.l}"><span class="vb">${vpic(s.ic)}</span></button>`).join("")}</div>`).join("");
 }
 const colHeads = (scale, tinted) => scale.map(s=>`<div class="colh ${tinted? s.t : ""}">${pic(s.ic)}<span>${s.l}</span></div>`).join("");
@@ -592,14 +697,14 @@ function renderForm(type){
       h += `<div class="drow vis" data-d="${d.k}"><section class="dcard vcard" aria-labelledby="h-${d.k}">
         <div class="vside"><span class="deco v-rays">${ILL.rays("rgba(255,255,255,.9)")}</span><div class="di art">${ILL[d.k]}</div><h3 id="h-${d.k}">${di+1}. ${d.t.visual}</h3></div>
         <div><div class="vgrid"><div class="sp"></div>${colHeads(scale,false)}${rowsVis(ids,texts,ITEM_ICONS[d.k],scale)}</div>
-        <div class="vimprove"><h4>${GOAL_TITLE}</h4><p class="ghint">בוחרים מטרה אחת</p><div class="chips cards single" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[1],o[2],false)).join("")}${chip(g,"אחר","אחר","✨",false)}</div></div></div>
+        <div class="vimprove"><h4>${GOAL_TITLE}</h4><p class="ghint">בוחרים מטרה אחת</p><div class="chips cards single" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[1],SYM[o[2]]||"",false)).join("")}${chip(g,"אחר","אחר","✨",false)}</div></div></div>
       </section></div>`;
     } else {
       h += `<div class="drow staffrow" data-d="${d.k}"><section class="dcard" aria-labelledby="h-${d.k}"><div class="grid">
         <div class="dtitle"><h3 id="h-${d.k}">${di+1}. ${d.t[type]}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL[d.k]}</div></div>
-        ${colHeads(scale,true)}${rowsGrid(ids,texts,scale)}
+        ${colHeads(scale,true)}${rowsGrid(ids,texts,scale,ITEM_ICONS[d.k])}
       </div>
-      ${staff? "" : `<div class="goalpanel"><h4>${GOAL_TITLE}<span class="ghint">בוחרים מטרה אחת</span></h4><div class="chips single gp" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[0],o[2],false)).join("")}${otherChip(g)}</div></div>`}
+      ${staff? "" : `<div class="goalpanel"><h4>${GOAL_TITLE}<span class="ghint">בוחרים מטרה אחת</span></h4><div class="chips single gp" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[0],SYM[o[2]]||"",false)).join("")}${otherChip(g)}</div></div>`}
       </section></div>`;
     }
   });
@@ -615,7 +720,7 @@ function renderForm(type){
     } else {
       h += `<div class="drow staffrow" data-d="climate"><section class="dcard" aria-labelledby="h-climate"><div class="grid">
         <div class="dtitle"><h3 id="h-climate">${esc(CLIMATE.title.high)}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL.school}</div></div>
-        ${colHeads(cs,true)}${rowsGrid(ids,CLIMATE.high,cs)}
+        ${colHeads(cs,true)}${rowsGrid(ids,CLIMATE.high,cs,CLIMATE.icons)}
       </div></section></div>`;
     }
   } else {
@@ -798,7 +903,7 @@ function textEntries(){
   return E;
 }
 const TEXT_DEFAULTS = Object.fromEntries(textEntries().map(e=>[e.key, e.obj[e.prop]]));
-let textOverrides = {}, textsVersion = "default";
+let textOverrides = {}, textsVersion = "2026-10-10";
 function applyTexts(ov){
   textOverrides = ov||{};
   textEntries().forEach(e=>{ e.obj[e.prop] = (typeof textOverrides[e.key]==="string" && textOverrides[e.key].trim())? textOverrides[e.key] : TEXT_DEFAULTS[e.key]; });
@@ -810,7 +915,7 @@ async function loadTexts(){
     if(!snap.exists) return;
     const d = snap.data()||{};
     configCache = d; ROSTER = (d.roster && typeof d.roster==="object")? d.roster : {};
-    applyTexts(d.overrides); textsVersion = d.updatedAt || "default";
+    applyTexts(d.overrides); textsVersion = (d.updatedAt && d.updatedAt!=="default")? d.updatedAt : "2026-10-10";
     const untouched = state && !Object.keys(state.answers).length && !state.name;
     if(untouched && currentTab!=="data") renderForm(currentTab);
   }catch(e){}
@@ -1757,7 +1862,7 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
   banner(wsClim, 8, "אקלים בית־ספרי", "מדד נפרד – לא נכלל בציוני התפיסה העצמית · שאלות התצפית של הצוות הן מידע משלים ואינן מושוות לציון האקלים", C.climate[1]);
   section(wsClim, 5, 8, "ממוצע בית־ספרי לכל שאלה (מילוי אחרון של כל תלמיד/ה)", C.climate);
   headerRow(wsClim, 6, ["שאלה","","","ממוצע"]);
-  CLIMATE.high.forEach((q,i)=>{ const n=7+i; wsClim.mergeCells(`A${n}:C${n}`); cell(wsClim,n,1,`${CLIMATE.icons[i]} ${q}`);
+  CLIMATE.high.forEach((q,i)=>{ const n=7+i; wsClim.mergeCells(`A${n}:C${n}`); cell(wsClim,n,1,q);
     cell(wsClim,n,4,`=IFERROR(AVERAGEIFS(${R("i_climate"+(i+1))},${R("latest")},1,${R("grp")},"תלמיד"),"")`,{h:"center",num:"0.00",bold:true}); });
   barCF(wsClim, "D7:D10", "FF13879A", 3);
   section(wsClim, 12, 8, "לפי תלמיד/ה", C.orange);
