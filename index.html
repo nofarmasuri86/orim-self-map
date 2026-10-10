@@ -1960,7 +1960,11 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
 }
 
 
-renderForm("high");
+/* direct links: index.html#visual opens the TT"CH questionnaire, #staff the staff one, etc. */
+const DEEP = ["high","visual","staff","track","data"];
+const hashTab = () => { const h = decodeURIComponent(location.hash.slice(1)); return DEEP.includes(h)? h : null; };
+window.addEventListener("hashchange", ()=>{ const h=hashTab(); if(h && h!==currentTab) switchTab(h); });
+if(hashTab()) switchTab(hashTab()); else renderForm("high");
 loadTexts();
 </script>
 </body></html>
