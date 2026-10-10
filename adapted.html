@@ -1,0 +1,873 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>שאלונים מותאמים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: a staff setup card → a full-screen, one-question-per-screen student mode with two giant answer targets → a staff observation sheet → summary. */
+:root{
+  --bg:#EEF2F8; --paper:#FFFFFF; --ink:#1E2A4F; --muted:#56607E; --line:#DCE2EE; --accent:#2F56B0; --accent-soft:#E6EDFB;
+  --yes-btn:#1F8A43; --no-btn:#C42F39; --yes-soft:#E2F5E5; --no-soft:#FDE2E3; --focus:#F2B705;
+  --social:#24448F; --learning:#17775A; --emotion:#C2295A; --indep:#5B3FB8; --climate:#13879A; --warm:#B4541A; --warm-soft:#FDEBDD;
+  --run-bg:#FFFFFF; --run-ink:#1E2A4F;
+  --font-display:"Rubik","Assistant",system-ui,sans-serif;
+  --font-body:"Assistant","Rubik","Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#10162A; --paper:#18213A; --ink:#EEF2FA; --muted:#A9B3CD; --line:#2C3759; --accent:#93B1FF; --accent-soft:#22305A;
+  --yes-soft:#173A24; --no-soft:#3D1A1E; --warm:#F2A06A; --warm-soft:#3A2416;
+  --social:#93B1FF; --learning:#6FD3A9; --emotion:#FF8FB1; --indep:#B9A4FF; --climate:#6FD6E6;
+  --run-bg:#18213A; --run-ink:#EEF2FA; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#10162A; --paper:#18213A; --ink:#EEF2FA; --muted:#A9B3CD; --line:#2C3759; --accent:#93B1FF; --accent-soft:#22305A;
+  --yes-soft:#173A24; --no-soft:#3D1A1E; --warm:#F2A06A; --warm-soft:#3A2416;
+  --social:#93B1FF; --learning:#6FD3A9; --emotion:#FF8FB1; --indep:#B9A4FF; --climate:#6FD6E6;
+  --run-bg:#18213A; --run-ink:#EEF2FA; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:18px;line-height:1.5;direction:rtl;padding-inline:16px}
+h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 48px;display:flex;flex-direction:column;gap:20px}
+.hero{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-weight:700;color:var(--accent);letter-spacing:.02em;font-size:15px}
+.hero h1{font-size:clamp(30px,5vw,42px);font-weight:800}
+.hero p{margin:0;color:var(--muted);max-width:62ch}
+.preview-note{background:var(--warm-soft);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:16px}
+.preview-note b{color:var(--warm)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card h2{font-size:22px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.flabel{font-weight:700;font-size:16px}
+input[type=text],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:80px;resize:vertical}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.mode{position:relative}
+.mode input{position:absolute;opacity:0;inset:0}
+.mode span{display:flex;flex-direction:column;gap:4px;height:100%;border:2px solid var(--line);border-radius:14px;padding:14px;background:var(--bg);cursor:pointer}
+.mode span b{font-family:var(--font-display);font-size:18px}
+.mode span small{color:var(--muted);font-size:15px;line-height:1.35}
+.mode input:checked + span{border-color:var(--accent);background:var(--accent-soft)}
+.mode input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;background:var(--bg);font-size:16px}
+.seg input{accent-color:var(--accent);width:18px;height:18px}
+.check{display:flex;align-items:center;gap:10px;font-size:17px}
+.check input{width:22px;height:22px;accent-color:var(--accent)}
+.hint{color:var(--muted);font-size:15px;margin:0}
+.btn{font:inherit;font-family:var(--font-display);font-weight:700;font-size:20px;border:0;border-radius:14px;padding:14px 26px;background:var(--accent);color:var(--paper);cursor:pointer;min-height:52px}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-start}
+.calrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.calrow .q{flex:1 1 200px;font-weight:600}
+
+/* ---------- student run ---------- */
+#run{position:fixed;inset:0;z-index:20;background:var(--run-bg);color:var(--run-ink);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px calc(env(safe-area-inset-bottom,0px) + 16px)}
+#run.cvi{--run-bg:#000000;--run-ink:#FFFFFF;--yes-btn:#14B84A;--no-btn:#FF2E3B}
+.rtop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots i{width:12px;height:12px;border-radius:50%;background:currentColor;opacity:.22}
+.dots i.on{opacity:1}
+.staffbar{display:flex;gap:8px;flex-wrap:wrap}
+.sbtn{font:inherit;font-size:15px;font-weight:600;border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:10px;padding:6px 12px;cursor:pointer;opacity:.7;min-height:40px}
+.sbtn:hover,.sbtn:focus-visible{opacity:1}
+.rmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:0;text-align:center}
+.rtag{font-family:var(--font-display);font-weight:700;font-size:18px;padding:3px 14px;border-radius:999px;color:#fff}
+.rsym{width:min(34vh,260px);height:min(34vh,260px);background:#fff;border-radius:24px;padding:10px;border:3px solid currentColor}
+#run.cvi .rsym{border-color:#FFD400}
+.rsym svg{width:100%;height:100%}
+.rq{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,5vw,48px);line-height:1.2;max-width:22ch}
+.rbot{display:flex;gap:min(4vw,40px);height:min(36vh,300px);flex:none}
+.ans{flex:1;border:0;border-radius:28px;color:#fff;font-family:var(--font-display);font-weight:800;font-size:clamp(34px,7vw,64px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;overflow:hidden;outline:none;transition:transform .15s}
+.ans svg{width:min(14vh,110px);height:min(14vh,110px)}
+.ans.yes{background:var(--yes-btn)}
+.ans.no{background:var(--no-btn)}
+.ans.scan{outline:10px solid var(--focus);outline-offset:-10px;transform:scale(1.03)}
+.ans:not(.scan).dim{opacity:.45}
+.ans:focus-visible{outline:8px solid var(--focus);outline-offset:-8px}
+.ans .fill{position:absolute;inset:auto 0 0 0;height:0;background:rgba(255,255,255,.35);pointer-events:none}
+.ans.dwelling .fill{animation:dwell var(--dwell,1.5s) linear forwards}
+@keyframes dwell{to{height:100%}}
+.done{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;font-family:var(--font-display);font-weight:800;font-size:clamp(40px,8vw,80px);color:#fff}
+.done svg{width:150px;height:150px}
+.rhint{font-size:15px;opacity:.75;text-align:center;margin:8px 0 0}
+
+/* ---------- staff + summary ---------- */
+.obs{width:100%;border-collapse:collapse}
+.obs th,.obs td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+.obs th{font-size:15px;color:var(--muted)}
+.obs td.d{font-weight:700;width:30%}
+.obs td.d small{display:block;font-weight:400;color:var(--muted);font-size:15px}
+.obs .o{text-align:center;width:18%}
+.obs input{width:24px;height:24px;accent-color:var(--accent)}
+.tablewrap{overflow-x:auto}
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.dom{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.dom h3{font-size:19px}
+.arow{display:flex;justify-content:space-between;gap:10px;font-size:16px}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-weight:700;font-size:15px;white-space:nowrap}
+.pill.y{background:var(--yes-soft);color:var(--yes-btn)}
+.pill.n{background:var(--no-soft);color:var(--no-btn)}
+.pill.u{background:var(--line);color:var(--muted)}
+.ok{color:var(--yes-btn);font-weight:700}
+.bad{color:var(--no-btn);font-weight:700}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .pill.y{color:#7BE39A} :root:not([data-theme="light"]) .pill.n{color:#FF9AA0} :root:not([data-theme="light"]) .ok{color:#7BE39A} :root:not([data-theme="light"]) .bad{color:#FF9AA0} }
+:root[data-theme="dark"] .pill.y,:root[data-theme="dark"] .ok{color:#7BE39A}
+:root[data-theme="dark"] .pill.n,:root[data-theme="dark"] .bad{color:#FF9AA0}
+@media (prefers-reduced-motion: reduce){ .ans{transition:none} .ans.dwelling .fill{animation-duration:var(--dwell,1.5s)} }
+@media (max-width:600px){ .rbot{height:28vh} .rsym{width:28vh;height:28vh} }
+/* ---------- shell: tabs ---------- */
+:root{--sheet-bg:#FFFFFF;--sheet-ink:#1E2A4F;--sheet-line:#DCE2EE}
+.topbar{max-width:1000px;margin:0 auto;padding-block:20px 0;display:flex;flex-direction:column;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand b{font-family:var(--font-display);font-size:clamp(24px,4vw,32px);font-weight:800}
+.brand span{color:var(--muted);font-size:15px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--line)}
+.tab{font:inherit;font-weight:700;font-size:16px;background:transparent;color:var(--muted);border:0;border-bottom:4px solid transparent;padding:10px 14px;cursor:pointer;margin-bottom:-2px;min-height:44px}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1000px}
+.qpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.qcard{font:inherit;color:inherit;text-align:right;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:20px;display:flex;gap:16px;align-items:flex-start;cursor:pointer}
+.qcard:hover,.qcard:focus-visible{border-color:var(--accent);outline:none}
+.qcard .ic{width:84px;height:84px;flex:none;background:#fff;border-radius:14px;border:1.5px solid var(--line);padding:4px}
+.qcard .ic svg{width:100%;height:100%}
+.qcard h2{font-size:21px;margin-bottom:4px}
+.qcard p{margin:0;color:var(--muted);font-size:16px}
+.badge{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent);margin-bottom:6px}
+/* photos */
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.slot{border:1.5px dashed var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg);min-width:0}
+.slot.has{border-style:solid;border-color:var(--yes-btn)}
+.slot .ph{aspect-ratio:1;max-width:100%;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line)}
+.slot .ph img{width:100%;height:100%;object-fit:cover}
+.slot .ph svg{width:80%;height:80%;opacity:.55}
+.slot b{font-size:16px}
+.slot small{color:var(--muted);font-size:14px;line-height:1.35}
+.slot .row{display:flex;gap:8px;flex-wrap:wrap}
+.upl{font:inherit;font-weight:700;font-size:15px;border-radius:10px;border:1.5px solid var(--accent);color:var(--accent);background:var(--paper);padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.upl input{position:absolute;width:1px;height:1px;opacity:0}
+.upl:focus-within{outline:3px solid var(--focus)}
+.linkbtn{font:inherit;font-size:14px;background:none;border:0;color:var(--no-btn);cursor:pointer;text-decoration:underline;padding:4px}
+.req{color:var(--no-btn);font-weight:700}
+.progress{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--muted)}
+.progress .bar{flex:1;max-width:220px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress .bar span{display:block;height:100%;background:var(--yes-btn)}
+.msg{border-radius:12px;padding:10px 14px;font-size:16px}
+.msg.ok{background:var(--yes-soft)}
+.msg.err{background:var(--no-soft)}
+.lock{max-width:420px}
+.ro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.ans img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.ans.pick{background:#fff;border:6px solid var(--line)}
+.ans.pick .cap{position:absolute;inset:auto 0 0 0;background:rgba(0,0,0,.55);color:#fff;font-size:22px;padding:6px}
+.ans.pick svg.fb{width:70%;height:70%}
+.rsym img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+/* parent sheet */
+.sheetwrap{overflow-x:auto}
+.sheet{width:794px;max-width:none;background:var(--sheet-bg);color:var(--sheet-ink);border-radius:6px;box-shadow:0 6px 24px rgba(20,30,60,.18);padding:36px 40px;display:flex;flex-direction:column;gap:16px;margin:0 auto}
+.sh-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:3px solid var(--sheet-line);padding-bottom:14px}
+.sh-h h2{font-size:30px;font-weight:800}
+.sh-h .meta{font-size:14px;color:#56607E;text-align:left;line-height:1.5}
+.sh-photo{width:92px;height:92px;border-radius:50%;object-fit:cover;border:4px solid #F2B705;flex:none}
+.sh-sec{font-family:var(--font-display);font-weight:700;font-size:18px;padding:4px 14px;border-radius:999px;color:#fff;align-self:flex-start}
+.sh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sh-q{border:1.5px solid var(--sheet-line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.sh-q .im{width:120px;height:120px;border-radius:10px;overflow:hidden;background:#fff}
+.sh-q .im img,.sh-q .im svg{width:100%;height:100%;object-fit:cover}
+.sh-q p{margin:0;font-weight:700;font-size:15px;line-height:1.3}
+.sh-a{font-family:var(--font-display);font-weight:800;font-size:20px;border-radius:999px;padding:3px 18px;color:#fff}
+.sh-a.y{background:#1F8A43}.sh-a.n{background:#C42F39}.sh-a.u{background:#8A93A8}
+.sh-note{background:#FFF6D6;border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.55}
+.sh-note b{font-family:var(--font-display)}
+.sh-foot{display:flex;justify-content:space-between;font-size:13px;color:#56607E;border-top:1px solid var(--sheet-line);padding-top:10px}
+.reslist{display:flex;flex-direction:column;gap:8px}
+.resrow{font:inherit;color:inherit;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;text-align:right}
+.resrow[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.empty{color:var(--muted);text-align:center;padding:24px;border:1.5px dashed var(--line);border-radius:14px}
+@media (max-height:760px){ .rsym{width:24vh;height:24vh} .rq{font-size:clamp(22px,4.2vh,36px)} .rbot{height:32vh} .rmid{gap:6px} .ans svg{width:9vh;height:9vh} .ans{font-size:clamp(28px,6vh,52px)} }
+input[type=password]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.topbar a,.brand a{color:var(--accent)}
+.obs input[type=text]{min-width:180px}
+.pill.y{background:var(--yes-soft);color:var(--yes-btn)}
+</style></head><body>
+<div id="top"></div><div id="app"></div><div id="run" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ================= content ================= */
+const DOM = {
+  cal:{name:"חימום",color:"#5B6584"}, social:{name:"חברתי",color:"#24448F"}, learning:{name:"למידה",color:"#17775A"},
+  emotion:{name:"רגשי",color:"#C2295A"}, indep:{name:"השתתפות",color:"#5B3FB8"}, climate:{name:"בית הספר",color:"#13879A"},
+  id:{name:"זה אני",color:"#B4541A"}, can:{name:"אני יכול/ה",color:"#17775A"}, pride:{name:"גאווה ושייכות",color:"#C2295A"},
+};
+/* photo slots a teacher uploads for each student (class photo is shared by the class) */
+const SLOTS = [
+  {k:"self", t:"תמונת פנים של התלמיד/ה", d:"פנים ברורות, רקע פשוט. חובה לשאלון ״זה אני״.", req:true, sym:"me"},
+  {k:"other", t:"תמונה של ילד/ה אחר/ת", d:"להשוואה בשאלה ״איפה אני?״. עדיף תמונה מספר או ממאגר, לא תלמיד/ה מבית הספר.", req:true, sym:"otherkid"},
+  {k:"act_social", t:"בקשר עם מישהו", d:"התלמיד/ה עם חבר/ה או מבוגר/ת, למשל בברכת שלום.", sym:"greet"},
+  {k:"act_choose", t:"בוחר/ת בין שני דברים", d:"מבט או הצבעה על אחת משתי אפשרויות.", sym:"choose"},
+  {k:"act_switch", t:"מפעיל/ה מתג או מסך", d:"בזמן פעילות עם מתג, טאבלט או צעצוע.", sym:"switchpress"},
+  {k:"act_help", t:"משתתף/ת באוכל או בלבוש", d:"מחזיק/ה כוס, מושיט/ה יד לשרוול וכו׳.", sym:"helpself"},
+  {k:"smile", t:"מחייך/ת או שמח/ה", d:"רגע של שמחה בבית הספר.", sym:"happy"},
+  {k:"work", t:"עבודה שהתלמיד/ה יצר/ה", d:"ציור, יצירה או תוצר מפעילות.", sym:"artwork"},
+];
+const CLASS_SLOT = {t:"תמונה של הכיתה", d:"החדר או הקבוצה. משותפת לכל תלמידי הכיתה.", sym:"myclass"};
+
+/* item: [id, domain, male, female, symbol, photoSlot|null, type, expected] */
+const Q = {
+  well:{ name:"מיפוי רווחה והשתתפות", short:"רווחה והשתתפות", sym:"goodschool",
+    desc:"איך טוב לתלמיד/ה בבית הספר ועד כמה הוא/היא משתתף/ת. תשובות התלמיד/ה ותצפית הצוות.",
+    items:[
+      ["cal1","cal","אני אוהב מוזיקה.","אני אוהבת מוזיקה.","music",null,"yn"],
+      ["cal2","cal","אני אוהב בועות סבון.","אני אוהבת בועות סבון.","bubbles",null,"yn"],
+      ["s1","social","אני אוהב להיות עם הילדים בכיתה.","אני אוהבת להיות עם הילדים בכיתה.","withkids","class","yn"],
+      ["s2","social","אני שמח כשמדברים איתי.","אני שמחה כשמדברים איתי.","talktome",null,"yn"],
+      ["l1","learning","אני אוהב את הפעילויות בכיתה.","אני אוהבת את הפעילויות בכיתה.","activity",null,"yn"],
+      ["l2","learning","אני מראה מה אני רוצה.","אני מראה מה אני רוצה.","showwant",null,"yn"],
+      ["e1","emotion","טוב לי בבית הספר.","טוב לי בבית הספר.","goodschool",null,"yn"],
+      ["i1","indep","אני בוחר דברים בעצמי.","אני בוחרת דברים בעצמי.","choose","act_choose","yn"],
+      ["i2","indep","אני עוזר קצת בעצמי.","אני עוזרת קצת בעצמי.","helpself","act_help","yn"],
+      ["c1","climate","המבוגרים פה נחמדים אליי.","המבוגרים פה נחמדים אליי.","niceadults",null,"yn"],
+      ["c2","climate","אני אוהב להגיע לבית הספר.","אני אוהבת להגיע לבית הספר.","cometo",null,"yn"],
+    ],
+    obs:[
+      ["social","מגיב/ה לקרבה של אחרים","מבט, חיוך, קול או תנועה"],
+      ["social2","יוזם/ת קשר עם אחרים","מבט, קול, הושטת יד"],
+      ["learning","מתעניין/ת בפעילות ומגיב/ה אליה","קשב, הושטת יד, שינוי הבעה"],
+      ["learning2","נשאר/ת מעורב/ת בפעילות לאורך זמן","לא מתנתק/ת, ממשיך/ה להגיב"],
+      ["emotion","נראה/ית רגוע/ה ונינוח/ה","גוף רפוי, הבעה שלווה"],
+      ["emotion2","מביע/ה אי־נוחות בדרך שאפשר להבין","בכי, קול, הבעה, תנועה"],
+      ["indep","מביע/ה בחירה כשמציעים אפשרויות","מבט, הצבעה, מתג, קול"],
+      ["indep2","משתתף/ת בפעולות יומיום כשמזמינים","אוכל, לבוש, היגיינה"],
+      ["climate","נראה/ית שמח/ה כשמגיע/ה בבוקר","חיוך, ערנות, תנועה לקראת"],
+    ]},
+  me:{ name:"זה אני", short:"זה אני", sym:"me",
+    desc:"בדיקה ניסיונית של תפיסה עצמית: זיהוי עצמי, ״אני יכול/ה״, גאווה ושייכות.",
+    items:[
+      ["p1","id","איפה אני?","איפה אני?","me","self","pick",1],
+      ["y1","id","זה אני?","זה אני?","me","self","yn",1],
+      ["y2","id","זה אני?","זה אני?","otherkid","other","yn",0],
+      ["a1","can","אני יודע להגיד שלום לחברים.","אני יודעת להגיד שלום לחברים.","greet","act_social","yn"],
+      ["a2","can","אני יודע לבחור מה אני רוצה.","אני יודעת לבחור מה אני רוצה.","choose","act_choose","yn"],
+      ["a3","can","אני יכול להפעיל את המתג או המסך.","אני יכולה להפעיל את המתג או המסך.","switchpress","act_switch","yn"],
+      ["a4","can","אני עוזר באוכל או בלבוש.","אני עוזרת באוכל או בלבוש.","helpself","act_help","yn"],
+      ["a5","can","אני יודע להראות שאני שמח.","אני יודעת להראות שאני שמחה.","happy","smile","yn"],
+      ["w1","pride","את זה אני עשיתי.","את זה אני עשיתי.","artwork","work","yn"],
+      ["w2","pride","זה יפה.","זה יפה.","pretty","work","yn"],
+      ["k1","pride","זו הכיתה שלי.","זו הכיתה שלי.","myclass","class","yn"],
+    ],
+    obs:[["pride","מראה גאווה כשמצליח/ה","חיוך, מבט למבוגר/ת, קול"]]},
+};
+const FREQ = [["3","הרבה"],["2","לפעמים"],["1","כמעט לא"]];
+const VERIFY = [["1","כן"],["h","חלקית"],["0","לא"]];
+const MODES = [
+  ["touch","מגע או לחיצה","התלמיד/ה נוגע/ת בכפתור או לוחץ/ת בעכבר."],
+  ["gaze","מבט (השהיה)","מסתכלים על התשובה, והיא נבחרת אחרי כמה שניות."],
+  ["scan","מתג (סריקה)","התשובות נדלקות לסירוגין. לחיצה על המתג בוחרת."],
+  ["staff","תיווך מבוגר/ת","התלמיד/ה מראה את התשובה, והמבוגר/ת לוחץ/ת."],
+];
+const RESP = ["מבט","מגע","מתג","הבעת פנים","קול","תנועת גוף"];
+const TPN = {start:"תחילת שנה",mid:"אמצע שנה",end:"סוף שנה"};
+const SYM = (()=>{
+  const K="#1d1d1f", SW=2.6;
+  const st=`stroke="${K}" stroke-width="${SW}" stroke-linejoin="round" stroke-linecap="round"`;
+  const SKIN="#F6C9A0", HAIR="#5A3B22";
+  /* stick figure: cx = centre x, by = feet y, s = scale (1 ≈ 60px tall) */
+  function person(cx, by, s=1, o={}){
+    const lw=3.2*s+0.6, hr=10*s, H=60*s, hy=by-H+hr, neck=hy+hr, hip=neck+21*s, sh=neck+5*s;
+    const line=(d)=>`<path d="${d}" fill="none" stroke="${K}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const arm=(side,kind)=>{ const x0=cx, y0=sh; let p;
+      if(kind==="up") p=`M${x0} ${y0} L${x0+side*12*s} ${y0-5*s} L${x0+side*17*s} ${y0-17*s}`;
+      else if(kind==="side") p=`M${x0} ${y0} L${x0+side*11*s} ${y0+5*s} L${x0+side*19*s} ${y0+3*s}`;
+      else if(kind==="fwd") p=`M${x0} ${y0} L${x0+side*9*s} ${y0+8*s} L${x0+side*18*s} ${y0+7*s}`;
+      else if(kind==="hip") p=`M${x0} ${y0} L${x0+side*10*s} ${y0+8*s} L${x0+side*4*s} ${y0+15*s}`;
+      else if(kind==="face") p=`M${x0} ${y0} L${x0+side*9*s} ${y0+6*s} L${x0+side*6*s} ${hy+3*s}`;
+      else if(kind==="ears") p=`M${x0} ${y0} L${x0+side*12*s} ${y0-1*s} L${x0+side*10*s} ${hy}`;
+      else p=`M${x0} ${y0} L${x0+side*6*s} ${y0+10*s} L${x0+side*8*s} ${y0+19*s}`;
+      return line(p); };
+    let legs;
+    if(o.sit) legs=line(`M${cx} ${hip} L${cx+13*s} ${hip+1*s} L${cx+13*s} ${by}`);
+    else if(o.cross) legs=line(`M${cx} ${hip} L${cx-14*s} ${hip+6*s} L${cx+6*s} ${hip+8*s} M${cx} ${hip} L${cx+14*s} ${hip+6*s} L${cx-6*s} ${hip+8*s}`);
+    else legs=line(`M${cx} ${hip} L${cx-7*s} ${by} M${cx} ${hip} L${cx+7*s} ${by}`);
+    const body=line(`M${cx} ${neck} L${cx} ${hip}`);
+    const shirt=o.shirt && o.clothes? `<path d="M${cx-6*s} ${neck+2*s} h${12*s} l${2*s} ${16*s} h${-16*s}Z" fill="${o.shirt}" stroke="${K}" stroke-width="${lw*0.7}" stroke-linejoin="round"/>` : "";
+    const head=`<circle cx="${cx}" cy="${hy}" r="${hr}" fill="#E9BE8E" stroke="${K}" stroke-width="${lw*0.85}"/>`;
+    const f=o.face||"smile", ex=3.6*s, ey=hy-1.5*s, my=hy+4.2*s, fw=1.3*s+0.5;
+    let face=`<circle cx="${cx-ex}" cy="${ey}" r="${1.25*s+0.3}" fill="${K}"/><circle cx="${cx+ex}" cy="${ey}" r="${1.25*s+0.3}" fill="${K}"/>`;
+    if(f==="smile") face+=`<path d="M${cx-4*s} ${my-1*s} Q${cx} ${my+3.4*s} ${cx+4*s} ${my-1*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="flat") face+=`<path d="M${cx-3.4*s} ${my} h${6.8*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="sad") face+=`<path d="M${cx-4*s} ${my+2*s} Q${cx} ${my-2.2*s} ${cx+4*s} ${my+2*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="angry") face+=`<path d="M${cx-6.4*s} ${ey-4*s} l${4.4*s} ${2*s} M${cx+6.4*s} ${ey-4*s} l${-4.4*s} ${2*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3.6*s} ${my+1.6*s} Q${cx} ${my-1.8*s} ${cx+3.6*s} ${my+1.6*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="calm") face=`<path d="M${cx-5.4*s} ${ey} q${1.6*s} ${1.6*s} ${3.2*s} 0 M${cx+2.2*s} ${ey} q${1.6*s} ${1.6*s} ${3.2*s} 0" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3*s} ${my-0.6*s} Q${cx} ${my+2.2*s} ${cx+3*s} ${my-0.6*s}" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    if(f==="worried") face+=`<path d="M${cx-6*s} ${ey-3*s} l${4*s} ${-1.6*s} M${cx+6*s} ${ey-3*s} l${-4*s} ${-1.6*s}" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/><path d="M${cx-3.4*s} ${my+1*s} q${1.7*s} ${-1.6*s} ${3.4*s} 0 q${1.7*s} ${1.6*s} ${3.4*s} 0" fill="none" stroke="${K}" stroke-width="${fw}" stroke-linecap="round"/>`;
+    const hair = o.hair? `<path d="M${cx-hr} ${hy-1*s} Q${cx-hr+1*s} ${hy-hr-3*s} ${cx} ${hy-hr-1*s} Q${cx+hr-1*s} ${hy-hr-3*s} ${cx+hr} ${hy-1*s} Q${cx+4*s} ${hy-7*s} ${cx-hr} ${hy-1*s}Z" fill="${o.hair}" stroke="${K}" stroke-width="${lw*0.6}" stroke-linejoin="round"/>` : "";
+    return `<g>${shirt}${legs}${body}${arm(-1,o.l||"down")}${arm(1,o.r||"down")}${head}${hair}${face}</g>`;
+  }
+  const bubble=(x,y,w,h,tail="left",fill="#fff")=>{ const tx=tail==="left"? x+w*0.25 : x+w*0.75, dir=tail==="left"?-1:1;
+    return `<path d="M${x+6} ${y} h${w-12} q6 0 6 6 v${h-12} q0 6 -6 6 H${tx+4} l${dir*-1-4+dir*6} 9 l${-2-dir*2} -9 H${x+6} q-6 0 -6 -6 v${-(h-12)} q0 -6 6 -6Z" fill="${fill}" ${st}/>`; };
+  const thought=(x,y,w,h)=>`<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w/2}" ry="${h/2}" fill="#fff" ${st}/><circle cx="${x+w*0.2}" cy="${y+h+5}" r="3" fill="#fff" ${st}/><circle cx="${x+w*0.12}" cy="${y+h+11}" r="2" fill="#fff" ${st}/>`;
+  const mini=(cx,cy,r,kind,fill)=>{ let m=kind==="smile"?`<path d="M${cx-r*.45} ${cy+r*.15} Q${cx} ${cy+r*.6} ${cx+r*.45} ${cy+r*.15}" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>`:`<path d="M${cx-r*.45} ${cy+r*.5} Q${cx} ${cy+r*.05} ${cx+r*.45} ${cy+r*.5}" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>`;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${st}/><circle cx="${cx-r*.35}" cy="${cy-r*.2}" r="1.3" fill="${K}"/><circle cx="${cx+r*.35}" cy="${cy-r*.2}" r="1.3" fill="${K}"/>${m}`; };
+  const desk=(x,y,w)=>`<rect x="${x}" y="${y}" width="${w}" height="6" rx="2" fill="#C98B4E" ${st}/><path d="M${x+5} ${y+6} v18 M${x+w-5} ${y+6} v18" stroke="${K}" stroke-width="${SW+1}" stroke-linecap="round"/>`;
+  const paper=(x,y,w,h,lines=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#fff" ${st}/>${Array.from({length:lines},(_,i)=>`<path d="M${x+4} ${y+6+i*(h-10)/Math.max(1,lines-1)} h${w-8}" stroke="#9aa" stroke-width="1.8" stroke-linecap="round"/>`).join("")}`;
+  const check=(x,y,s=1,c="#2E9E57")=>`<circle cx="${x}" cy="${y}" r="${8*s}" fill="${c}" ${st}/><path d="M${x-4*s} ${y} l${3*s} ${3*s} l${5.5*s} ${-6*s}" fill="none" stroke="#fff" stroke-width="${2.8*s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const xmark=(x,y,s=1)=>`<circle cx="${x}" cy="${y}" r="${9*s}" fill="#E5484D" ${st}/><path d="M${x-4*s} ${y-4*s} l${8*s} ${8*s} M${x+4*s} ${y-4*s} l${-8*s} ${8*s}" stroke="#fff" stroke-width="${3*s}" stroke-linecap="round"/>`;
+  const arrow=(x1,y1,x2,y2,c=K)=>{ const a=Math.atan2(y2-y1,x2-x1), h=6; return `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${c}" stroke-width="3.4" stroke-linecap="round"/><path d="M${x2} ${y2} L${x2-h*Math.cos(a-0.5)} ${y2-h*Math.sin(a-0.5)} M${x2} ${y2} L${x2-h*Math.cos(a+0.5)} ${y2-h*Math.sin(a+0.5)}" stroke="${c}" stroke-width="3.4" stroke-linecap="round"/>`; };
+  const ball=(x,y,r=6)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#F6A43A" ${st}/><path d="M${x-r} ${y} Q${x} ${y-r*.5} ${x+r} ${y} M${x} ${y-r} Q${x+r*.5} ${y} ${x} ${y+r}" fill="none" stroke="${K}" stroke-width="1.6"/>`;
+  const heart=(x,y,s=1,c="#E5484D")=>`<path d="M${x} ${y+8*s} C${x-12*s} ${y} ${x-9*s} ${y-9*s} ${x} ${y-3*s} C${x+9*s} ${y-9*s} ${x+12*s} ${y} ${x} ${y+8*s}Z" fill="${c}" ${st}/>`;
+  const school=(x,y,w=38)=>`<path d="M${x} ${y+12} L${x+w/2} ${y} L${x+w} ${y+12}Z" fill="#E5484D" ${st}/><rect x="${x+3}" y="${y+12}" width="${w-6}" height="${w*0.62}" fill="#FFE8B0" ${st}/><rect x="${x+w/2-5}" y="${y+12+w*0.62-14}" width="10" height="14" fill="#8B5A2B" ${st}/><rect x="${x+7}" y="${y+17}" width="8" height="7" fill="#9FDCE6" ${st}/><rect x="${x+w-15}" y="${y+17}" width="8" height="7" fill="#9FDCE6" ${st}/><path d="M${x+w/2} ${y} v-8" stroke="${K}" stroke-width="2"/><path d="M${x+w/2} ${y-8} l8 2.5 l-8 2.5Z" fill="#4A86E8" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  const backpack=(x,y,s=1)=>`<rect x="${x}" y="${y}" width="${20*s}" height="${24*s}" rx="${6*s}" fill="#E5484D" ${st}/><rect x="${x+4*s}" y="${y+12*s}" width="${12*s}" height="${8*s}" rx="${2*s}" fill="#F27E8E" ${st}/><path d="M${x+6*s} ${y} q${4*s} ${-7*s} ${8*s} 0" fill="none" ${st}/>`;
+  const pencil=(x,y,ang=-35)=>`<g transform="rotate(${ang} ${x} ${y})"><rect x="${x-3}" y="${y-16}" width="6" height="20" fill="#FFD34D" ${st}/><path d="M${x-3} ${y+4} L${x} ${y+10} L${x+3} ${y+4}Z" fill="#F6C9A0" ${st}/></g>`;
+  const book=(x,y,w=26,c="#4A86E8")=>`<path d="M${x} ${y+3} q${w/4} -5 ${w/2} 0 v${w*0.7} q${-w/4} -5 ${-w/2} 0Z" fill="${c}" ${st}/><path d="M${x+w} ${y+3} q${-w/4} -5 ${-w/2} 0 v${w*0.7} q${w/4} -5 ${w/2} 0Z" fill="${c}" ${st}/>`;
+  const board=(x,y,w,h,content="")=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#2F6B4F" stroke="#8B5A2B" stroke-width="3.5"/>${content}`;
+  const zig=(x1,y1,x2,y2)=>{ const n=4, dx=(x2-x1)/n, dy=(y2-y1)/n; let d=`M${x1} ${y1}`; for(let i=1;i<=n;i++) d+=` L${x1+dx*i+(i%2?3:-3)} ${y1+dy*i+(i%2?-5:5)}`; return `<path d="${d}" fill="none" stroke="#E5484D" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`; };
+  const svg = body => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${body}</svg>`;
+  const S = {};
+  /* ---------- social ---------- */
+  S.group = svg(`<circle cx="50" cy="56" r="40" fill="#E3EEFF" stroke="#9DB9E8" stroke-width="2" stroke-dasharray="4 4"/>${person(24,88,.82,{shirt:"#F6A43A"})}${person(76,88,.82,{shirt:"#2E9E57"})}${person(50,92,.95,{shirt:"#4A86E8",l:"side",r:"side"})}`);
+  S.talkplay = svg(`${person(26,92,.9,{shirt:"#4A86E8",r:"fwd"})}${person(74,92,.9,{shirt:"#F6A43A",l:"fwd",hair:"#2b2b2b"})}${ball(50,80,6)}${bubble(30,6,22,16,"left")}<path d="M35 14 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${bubble(56,10,22,16,"right")}<path d="M61 18 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>`);
+  S.solve = svg(`${person(24,92,.85,{shirt:"#4A86E8",face:"flat",r:"fwd"})}${person(76,92,.85,{shirt:"#F6A43A",face:"flat",l:"fwd"})}${zig(40,30,60,30)}<path d="M40 62 q10 -8 20 0" fill="none" stroke="#2E9E57" stroke-width="3.4" stroke-linecap="round"/>${heart(50,50,.75,"#2E9E57")}`);
+  S.newfriend = svg(`${person(30,92,.9,{shirt:"#4A86E8",r:"side"})}${person(66,92,.9,{shirt:"#9B6BDF",l:"side",hair:"#2b2b2b"})}<circle cx="84" cy="22" r="10" fill="#2E9E57" ${st}/><path d="M84 16 v12 M78 22 h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>`);
+  S.play = svg(`${person(28,92,.9,{shirt:"#4A86E8",r:"up"})}${person(72,92,.9,{shirt:"#2E9E57",l:"up",hair:"#2b2b2b"})}${ball(50,20,9)}<path d="M38 34 q6 -10 4 -2 M62 34 q-6 -10 -4 -2" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round"/>`);
+  S.talk = svg(`${person(28,92,.9,{shirt:"#4A86E8"})}${person(72,92,.9,{shirt:"#F6A43A",hair:"#2b2b2b"})}${bubble(8,6,36,22,"right")}<path d="M15 14 h22 M15 20 h14" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${bubble(56,14,36,22,"left")}<path d="M63 22 h22 M63 28 h14" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>`);
+  S.space = svg(`<circle cx="50" cy="58" r="30" fill="#E8F7EC" stroke="#2E9E57" stroke-width="3" stroke-dasharray="6 5"/>${person(50,86,.8,{shirt:"#4A86E8",l:"side",r:"side"})}${person(10,92,.55,{shirt:"#F6A43A"})}${person(90,92,.55,{shirt:"#9B6BDF"})}`);
+  /* ---------- learning ---------- */
+  S.participate = svg(`${board(8,8,44,28,`<path d="M15 18 h16 M15 26 h26" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`)}${desk(46,72,46)}${person(70,92,.78,{shirt:"#4A86E8",r:"up",sit:true})}`);
+  S.keeptrying = svg(`${desk(10,70,56)}${paper(18,52,26,18,2)}${person(64,92,.8,{shirt:"#2E9E57",face:"flat",l:"fwd",sit:true})}<path d="M76 18 a12 12 0 1 1 -10 -4" fill="none" stroke="#F6A43A" stroke-width="4" stroke-linecap="round"/><path d="M62 9 l5 6 l-7 2" fill="none" stroke="#F6A43A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`);
+  S.askhelp = svg(`${person(30,92,.85,{shirt:"#4A86E8",r:"up"})}<circle cx="40" cy="14" r="9" fill="#FFD34D" ${st}/><text x="40" y="19" text-anchor="middle" font-size="14" font-weight="900" font-family="Arial" fill="#1d1d1f">?</text>${person(74,94,1.1,{hair:"#6B4A2B",l:"fwd"})}`);
+  S.start = svg(`${desk(8,70,56)}${paper(16,52,26,18,2)}${person(62,92,.8,{shirt:"#4A86E8",l:"fwd",sit:true})}<circle cx="80" cy="22" r="12" fill="#2E9E57" ${st}/><path d="M76 15 v14 l11 -7Z" fill="#fff"/>`);
+  S.finish = svg(`${paper(22,12,40,52,4)}${check(66,62,1.4)}${pencil(30,74,-40)}`);
+  S.reading = svg(`${person(50,94,.9,{shirt:"#2E9E57",l:"fwd",r:"fwd"})}${book(34,50,32,"#E5484D")}<text x="22" y="24" font-size="15" font-weight="900" font-family="Arial" fill="#4A86E8">א</text><text x="68" y="20" font-size="15" font-weight="900" font-family="Arial" fill="#E5484D">ב</text>`);
+  S.math = svg(`<rect x="12" y="14" width="76" height="72" rx="10" fill="#fff" ${st}/><text x="50" y="58" text-anchor="middle" direction="ltr" unicode-bidi="bidi-override" font-size="20" font-weight="900" font-family="Arial"><tspan fill="#4A86E8">2+1</tspan><tspan fill="#2E9E57">=3</tspan></text>`);
+  /* ---------- emotions ---------- */
+  S.feel = svg(`${person(36,94,.95,{shirt:"#9B6BDF",face:"flat"})}${thought(52,6,42,28)}${mini(64,20,8,"smile","#FFD34D")}${mini(83,20,8,"sad","#9DB9E8")}`);
+  S.calm = svg(`${person(50,90,.9,{shirt:"#2E9E57",face:"calm",cross:true,l:"hip",r:"hip"})}<path d="M14 30 q8 -6 16 0 M12 40 q8 -6 16 0 M70 30 q8 -6 16 0 M72 40 q8 -6 16 0" fill="none" stroke="#4A86E8" stroke-width="3" stroke-linecap="round"/>`);
+  S.nohurt = svg(`${person(40,94,.95,{shirt:"#E5484D",face:"angry"})}<path d="M12 22 l6 4 M8 32 l7 1 M70 22 l-6 4" stroke="#E5484D" stroke-width="3" stroke-linecap="round"/><g><rect x="66" y="52" width="20" height="16" rx="6" fill="#F6C9A0" ${st}/><path d="M71 52 v6 M76 52 v6 M81 52 v6" stroke="#1d1d1f" stroke-width="1.8" stroke-linecap="round"/></g><circle cx="76" cy="60" r="16" fill="none" stroke="#E5484D" stroke-width="4"/><path d="M65 71 L87 49" stroke="#E5484D" stroke-width="4" stroke-linecap="round"/>`);
+  S.stop = svg(`${person(34,94,.95,{shirt:"#4A86E8",face:"flat",r:"fwd"})}<path d="M66 18 l12 0 l9 9 v12 l-9 9 h-12 l-9 -9 v-12Z" fill="#E5484D" ${st}/><text x="72" y="38" text-anchor="middle" font-size="10" font-weight="900" font-family="Arial" fill="#fff">עצור</text><path d="M72 48 v40" stroke="#1d1d1f" stroke-width="3"/>`);
+  S.change = svg(`<rect x="10" y="22" width="30" height="38" rx="5" fill="#9DB9E8" ${st}/><rect x="60" y="22" width="30" height="38" rx="5" fill="#FFD34D" ${st}/>${arrow(42,34,58,34,"#2E9E57")}${arrow(58,50,42,50,"#2E9E57")}${mini(50,80,10,"smile","#FFD34D")}`);
+  /* ---------- independence ---------- */
+  S.equipment = svg(`${backpack(12,48,1.5)}${pencil(66,40,25)}${book(58,58,28,"#2E9E57")}${arrow(46,70,56,70,"#1d1d1f")}`);
+  S.schedule = svg(`<rect x="22" y="8" width="56" height="84" rx="6" fill="#fff" ${st}/>${[0,1,2].map(i=>`<rect x="30" y="${18+i*24}" width="28" height="16" rx="3" fill="${["#9DB9E8","#FFD34D","#F27E8E"][i]}" ${st}/>`).join("")}${check(66,26,.75)}${arrow(92,50,72,50,"#E5484D")}`);
+  S.tryalone = svg(`${person(28,92,.85,{shirt:"#4A86E8",l:"fwd",r:"fwd"})}<rect x="34" y="58" width="18" height="14" rx="2" fill="#C98B4E" ${st}/><text x="16" y="20" font-size="16" font-weight="900" font-family="Arial" fill="#2E9E57">1</text>${arrow(56,40,70,40)}${person(80,92,.75,{shirt:"#4A86E8",r:"up"})}<text x="70" y="20" font-size="16" font-weight="900" font-family="Arial" fill="#F6A43A">2</text>`);
+  S.alone = svg(`${person(50,92,1,{shirt:"#9B6BDF",l:"up",r:"up"})}<path d="M18 20 l4 4 M14 34 h6 M82 20 l-4 4 M86 34 h-6" stroke="#FFD34D" stroke-width="3.4" stroke-linecap="round"/>`);
+  /* ---------- climate ---------- */
+  S.cometoschool = svg(`${school(52,22,42)}${person(26,92,.9,{shirt:"#4A86E8",r:"side"})}${arrow(38,84,54,84,"#2E9E57")}`);
+  S.safe = svg(`<path d="M50 8 L84 20 V44 C84 66 68 82 50 92 C32 82 16 66 16 44 V20Z" fill="#CFE6FF" ${st}/>${person(50,84,.75,{shirt:"#2E9E57"})}`);
+  S.adult = svg(`${person(30,94,1.15,{hair:"#6B4A2B",r:"fwd"})}${person(72,94,.72,{shirt:"#4A86E8",l:"up"})}${bubble(56,6,30,18,"left")}${heart(71,15,.45)}`);
+  S.helper = svg(`${person(36,94,1.12,{hair:"#6B4A2B",r:"side"})}${person(66,94,.72,{shirt:"#4A86E8",face:"smile"})}${heart(52,18,.9)}`);
+  /* ---------- choice questionnaire: wheelchair-inclusive figures ---------- */
+  const wc=(cx,by,s=1,o={})=>{ const r=13*s, wx=cx-3*s, wy=by-r;
+    const wheel=`<circle cx="${wx}" cy="${wy}" r="${r}" fill="#E4E8F0" stroke="${K}" stroke-width="${2.4*s+0.4}"/><circle cx="${wx}" cy="${wy}" r="${2.4*s}" fill="${K}"/><path d="M${wx-r*.7} ${wy} h${r*1.4} M${wx} ${wy-r*.7} v${r*1.4}" stroke="#9AA3B5" stroke-width="${1.4*s}"/>`;
+    const frame=`<path d="M${cx-10*s} ${by-44*s} L${cx-9*s} ${by-19*s} L${cx+15*s} ${by-19*s}" fill="none" stroke="#4A5878" stroke-width="${3.2*s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    return `${frame}${person(cx,by-2*s,s,{...o,sit:true})}${wheel}`; };
+  const note=(x,y,c="#9B6BDF")=>`<path d="M${x} ${y} v-16 l10 -3 v16" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="${x-3}" cy="${y}" rx="4" ry="3" fill="${c}"/><ellipse cx="${x+7}" cy="${y-3}" rx="4" ry="3" fill="${c}"/>`;
+  const star=(x,y,r=8,c="#FFD34D")=>{ let d=""; for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*.45:r; d+=(i?"L":"M")+(x+rr*Math.cos(a)).toFixed(1)+" "+(y+rr*Math.sin(a)).toFixed(1); } return `<path d="${d}Z" fill="${c}" ${st}/>`; };
+  const cup=(x,y)=>`<path d="M${x} ${y} h14 l-2 16 h-10Z" fill="#9FDCE6" ${st}/><path d="M${x+14} ${y+4} q6 1 0 8" fill="none" ${st}/>`;
+  S.music = svg(`${wc(44,94,.95,{shirt:"#4A86E8"})}${note(70,30)}${note(84,52,"#E5484D")}${note(22,20,"#2E9E57")}`);
+  S.bubbles = svg(`${wc(40,94,.95,{shirt:"#F6A43A"})}${[[70,24,10],[86,42,7],[64,50,6],[82,14,5],[56,20,4]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#CFEFFF" stroke="#4A86E8" stroke-width="2"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.25}" fill="#fff"/>`).join("")}`);
+  S.withkids = svg(`<circle cx="50" cy="58" r="40" fill="#E3EEFF" stroke="#9DB9E8" stroke-width="2" stroke-dasharray="4 4"/>${person(18,90,.72,{shirt:"#F6A43A",r:"side"})}${person(82,90,.72,{shirt:"#2E9E57",l:"side",hair:"#2b2b2b"})}${wc(50,94,.82,{shirt:"#4A86E8",l:"side",r:"side"})}`);
+  S.talktome = svg(`${person(28,94,1.12,{hair:"#6B4A2B",r:"fwd"})}${wc(72,94,.8,{shirt:"#4A86E8"})}${bubble(40,4,34,20,"left")}<path d="M47 12 h20 M47 18 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${heart(84,30,.55)}`);
+  S.activity = svg(`${board(8,8,48,30,`<circle cx="22" cy="23" r="6" fill="#FFD34D"/><path d="M34 30 l8 -12 l8 12Z" fill="#9FDCE6"/>`)}${wc(70,94,.85,{shirt:"#2E9E57",l:"up",r:"up"})}${star(84,16,8)}`);
+  S.showwant = svg(`${wc(34,94,.95,{shirt:"#9B6BDF",r:"fwd"})}${bubble(50,10,40,32,"left")}${ball(70,26,9)}`);
+  S.goodschool = svg(`${school(54,20,40)}${wc(30,94,.9,{shirt:"#4A86E8"})}${heart(30,22,.9)}`);
+  S.uncomfortable = svg(`${wc(40,94,.95,{shirt:"#4A86E8",face:"worried",r:"up"})}${bubble(58,8,30,28,"left","#FFE8B0")}<path d="M73 14 v10" stroke="#E5484D" stroke-width="4.5" stroke-linecap="round"/><circle cx="73" cy="30" r="2.6" fill="#E5484D"/>`);
+  S.choose = svg(`<rect x="10" y="10" width="34" height="34" rx="6" fill="#fff" ${st}/>${ball(27,27,10)}<rect x="56" y="10" width="34" height="34" rx="6" fill="#fff" ${st}/>${book(60,20,26,"#4A86E8")}${check(44,44,1.1)}${wc(50,96,.8,{shirt:"#F6A43A",l:"up"})}`);
+  S.helpself = svg(`${wc(40,94,1,{shirt:"#2E9E57",r:"fwd"})}${cup(54,48)}${person(84,94,.95,{hair:"#6B4A2B",l:"fwd"})}`);
+  S.niceadults = svg(`${person(30,94,1.15,{hair:"#6B4A2B",r:"fwd"})}${wc(72,94,.8,{shirt:"#4A86E8",l:"up"})}${heart(52,20,1)}`);
+  S.cometo = svg(`${school(54,22,40)}${wc(26,94,.85,{shirt:"#4A86E8",r:"side"})}${arrow(40,84,54,84,"#2E9E57")}`);
+  /* ---------- "זה אני" symbols ---------- */
+  S.greet = svg(`${wc(30,94,.9,{shirt:"#4A86E8",r:"up"})}${person(78,92,.82,{shirt:"#F6A43A",l:"up",hair:"#2b2b2b"})}${bubble(36,4,40,20,"left","#FFF6D6")}<text x="56" y="18" text-anchor="middle" font-size="11" font-weight="900" font-family="Arial" fill="#1d1d1f">שלום</text>`);
+  S.switchpress = svg(`${wc(34,94,.95,{shirt:"#2E9E57",r:"fwd"})}<ellipse cx="68" cy="66" rx="16" ry="6" fill="#9AA3B5" ${st}/><ellipse cx="68" cy="60" rx="14" ry="6" fill="#FFD34D" ${st}/>${note(74,30,"#9B6BDF")}${note(88,44,"#E5484D")}`);
+  S.happy = svg(`${wc(50,94,1.05,{shirt:"#F6A43A",l:"up",r:"up"})}${star(18,22,8)}${star(84,20,7,"#9DD8FF")}${star(86,52,5)}`);
+  S.artwork = svg(`<rect x="44" y="10" width="46" height="40" rx="3" fill="#fff" ${st}/><circle cx="58" cy="24" r="6" fill="#FFD34D"/><path d="M48 46 q10 -14 20 0 q8 -10 18 0" fill="#9FDCE6" stroke="#2E9E57" stroke-width="2"/>${wc(26,94,.9,{shirt:"#4A86E8",r:"up"})}${heart(70,62,.7)}`);
+  S.pretty = svg(`<rect x="22" y="14" width="56" height="48" rx="3" fill="#fff" ${st}/><circle cx="38" cy="30" r="7" fill="#FFD34D"/><path d="M26 58 q12 -16 24 0 q10 -12 24 0" fill="#9FDCE6" stroke="#2E9E57" stroke-width="2"/>${star(20,76,9)}${star(50,82,9)}${star(80,76,9)}`);
+  S.myclass = svg(`<rect x="8" y="10" width="84" height="58" rx="6" fill="#E3EEFF" ${st}/>${person(24,62,.6,{shirt:"#F6A43A"})}${wc(50,64,.62,{shirt:"#4A86E8"})}${person(76,62,.6,{shirt:"#2E9E57",hair:"#2b2b2b"})}<path d="M34 82 h32" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"/>${heart(50,86,.6)}`);
+  S.me = svg(`<rect x="22" y="8" width="56" height="64" rx="6" fill="#fff" stroke="#F6A43A" stroke-width="5"/>${wc(50,66,.78,{shirt:"#4A86E8"})}<path d="M50 78 v10" stroke="#1d1d1f" stroke-width="3"/><path d="M44 84 l6 6 l6 -6" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+  S.otherkid = svg(`<rect x="22" y="8" width="56" height="64" rx="6" fill="#fff" stroke="#9AA3B5" stroke-width="5"/>${person(50,66,.78,{shirt:"#9B6BDF",hair:"#C98B4E"})}`);
+  return S;
+})();
+
+/* ================= backend (same Supabase project as the main site) ================= */
+const SB_URL = "https://rbtsrxscaaeigjasqiwf.supabase.co", SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJidHNyeHNjYWFlaWdqYXNxaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NzkyMDQsImV4cCI6MjA5OTU1NTIwNH0.yr8F3pVUe_C-itIs_zALTz6L_ak-0X-8tT7EWRjoSA4";
+const sb = window.supabase ? supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:false}}) : null;
+const VERSION = "adapted_v1";
+const ss = { get(k){ try{ return sessionStorage.getItem(k)||""; }catch(e){ return ""; } }, set(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} } };
+let staffCode = ss.get("sm_staff"), adminPass = ss.get("sm_pass");
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nameKey = s => String(s||"").trim().replace(/\s+/g," ");
+const nk = s => nameKey(s).toLowerCase();
+const fmtDate = iso => { if(!iso) return ""; const d=new Date(iso); return isNaN(d)? String(iso) : `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; };
+const TP_ORDER = ["start","mid","end"];
+
+/* ================= wording: defaults + saved edits ================= */
+const DEF = JSON.parse(JSON.stringify({ well:{items:Q.well.items, obs:Q.well.obs}, me:{items:Q.me.items, obs:Q.me.obs} }));
+let ADAPTED_CFG = {overrides:{}, obs:{}};
+function applyWording(){
+  for(const k of ["well","me"]){
+    Q[k].items = DEF[k].items.map(it=>{ const o=ADAPTED_CFG.overrides?.[it[0]]; const c=[...it]; if(o?.m) c[2]=o.m; if(o?.f) c[3]=o.f; return c; });
+    Q[k].obs = DEF[k].obs.map(ob=>{ const t=ADAPTED_CFG.obs?.[k+":"+ob[0]]; const c=[...ob]; if(t) c[1]=t; return c; });
+  }
+}
+
+/* ================= data ================= */
+let ROSTER = {}, TEXTS_CFG = {};
+const classes = () => Object.keys(ROSTER).sort((a,b)=>a.localeCompare(b,"he"));
+async function loadConfig(){
+  const {data} = await sb.from("sm_config").select("key,value").in("key",["texts","adapted"]);
+  for(const row of data||[]){
+    if(row.key==="texts"){ TEXTS_CFG=row.value||{}; ROSTER=TEXTS_CFG.roster||{}; }
+    if(row.key==="adapted"){ ADAPTED_CFG={overrides:{}, obs:{}, ...(row.value||{})}; }
+  }
+  applyWording();
+}
+let RES = [];
+async function loadResults(){
+  const {data,error} = await sb.from("sm_responses").select("id,created_at,data").eq("data->>version", VERSION).order("created_at",{ascending:false}).limit(3000);
+  if(error) throw error;
+  RES = (data||[]).map(r=>({id:r.id, created:r.created_at, ...r.data, cls:r.data.className, tp:r.data.timepoint}));
+  return RES;
+}
+
+/* photos: cached per student, fetched with the staff code */
+const PH = {};
+const pkey = (c,n) => c+"|"+n;
+function photoFor(slot,c,n){ if(!slot) return null; return PH[pkey(c,n)]?.[slot] || null; }
+async function loadPhotos(c,n,force){
+  if(!c||!n) return {}; const k=pkey(c,n); if(PH[k] && !force) return PH[k];
+  const {data} = await sb.rpc("sm_photos_get",{p_code:staffCode, p_cls:c, p_name:n});
+  PH[k] = {}; for(const r of data||[]) PH[k][r.slot]=r.data; return PH[k];
+}
+async function photoCounts(c){
+  const {data} = await sb.rpc("sm_photos_counts",{p_code:staffCode, p_cls:c});
+  const m={}; for(const r of data||[]) m[r.name]=Number(r.n); return m;
+}
+async function setPhoto(c,n,slot,dataUrl){
+  const {data,error} = await sb.rpc("sm_photo_set",{p_code:staffCode, p_cls:c, p_name:n, p_slot:slot, p_data:dataUrl});
+  if(error||data!==true) throw new Error("save failed");
+}
+
+/* ================= speech ================= */
+let heVoice=null;
+function pickVoice(){ try{ heVoice = speechSynthesis.getVoices().find(x=>/^he|^iw/i.test(x.lang))||null; }catch(e){} }
+try{ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }catch(e){}
+function say(t, done){
+  if(!S.voice || !("speechSynthesis" in window)){ done && setTimeout(done,600); return; }
+  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="he-IL"; if(heVoice) u.voice=heVoice; u.rate=.9;
+    let f=false; const fin=()=>{ if(!f){ f=true; done&&done(); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,4500); speechSynthesis.speak(u);
+  }catch(e){ done && setTimeout(done,600); }
+}
+
+/* ================= shell ================= */
+let TAB = (["fill","photos","track","print","admin"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "fill");
+const TABS = [["fill","מילוי שאלון"],["photos","תמונות לתלמידים"],["track","מעקב מילוי"],["print","דף להורים"],["admin","ניהול"]];
+function shell(){
+  $("#top").innerHTML = `<div class="topbar"><div class="brand"><b>שאלונים מותאמים</b><span>בית ספר אורים · לתלמידים בתפקוד סיעודי · <a href="index.html">חזרה לשאלונים הרגילים</a></span></div>
+    <nav class="tabs" role="tablist">${TABS.map(t=>`<button class="tab" role="tab" type="button" data-tab="${t[0]}" aria-selected="${TAB===t[0]}">${t[1]}</button>`).join("")}</nav></div>`;
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{ TAB=b.dataset.tab; try{ history.replaceState(null,"","#"+TAB); }catch(e){} route(); });
+}
+function route(){ stopRun(); $("#app").onchange=null; shell(); ({fill:renderPick, photos:renderPhotos, track:renderTrack, print:renderPrint, admin:renderAdmin})[TAB](); window.scrollTo(0,0); }
+const loading = t => { $("#app").innerHTML = `<div class="wrap"><div class="empty">${t||"טוען…"}</div></div>`; };
+const failMsg = `<div class="msg err">אין חיבור לשרת כרגע. בודקים את האינטרנט ומנסים שוב בעוד דקה.</div>`;
+
+/* ================= staff gate ================= */
+function renderGate(msg){
+  $("#top").innerHTML = "";
+  $("#app").innerHTML = `<div class="wrap"><section class="card lock" style="margin:40px auto 0"><div class="eyebrow">בית ספר אורים</div><h1 style="font-size:30px">שאלונים מותאמים</h1>
+    <p class="hint">העמוד כולל תמונות של תלמידים, ולכן נכנסים עם קוד צוות. את הקוד מקבלים מהרכזת.</p>
+    <div class="field"><label for="code">קוד צוות</label><input type="password" id="code" autocomplete="off"></div>
+    ${msg||""}<div class="actions"><button class="btn" type="button" id="code-go">כניסה</button></div>
+    <p class="hint"><a href="index.html">חזרה לשאלונים הרגילים</a></p></section></div>`;
+  const go=async()=>{ const v=$("#code").value.trim(); if(!v) return; $("#code-go").disabled=true;
+    const {data,error} = await sb.rpc("sm_check_staff",{p_code:v});
+    if(error) return renderGate(failMsg);
+    if(data===true){ staffCode=v; ss.set("sm_staff",v); boot(); } else renderGate(`<div class="msg err">הקוד לא נכון. בודקים ומנסים שוב.</div>`); };
+  $("#code-go").onclick=go; $("#code").onkeydown=e=>{ if(e.key==="Enter") go(); }; $("#code").focus();
+}
+function requirePass(then){
+  if(adminPass) return then();
+  $("#app").innerHTML = `<div class="wrap"><section class="card lock"><h2>סיסמת ניהול</h2><p class="hint">עריכת נוסחים, ייצוא ל־Excel, שינוי קוד הצוות ומחיקת מילויים פתוחים רק עם הסיסמה.</p>
+    <div class="field"><label for="pw">סיסמה</label><input type="password" id="pw" autocomplete="current-password"></div><div id="pw-msg"></div>
+    <div class="actions"><button class="btn" type="button" id="pw-go">כניסה</button></div></section></div>`;
+  const go=async()=>{ const p=$("#pw").value; if(!p) return; const {data} = await sb.rpc("sm_check_password",{p_pass:p});
+    if(data===true){ adminPass=p; ss.set("sm_pass",p); then(); } else $("#pw-msg").innerHTML=`<div class="msg err">הסיסמה לא נכונה.</div>`; };
+  $("#pw-go").onclick=go; $("#pw").onkeydown=e=>{ if(e.key==="Enter") go(); }; $("#pw").focus();
+}
+
+/* ================= photos tab ================= */
+let phCls="", phName="";
+function shrink(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onerror=rej; fr.onload=()=>{ const img=new Image(); img.onerror=rej; img.onload=()=>{
+  const m=640, s=Math.min(1, m/Math.max(img.width,img.height)); const cv=document.createElement("canvas"); cv.width=Math.round(img.width*s); cv.height=Math.round(img.height*s);
+  const g=cv.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,cv.width,cv.height); g.drawImage(img,0,0,cv.width,cv.height); res(cv.toDataURL("image/jpeg",.8)); }; img.src=fr.result; }; fr.readAsDataURL(file); }); }
+async function renderPhotos(msg){
+  const cls=classes(); if(!cls.includes(phCls)) phCls=cls[0]||""; const names=ROSTER[phCls]||[]; if(!names.includes(phName)) phName=names[0]||"";
+  if(!cls.length){ $("#app").innerHTML=`<div class="wrap"><div class="empty">עוד אין כיתות. מוסיפים כיתות ותלמידים באפליקציה הראשית, בלשונית <a href="index.html#track">״מעקב מילוי״</a> ← ״עריכת כיתות ותלמידים״.</div></div>`; return; }
+  loading("טוען תמונות…");
+  let counts={}; try{ counts = await photoCounts(phCls); if(phName) await loadPhotos(phCls,phName,true); await loadPhotos(phCls,"__class_holder__",true).catch(()=>{}); }catch(e){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
+  const ph = PH[pkey(phCls,phName)]||{}; const classSrc = ph.class || PH[pkey(phCls,"__class_holder__")]?.class;
+  const done=SLOTS.filter(s=>ph[s.k]).length;
+  const slotCard=(key,t,d,req,sym,src)=>`<div class="slot ${src?"has":""}"><div class="ph">${src?`<img src="${src}" alt="${esc(t)}">`:SYM[sym]}</div>
+    <b>${esc(t)} ${req?'<span class="req">· חובה</span>':""}</b><small>${esc(d)}</small>
+    <div class="row"><label class="upl">${src?"החלפה":"העלאה"}<input type="file" accept="image/*" data-slot="${key}"></label>${src?`<button class="linkbtn" type="button" data-rm="${key}">מחיקה</button>`:""}</div></div>`;
+  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">תמונות לתלמידים</h1>
+    <p>בכל שאלה שיש לה תמונה, התמונה מחליפה את סמל התת״ח. שאלה בלי תמונה מוצגת עם הסמל.</p></div>${msg||""}
+    <section class="card"><div class="grid2">
+      <div class="field"><label for="ph-c">כיתה</label><select id="ph-c">${cls.map(c=>`<option ${c===phCls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="ph-n">תלמיד/ה</label><select id="ph-n">${names.map(n=>`<option value="${esc(n)}" ${n===phName?"selected":""}>${esc(n)} · ${counts[n]||0}/${SLOTS.length}</option>`).join("")}</select></div>
+    </div>${phName?`<div class="progress"><span>${done} מתוך ${SLOTS.length} תמונות</span><div class="bar"><span style="width:${done/SLOTS.length*100}%"></span></div></div>`:""}</section>
+    ${phName?`<section class="card"><h2>התמונות של ${esc(phName)}</h2><div class="slots">${SLOTS.map(s=>slotCard(s.k,s.t,s.d,s.req,s.sym,ph[s.k])).join("")}</div></section>`:`<div class="empty">אין תלמידים בכיתה הזו.</div>`}
+    <section class="card"><h2>תמונה משותפת ל${esc(phCls)}</h2><div class="slots">${slotCard("__class",CLASS_SLOT.t,CLASS_SLOT.d,false,CLASS_SLOT.sym,classSrc)}</div></section>
+    <p class="hint">מעלים תמונות רק אחרי שיש הסכמה של ההורים לצילום לצורכי למידה. התמונות נשמרות במערכת ונפתחות רק עם קוד הצוות.</p></div>`;
+  $("#ph-c").onchange=e=>{ phCls=e.target.value; phName=""; renderPhotos(); };
+  if($("#ph-n")) $("#ph-n").onchange=e=>{ phName=e.target.value; renderPhotos(); };
+  document.querySelectorAll("[data-slot]").forEach(inp=>inp.onchange=async()=>{
+    const f=inp.files[0]; if(!f) return; const lab=inp.closest(".upl"); lab.firstChild.textContent="שומר…";
+    try{ const url=await shrink(f); const isClass=inp.dataset.slot==="__class";
+      await setPhoto(phCls, isClass?"__class":phName, isClass?"class":inp.dataset.slot, url);
+      Object.keys(PH).forEach(k=>{ if(k.startsWith(phCls+"|")) delete PH[k]; });
+      renderPhotos(`<div class="msg ok">התמונה נשמרה.</div>`); }
+    catch(e){ renderPhotos(`<div class="msg err">התמונה לא נשמרה. בוחרים קובץ תמונה (JPG או PNG) ומנסים שוב.</div>`); }
+  });
+  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{
+    if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="ללחוץ שוב למחיקה"; return; }
+    const isClass=b.dataset.rm==="__class";
+    try{ await setPhoto(phCls, isClass?"__class":phName, isClass?"class":b.dataset.rm, null); Object.keys(PH).forEach(k=>{ if(k.startsWith(phCls+"|")) delete PH[k]; }); renderPhotos(`<div class="msg ok">התמונה נמחקה.</div>`); }
+    catch(e){ renderPhotos(`<div class="msg err">המחיקה לא הצליחה. מנסים שוב.</div>`); }
+  });
+}
+
+/* ================= fill: pick + setup ================= */
+const S = { q:"well", cls:"", name:"", tp:"start", gender:"m", mode:"touch", dwell:"1.5", scan:"2.5", voice:true, cvi:false, yesSide:"right", filler:ss.get("sm_filler"),
+  calExp:{cal1:"",cal2:""}, ans:{}, obs:{}, verify:{}, resp:[], und:"", notes:"" };
+const txt = it => S.gender==="f"? it[3] : it[2];
+function renderPick(){
+  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>ממלאים את אותו שאלון בכל שלוש התקופות: תחילת שנה, אמצע שנה וסוף שנה.</p></div><div class="qpick">
+    ${Object.entries(Q).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"ניסיוני":"מדד מרכזי"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
+  document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ S.q=b.dataset.q; renderSetup(); });
+}
+async function renderSetup(msg){
+  const q=Q[S.q], cls=classes(); if(!cls.includes(S.cls)) S.cls=cls[0]||""; const names=ROSTER[S.cls]||[]; if(!names.includes(S.name)) S.name=names[0]||"";
+  if(S.name){ loading("טוען את התמונות של התלמיד/ה…"); try{ await loadPhotos(S.cls,S.name); }catch(e){} }
+  if(!RES.length){ try{ await loadResults(); }catch(e){} }
+  const filled = new Set(RES.filter(r=>r.q===S.q && r.cls===S.cls && r.tp===S.tp).map(r=>nk(r.name)));
+  const r=(n,v,l,c)=>`<label><input type="radio" name="${n}" value="${v}" ${c===v?"checked":""}> ${l}</label>`;
+  const needs=[...new Set(q.items.map(i=>i[5]).filter(Boolean))];
+  const have=needs.filter(s=>photoFor(s,S.cls,S.name));
+  const missingReq = S.q==="me" && S.name && (!photoFor("self",S.cls,S.name) || !photoFor("other",S.cls,S.name));
+  $("#app").innerHTML = `<div class="wrap"><div class="hero"><div class="eyebrow">${q.name}</div><h1 style="font-size:28px">הכנה למילוי</h1></div>${msg||""}
+  <section class="card"><h2>מי ממלא/ת?</h2>
+    ${!cls.length?`<div class="empty">עוד אין כיתות. מוסיפים באפליקציה הראשית, בלשונית <a href="index.html#track">״מעקב מילוי״</a>.</div>`:`<div class="grid2">
+      <div class="field"><label for="s-c">כיתה</label><select id="s-c">${cls.map(c=>`<option ${c===S.cls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="s-n">תלמיד/ה</label><select id="s-n">${names.map(n=>`<option value="${esc(n)}" ${n===S.name?"selected":""}>${esc(n)}${filled.has(nk(n))?"  ✓ כבר מולא":""}</option>`).join("")}</select></div>
+      <div class="field"><label for="s-tp">מועד</label><select id="s-tp">${TP_ORDER.map(k=>`<option value="${k}" ${S.tp===k?"selected":""}>${TPN[k]}</option>`).join("")}</select></div>
+      <div class="field"><span class="flabel">נוסח השאלות</span><div class="seg">${r("g","m","בן",S.gender)}${r("g","f","בת",S.gender)}</div></div>
+      <div class="field"><label for="s-fill">שם איש/אשת הצוות</label><input type="text" id="s-fill" value="${esc(S.filler)}" placeholder="מי מלווה את המילוי"></div></div>
+    <div class="progress"><span>תמונות לשאלון הזה: ${have.length} מתוך ${needs.length}. בשאר השאלות יוצגו סמלים.</span></div>
+    ${missingReq?`<div class="msg err">חסרות תמונת הפנים או התמונה להשוואה. בלעדיהן שאלות הזיהוי יידלגו. מעלים בלשונית <b>״תמונות לתלמידים״</b>.</div>`:""}`}
+  </section>
+  <section class="card"><h2>איך התלמיד/ה עונה?</h2>
+    <div class="modes">${MODES.map(m=>`<label class="mode"><input type="radio" name="mode" value="${m[0]}" ${S.mode===m[0]?"checked":""}><span><b>${m[1]}</b><small>${m[2]}</small></span></label>`).join("")}</div>
+    <div class="field" id="dwell-f" ${S.mode==="gaze"?"":"hidden"}><span class="flabel">כמה זמן מסתכלים עד שהתשובה נבחרת</span><div class="seg">${["1","1.5","2","3"].map(v=>r("dw",v,v+" שנ׳",S.dwell)).join("")}</div><p class="hint">אם תוכנת המבט כבר לוחצת בעצמה, בוחרים ״מגע או לחיצה״.</p></div>
+    <div class="field" id="scan-f" ${S.mode==="scan"?"":"hidden"}><span class="flabel">מהירות הסריקה</span><div class="seg">${["1.5","2.5","3.5","5"].map(v=>r("sc",v,v+" שנ׳",S.scan)).join("")}</div><p class="hint">המתג מוגדר כ״רווח״ או ״Enter״. אפשר גם לגעת בכל מקום במסך.</p></div>
+    <div class="grid2"><label class="check"><input type="checkbox" id="s-voice" ${S.voice?"checked":""}> הקראה קולית</label><label class="check"><input type="checkbox" id="s-cvi" ${S.cvi?"checked":""}> רקע שחור (CVI)</label></div>
+    <div class="field"><span class="flabel">איפה תופיע התשובה ״כן״</span><div class="seg">${r("ys","right","מימין",S.yesSide)}${r("ys","left","משמאל",S.yesSide)}</div></div>
+  </section>
+  ${S.q==="well"?`<section class="card"><h2>שאלות חימום: מה התשובה הצפויה?</h2><p class="hint">דברים שהצוות כבר יודע על התלמיד/ה. לא נספרות בתוצאות.</p>
+    ${q.items.slice(0,2).map(it=>`<div class="calrow"><span class="q">${esc(txt(it))}</span><div class="seg">${r("ce-"+it[0],"1","כן",S.calExp[it[0]])}${r("ce-"+it[0],"0","לא",S.calExp[it[0]])}${r("ce-"+it[0],"","לא ידוע",S.calExp[it[0]])}</div></div>`).join("")}</section>`:""}
+  <div class="actions"><button class="btn" type="button" id="go" ${!S.name?"disabled":""}>התחלת השאלון</button><button class="btn ghost" type="button" id="back">חזרה</button></div></div>`;
+  const sync=()=>{ if($("#s-c")){ S.cls=$("#s-c").value; S.name=$("#s-n").value; S.tp=$("#s-tp").value; S.gender=document.querySelector("[name=g]:checked").value; S.filler=$("#s-fill").value.trim(); ss.set("sm_filler",S.filler); }
+    S.mode=document.querySelector("[name=mode]:checked").value; S.dwell=document.querySelector("[name=dw]:checked")?.value||S.dwell; S.scan=document.querySelector("[name=sc]:checked")?.value||S.scan;
+    S.voice=$("#s-voice").checked; S.cvi=$("#s-cvi").checked; S.yesSide=document.querySelector("[name=ys]:checked").value;
+    if(S.q==="well") ["cal1","cal2"].forEach(k=>S.calExp[k]=document.querySelector(`[name=ce-${k}]:checked`)?.value??""); };
+  $("#app").onchange=e=>{ const id=e.target.id, nm=e.target.name;
+    if(id==="s-c"){ S.cls=e.target.value; S.name=""; return renderSetup(); }
+    sync(); if(id==="s-n" || id==="s-tp" || nm==="g") return renderSetup();
+    $("#dwell-f").hidden=S.mode!=="gaze"; $("#scan-f").hidden=S.mode!=="scan"; };
+  $("#back").onclick=renderPick;
+  $("#go").onclick=()=>{ sync(); Object.assign(S,{ans:{},obs:{},verify:{},resp:[],und:"",notes:""}); idx=0; $("#app").onchange=null; startRun(); };
+}
+/* ================= run ================= */
+let idx=0, scanTimer=null, scanIdx=0, lockUntil=0, dwellTimer=null, busy=false;
+const ICON_YES=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="6"/><path d="M28 52 l15 15 l30 -32" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ICON_NO=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="6"/><path d="M32 32 l36 36 M68 32 l-36 36" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>`;
+const items = () => Q[S.q].items;
+const imgOf = it => { const p=photoFor(it[5],S.cls,S.name); return p? `<img src="${p}" alt="">` : (SYM[it[4]]||""); };
+function startRun(){ const run=$("#run"); run.hidden=false; run.classList.toggle("cvi",S.cvi); document.body.style.overflow="hidden"; try{ run.requestFullscreen&&run.requestFullscreen().catch(()=>{}); }catch(e){} showItem(); }
+function stopRun(){ clearInterval(scanTimer); scanTimer=null; clearTimeout(dwellTimer); try{ speechSynthesis.cancel(); }catch(e){}
+  const run=$("#run"); if(run){ run.hidden=true; run.innerHTML=""; } document.body.style.overflow=""; try{ document.fullscreenElement&&document.exitFullscreen().catch(()=>{}); }catch(e){} }
+function showItem(){
+  clearInterval(scanTimer); scanTimer=null; clearTimeout(dwellTimer); busy=false;
+  const list=items(); if(idx>=list.length){ stopRun(); renderStaff(); return; }
+  const it=list[idx], d=DOM[it[1]];
+  // "זה אני" identity items need the uploaded photos; without them the item is skipped
+  if(it[1]==="id" && (!photoFor("self",S.cls,S.name) || !photoFor("other",S.cls,S.name))){ S.ans[it[0]]="na"; idx++; return showItem(); }
+  let pair;
+  if(it[6]==="pick"){
+    const opts=[[1,photoFor("self",S.cls,S.name)],[0,photoFor("other",S.cls,S.name)]]; if((idx+S.name.length)%2) opts.reverse();
+    pair=opts.map(([v,src])=>`<button type="button" class="ans pick" data-v="${v}" aria-label="תמונה ${v?"א":"ב"}"><span class="fill"></span><img src="${src}" alt=""></button>`).join("");
+  } else {
+    const yes=`<button type="button" class="ans yes" data-v="1" aria-label="כן"><span class="fill"></span>${ICON_YES}כן</button>`;
+    const no=`<button type="button" class="ans no" data-v="0" aria-label="לא"><span class="fill"></span>${ICON_NO}לא</button>`;
+    pair = S.yesSide==="right"? yes+no : no+yes;
+  }
+  const hint={touch:"נוגעים בתשובה.",gaze:`מסתכלים על התשובה ${S.dwell} שניות.`,scan:"לוחצים על המתג כשהתשובה הנכונה מוארת.",staff:"המבוגר/ת לוחץ/ת על התשובה שהתלמיד/ה הראה/תה."}[S.mode];
+  $("#run").innerHTML=`<div class="rtop"><div class="dots" aria-label="שאלה ${idx+1} מתוך ${list.length}">${list.map((_,i)=>`<i class="${i<=idx?"on":""}"></i>`).join("")}</div>
+    <div class="staffbar"><button type="button" class="sbtn" id="r-rep">הקראה חוזרת</button>${idx?`<button type="button" class="sbtn" id="r-back">חזרה</button>`:""}<button type="button" class="sbtn" id="r-skip">לא ענה/תה</button><button type="button" class="sbtn" id="r-exit">יציאה</button></div></div>
+    <div class="rmid"><span class="rtag" style="background:${d.color}">${d.name}</span>${it[6]==="pick"?"":`<div class="rsym">${imgOf(it)}</div>`}<div class="rq">${esc(txt(it))}</div></div>
+    <div class="rbot" style="--dwell:${S.dwell}s${it[6]==="pick"?";height:min(46vh,380px)":""}">${pair}</div><p class="rhint">${hint}</p>`;
+  lockUntil=Date.now()+900;
+  $("#r-rep").onclick=e=>{ e.stopPropagation(); readItem(); };
+  $("#r-skip").onclick=e=>{ e.stopPropagation(); record(null); };
+  $("#r-exit").onclick=e=>{ e.stopPropagation(); route(); };
+  if($("#r-back")) $("#r-back").onclick=e=>{ e.stopPropagation(); do{ idx--; }while(idx>0 && S.ans[items()[idx][0]]==="na"); showItem(); };
+  document.querySelectorAll(".ans").forEach(b=>{
+    b.onclick=e=>{ e.stopPropagation(); if(S.mode==="scan") return selectScan(); if(Date.now()<lockUntil) return; record(+b.dataset.v); };
+    if(S.mode==="gaze"){ b.onpointerenter=()=>{ if(busy) return; b.classList.add("dwelling"); clearTimeout(dwellTimer); dwellTimer=setTimeout(()=>{ if(Date.now()>=lockUntil) record(+b.dataset.v); }, parseFloat(S.dwell)*1000); };
+      b.onpointerleave=()=>{ b.classList.remove("dwelling"); clearTimeout(dwellTimer); }; }
+  });
+  readItem();
+}
+function readItem(){ const it=items()[idx]; if(S.mode==="scan"){ clearInterval(scanTimer); scanTimer=null; document.querySelectorAll(".ans").forEach(b=>b.classList.remove("scan","dim")); }
+  say(txt(it), ()=>{ if(S.mode==="scan" && !busy) startScan(); }); }
+function startScan(){ const btns=[...document.querySelectorAll(".ans")]; if(!btns.length) return; const pick=items()[idx][6]==="pick"; scanIdx=0;
+  const step=()=>{ btns.forEach((b,i)=>{ b.classList.toggle("scan",i===scanIdx); b.classList.toggle("dim",i!==scanIdx); }); say(pick? (scanIdx? "התמונה הזו" : "התמונה הזו") : (btns[scanIdx].dataset.v==="1"?"כן":"לא")); };
+  step(); clearInterval(scanTimer); scanTimer=setInterval(()=>{ scanIdx=(scanIdx+1)%btns.length; step(); }, parseFloat(S.scan)*1000); }
+function selectScan(){ if(busy||!scanTimer||Date.now()<lockUntil) return; const b=document.querySelector(".ans.scan"); if(b) record(+b.dataset.v); }
+function record(v){
+  if(busy) return; busy=true; clearInterval(scanTimer); scanTimer=null; clearTimeout(dwellTimer);
+  const it=items()[idx]; S.ans[it[0]]=v;
+  const pick=it[6]==="pick";
+  const label = v===null? "דילוג" : pick? "בחרת" : v===1? "כן" : "לא";
+  const ov=document.createElement("div"); ov.className="done"; ov.style.background = v===null? "#5B6584" : pick? "#2F56B0" : v===1? "var(--yes-btn)" : "var(--no-btn)";
+  ov.innerHTML=(pick||v===null? "" : v===1? ICON_YES : ICON_NO)+label; $("#run").appendChild(ov); if(v!==null) say(label);
+  setTimeout(()=>{ idx++; showItem(); }, 1100);
+}
+document.addEventListener("keydown",e=>{ if($("#run").hidden) return; if((e.key===" "||e.key==="Enter") && S.mode==="scan"){ e.preventDefault(); selectScan(); } if(e.key==="Escape") route(); });
+$("#run").addEventListener("pointerdown",e=>{ if(S.mode==="scan" && !e.target.closest(".staffbar")){ e.preventDefault(); selectScan(); } });
+
+/* ================= staff sheet + save ================= */
+function renderStaff(msg){
+  const q=Q[S.q];
+  const can = S.q==="me"? q.items.filter(i=>i[1]==="can") : [];
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><div class="eyebrow">${q.name} · ${esc(S.name)}</div><h1 style="font-size:28px">לאיש/אשת הצוות</h1>
+    <p>${S.q==="me"?"בדקו אם מה שהתלמיד/ה אמר/ה על עצמו/ה מתאים למה שאתם רואים ביום־יום.":"מה אתם רואים ביום־יום? החלק הזה הוא המדד המרכזי."}</p></div>${msg||""}
+  ${can.length?`<section class="card"><h2>האם זה נכון לפי מה שאתם רואים?</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התלמיד/ה ענה/תה</th>${VERIFY.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
+    ${can.map(it=>{ const a=S.ans[it[0]]; return `<tr><td class="d">${esc(txt(it))}<small>התשובה: ${a===1?"כן":a===0?"לא":"לא ענה/תה"}</small></td>${VERIFY.map(f=>`<td class="o"><input type="radio" name="vf-${it[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.verify[it[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>`:""}
+  <section class="card"><h2>תצפית: כמה פעמים רואים את זה?</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התנהגות</th>${FREQ.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
+    ${q.obs.map(o=>{ const dm=DOM[o[0].replace(/2$/,"")]; return `<tr><td class="d"><span style="color:${dm.color}">${dm.name}:</span> ${esc(o[1])}<small>${esc(o[2])}</small></td>${FREQ.map(f=>`<td class="o"><input type="radio" name="ob-${o[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.obs[o[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>
+  <section class="card"><h2>איך התלמיד/ה ענה/תה?</h2><div class="seg">${RESP.map(x=>`<label><input type="checkbox" name="resp" value="${x}" ${S.resp.includes(x)?"checked":""}> ${x}</label>`).join("")}</div>
+    <div class="field"><span class="flabel">האם נראה שהתלמיד/ה הבין/ה את השאלות?</span><div class="seg">${["הבין/ה","חלקית","לא ברור"].map(x=>`<label><input type="radio" name="und" value="${x}" ${S.und===x?"checked":""}> ${x}</label>`).join("")}</div></div>
+    <div class="field"><label for="s-notes">הערות (רשות)</label><textarea id="s-notes" placeholder="למשל: היה עייף, ענה בעיקר בחיוך">${esc(S.notes)}</textarea></div></section>
+  <div class="actions"><button class="btn" type="button" id="fin">שמירה וסיכום</button></div></div>`;
+  window.scrollTo(0,0);
+  $("#fin").onclick=async()=>{
+    q.obs.forEach(o=>{ S.obs[o[0]]=document.querySelector(`[name=ob-${o[0]}]:checked`)?.value||""; });
+    can.forEach(it=>{ S.verify[it[0]]=document.querySelector(`[name=vf-${it[0]}]:checked`)?.value||""; });
+    S.resp=[...document.querySelectorAll("[name=resp]:checked")].map(x=>x.value); S.und=document.querySelector("[name=und]:checked")?.value||""; S.notes=$("#s-notes").value.trim();
+    if(q.obs.some(o=>!S.obs[o[0]])) return renderStaff(`<div class="msg err">חסרה תשובה בתצפית. מסמנים תשובה בכל שורה.</div>`);
+    const doc={version:VERSION, q:S.q, className:S.cls, name:S.name, timepoint:S.tp, gender:S.gender, date:new Date().toISOString(), mode:S.mode, filler:S.filler,
+      calExp:{...S.calExp}, ans:{...S.ans}, obs:{...S.obs}, verify:{...S.verify}, resp:[...S.resp], und:S.und, notes:S.notes,
+      wording:Object.fromEntries(q.items.map(it=>[it[0], txt(it)]))};
+    $("#fin").disabled=true; $("#fin").textContent="שומר…";
+    const {data,error} = await sb.from("sm_responses").insert({data:doc}).select("id").single();
+    if(error){ return renderStaff(`<div class="msg err">השמירה לא הצליחה. בודקים את האינטרנט ולוחצים שוב על ״שמירה וסיכום״. התשובות לא נמחקו.</div>`); }
+    try{ await loadResults(); }catch(e){}
+    printSel=data.id; justSaved=true; TAB="print"; route();
+  };
+}
+
+/* ================= parent sheet ================= */
+let printSel="", justSaved=false;
+const ansBadge = (it,v) => it[6]==="pick"? (v===1?`<span class="sh-a y">בחר/ה בעצמו/ה ✓</span>`:v===0?`<span class="sh-a n">בחר/ה בתמונה האחרת</span>`:`<span class="sh-a u">לא נבדק</span>`)
+  : v===1?`<span class="sh-a y">כן</span>`: v===0?`<span class="sh-a n">לא</span>`: v==="na"?`<span class="sh-a u">לא נבדק</span>`:`<span class="sh-a u">לא ענה/תה</span>`;
+function sheetHTML(r){
+  const q=Q[r.q]; if(!q) return "";
+  const T=it=> r.wording?.[it[0]] || (r.gender==="f"?it[3]:it[2]);
+  const img=it=>{ const p=photoFor(it[5],r.cls,r.name); return p?`<img src="${p}" alt="">`:(SYM[it[4]]||""); };
+  const self=photoFor("self",r.cls,r.name);
+  const groups=[...new Set(q.items.map(i=>i[1]))].filter(k=>k!=="cal");
+  const fq=v=>(FREQ.find(f=>f[0]===v)||[,"—"])[1];
+  let story="";
+  if(r.q==="me"){
+    const idOk = r.ans.p1===1 && r.ans.y1===1 && r.ans.y2===0, idNA = r.ans.p1==="na";
+    const can=q.items.filter(i=>i[1]==="can"); const yes=can.filter(i=>r.ans[i[0]]===1).length;
+    const vmap={"1":1,"0":0}; const checked=can.filter(i=>r.verify?.[i[0]] && r.ans[i[0]]!=null && r.verify[i[0]]!=="h");
+    const match=checked.filter(i=>vmap[r.verify[i[0]]]===r.ans[i[0]]).length;
+    story=`<b>מה ראינו:</b> ${idNA?"שאלות הזיהוי לא נבדקו הפעם. ":idOk?"זיהה/תה את עצמו/ה בתמונה. ":"זיהוי עצמי בתמונה עדיין בתהליך. "}
+      ענה/תה ״כן״ על ${yes} מתוך ${can.length} דברים שהוא/היא יודע/ת לעשות${checked.length?`, ו־${match} מתוך ${checked.length} תשובות תואמות את מה שהצוות רואה`:""}.
+      ${r.obs?.pride?` גאווה כשמצליח/ה: ${fq(r.obs.pride)}.`:""}`;
+  } else {
+    const parts=["social","learning","emotion","indep","climate"].map(dk=>{ const os=q.obs.filter(o=>o[0].startsWith(dk)); const v=os.map(o=>+r.obs?.[o[0]]).filter(Boolean); if(!v.length) return null; const a=v.reduce((s,x)=>s+x,0)/v.length; return `${DOM[dk].name}: ${a>=2.5?"הרבה":a>=1.75?"לפעמים":"כמעט לא"}`; }).filter(Boolean);
+    story=`<b>מה הצוות רואה ביום־יום:</b> ${parts.join(" · ")}.`;
+  }
+  return `<div class="sheet" dir="rtl" id="sheet">
+    <div class="sh-h"><div style="display:flex;gap:16px;align-items:center">${self?`<img class="sh-photo" src="${self}" alt="">`:""}<div><div style="font-weight:700;color:#B4541A">${q.name}</div><h2>${esc(r.name)}</h2></div></div>
+      <div class="meta">${esc(r.cls)}<br>${TPN[r.tp]||""} · ${fmtDate(r.date)}<br>ענה/תה ב: ${(MODES.find(m=>m[0]===r.mode)||[,""])[1]}</div></div>
+    ${groups.map(gk=>`<span class="sh-sec" style="background:${DOM[gk].color}">${DOM[gk].name}</span>
+      <div class="sh-grid">${q.items.filter(i=>i[1]===gk && i[0]!=="y2").map(it=>`<div class="sh-q"><div class="im">${it[6]==="pick"&&self?`<img src="${self}" alt="">`:img(it)}</div><p>${esc(T(it))}</p>${ansBadge(it,r.ans?.[it[0]])}</div>`).join("")}</div>`).join("")}
+    <div class="sh-note">${story}${r.notes?`<br><b>הערה מהצוות:</b> ${esc(r.notes)}`:""}</div>
+    <div class="sh-foot"><span>בית ספר אורים, אילת</span><span>התשובות נבחרו על ידי ${esc(r.name)} בעצמו/ה</span></div></div>`;
+}
+let prCls="__all";
+async function renderPrint(){
+  loading("טוען מילויים…");
+  try{ await loadResults(); }catch(e){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
+  const list = RES.filter(r=>prCls==="__all"||r.cls===prCls);
+  if(!list.some(r=>r.id===printSel)) printSel=list[0]?.id||"";
+  const cur=RES.find(r=>r.id===printSel);
+  if(cur){ try{ await loadPhotos(cur.cls,cur.name); }catch(e){} }
+  const cl=[...new Set(RES.map(r=>r.cls))].sort((a,b)=>a.localeCompare(b,"he"));
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">דף להורים ולתלמיד/ה</h1><p>דף צבעוני עם השאלות, התמונות והתשובות שהתלמיד/ה בחר/ה. מורידים PDF ומדפיסים.</p></div>
+    ${justSaved?'<div class="msg ok">השאלון נשמר. זה הדף להורים ולתלמיד/ה.</div>':""}
+    ${!RES.length?`<div class="empty">עוד אין מילויים. ממלאים שאלון בלשונית ״מילוי שאלון״, והדף יופיע כאן.</div>`:`
+    <section class="card"><div class="grid2"><div class="field"><label for="pr-c">כיתה</label><select id="pr-c"><option value="__all">כל הכיתות</option>${cl.map(c=>`<option ${c===prCls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="pr-r">מילוי</label><select id="pr-r">${list.map(r=>`<option value="${r.id}" ${r.id===printSel?"selected":""}>${esc(r.name)} · ${Q[r.q]?.short||""} · ${TPN[r.tp]||""} · ${fmtDate(r.date)}</option>`).join("")}</select></div></div>
+      <div class="actions"><button class="btn" type="button" id="pr-pdf" ${cur?"":"disabled"}>הורדת PDF להדפסה</button>${justSaved?`<button class="btn ghost" type="button" id="pr-more">מילוי נוסף</button>`:""}</div><div id="pr-msg"></div></section>
+    <div class="sheetwrap">${cur?sheetHTML(cur):""}</div>`}</div>`;
+  justSaved=false;
+  if(!RES.length) return;
+  $("#pr-c").onchange=e=>{ prCls=e.target.value; printSel=""; renderPrint(); };
+  $("#pr-r").onchange=e=>{ printSel=e.target.value; renderPrint(); };
+  if($("#pr-more")) $("#pr-more").onclick=()=>{ TAB="fill"; route(); };
+  $("#pr-pdf").onclick=async()=>{
+    const b=$("#pr-pdf"); b.disabled=true; b.textContent="מכין PDF…";
+    try{
+      const el=$("#sheet"); const c=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false,windowWidth:900});
+      const pdf=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+      const W=210, H=297, m=8; let w=W-2*m, h=c.height*w/c.width; if(h>H-2*m){ h=H-2*m; w=c.width*h/c.height; }
+      pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",(W-w)/2,m,w,h);
+      saveBlob(pdf.output("blob"), `${cur.name} - ${Q[cur.q].short} - ${TPN[cur.tp]}.pdf`);
+      b.textContent="הורדת PDF להדפסה"; b.disabled=false;
+    }catch(e){ b.textContent="הורדת PDF להדפסה"; b.disabled=false; $("#pr-msg").innerHTML=`<div class="msg err">לא הצלחתי להכין את הקובץ. מנסים שוב.</div>`; }
+  };
+}
+function saveBlob(blob, filename){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); }
+
+/* ================= tracking ================= */
+let trTp="start";
+async function renderTrack(){
+  loading("טוען את מצב המילוי…");
+  try{ await loadResults(); }catch(e){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
+  const cl=classes(); let h="";
+  for(const c of cl){
+    const names=ROSTER[c]||[]; let counts={}; try{ counts=await photoCounts(c); }catch(e){}
+    const done=(q)=>new Set(RES.filter(r=>r.q===q&&r.cls===c&&r.tp===trTp).map(r=>nk(r.name)));
+    const w=done("well"), m=done("me");
+    h+=`<section class="card"><h2>${esc(c)}</h2>${names.length?`<div class="tablewrap"><table class="obs"><thead><tr><th scope="col">תלמיד/ה</th><th scope="col">רווחה והשתתפות</th><th scope="col">זה אני</th><th scope="col">תמונות</th></tr></thead><tbody>
+      ${names.map(n=>`<tr><td class="d">${esc(n)}</td><td>${w.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${m.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">—</span>'}</td><td>${counts[n]||0}/${SLOTS.length}</td></tr>`).join("")}
+      </tbody></table></div>`:`<p class="hint">אין תלמידים בכיתה הזו.</p>`}</section>`;
+  }
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">מעקב מילוי</h1><p>״זה אני״ הוא ניסיוני, ולכן לא חובה למלא אותו לכולם. את רשימת הכיתות והתלמידים עורכים <a href="index.html#track">באפליקציה הראשית</a>.</p></div>
+    <section class="card"><div class="field" style="max-width:280px"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(k=>`<option value="${k}" ${k===trTp?"selected":""}>${TPN[k]}</option>`).join("")}</select></div></section>
+    ${cl.length?h:`<div class="empty">עוד אין כיתות. מוסיפים באפליקציה הראשית.</div>`}</div>`;
+  $("#tr-tp").onchange=e=>{ trTp=e.target.value; renderTrack(); };
+}
+
+/* ================= admin ================= */
+function renderAdmin(msg){
+  requirePass(()=>{
+    $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">ניהול</h1></div>${msg||""}
+    <section class="card"><h2>ייצוא ל־Excel</h2><p class="hint">קובץ עם כל המילויים, חישובים אוטומטיים, מעקב לכל תלמיד/ה לאורך השנה וסיכום כיתתי.</p>
+      <div class="actions"><button class="btn" type="button" id="ad-xl">הורדת קובץ Excel</button></div><div id="xl-msg"></div></section>
+    <section class="card"><h2>עריכת נוסחים</h2><p class="hint">אפשר לשנות נוסח של כל שאלה. מילויים קודמים נשמרו עם הנוסח שהיה בזמן המילוי.</p>
+      <div class="actions"><button class="btn ghost" type="button" data-ed="well">${Q.well.name}</button><button class="btn ghost" type="button" data-ed="me">${Q.me.name}</button></div></section>
+    <section class="card"><h2>קוד צוות</h2><p class="hint">הקוד שהמורים מקלידים כדי להיכנס לעמוד הזה ולתמונות. לפחות 4 תווים.</p>
+      <div class="grid2"><div class="field"><label for="ad-code">קוד חדש</label><input type="text" id="ad-code" autocomplete="off"></div></div>
+      <div class="actions"><button class="btn ghost" type="button" id="ad-code-go">שמירת הקוד</button></div><div id="code-msg"></div></section>
+    <section class="card"><h2>מחיקת מילוי</h2><p class="hint">למילוי שנעשה בטעות. לוחצים פעמיים לאישור.</p><div id="ad-del" class="reslist"><span class="hint">טוען…</span></div></section></div>`;
+    $("#ad-xl").onclick=exportExcel;
+    document.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>renderEditor(b.dataset.ed));
+    $("#ad-code-go").onclick=async()=>{ const v=$("#ad-code").value.trim(); if(v.length<4){ $("#code-msg").innerHTML=`<div class="msg err">הקוד צריך להיות לפחות 4 תווים.</div>`; return; }
+      const {data} = await sb.rpc("sm_set_staff_code",{p_admin:adminPass, p_new:v});
+      if(data===true){ staffCode=v; ss.set("sm_staff",v); $("#code-msg").innerHTML=`<div class="msg ok">הקוד עודכן. מעבירים את הקוד החדש לצוות.</div>`; $("#ad-code").value=""; }
+      else $("#code-msg").innerHTML=`<div class="msg err">הקוד לא נשמר. יוצאים ונכנסים שוב עם הסיסמה.</div>`; };
+    loadResults().then(()=>{ const box=$("#ad-del"); if(!box) return;
+      box.innerHTML = RES.length? RES.map(r=>`<div class="resrow" style="cursor:default"><span><b>${esc(r.name)}</b> · ${Q[r.q]?.short||""} · ${esc(r.cls)} · ${TPN[r.tp]||""} · ${fmtDate(r.date)}</span><button class="linkbtn" type="button" data-del="${r.id}">מחיקה</button></div>`).join("") : `<span class="hint">אין מילויים.</span>`;
+      box.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{ if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="ללחוץ שוב לאישור"; return; }
+        const {data} = await sb.rpc("sm_delete_response",{p_pass:adminPass, p_id:b.dataset.del});
+        renderAdmin(data===true? `<div class="msg ok">המילוי נמחק.</div>` : `<div class="msg err">המחיקה לא הצליחה.</div>`); });
+    }).catch(()=>{ const box=$("#ad-del"); if(box) box.innerHTML=failMsg; });
+  });
+}
+function renderEditor(k){
+  const q=Q[k], d=DEF[k];
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><div class="eyebrow">עריכת נוסחים</div><h1 style="font-size:28px">${q.name}</h1><p>לכל שאלה יש נוסח לבן ונוסח לבת. שדה ריק חוזר לנוסח המקורי.</p></div>
+    <section class="card"><h2>שאלות לתלמיד/ה</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">תחום</th><th scope="col">נוסח לבן</th><th scope="col">נוסח לבת</th></tr></thead><tbody>
+    ${q.items.map((it,i)=>`<tr><td class="d" style="width:16%"><span style="color:${DOM[it[1]].color}">${DOM[it[1]].name}</span></td>
+      <td><input type="text" data-m="${it[0]}" value="${esc(it[2])}" aria-label="נוסח לבן" placeholder="${esc(d.items[i][2])}"></td>
+      <td><input type="text" data-f="${it[0]}" value="${esc(it[3])}" aria-label="נוסח לבת" placeholder="${esc(d.items[i][3])}"></td></tr>`).join("")}</tbody></table></div></section>
+    <section class="card"><h2>שאלות תצפית לצוות</h2><div class="tablewrap"><table class="obs"><tbody>
+    ${q.obs.map((o,i)=>`<tr><td class="d" style="width:16%"><span style="color:${DOM[o[0].replace(/2$/,"")].color}">${DOM[o[0].replace(/2$/,"")].name}</span></td><td><input type="text" data-o="${o[0]}" value="${esc(o[1])}" aria-label="נוסח התצפית" placeholder="${esc(d.obs[i][1])}"></td></tr>`).join("")}</tbody></table></div></section>
+    <div id="ed-msg"></div><div class="actions"><button class="btn" type="button" id="ed-save">שמירת הנוסחים</button><button class="btn ghost" type="button" id="ed-back">חזרה לניהול</button></div></div>`;
+  $("#ed-back").onclick=()=>renderAdmin();
+  $("#ed-save").onclick=async()=>{
+    const ov={...ADAPTED_CFG.overrides}, ob={...ADAPTED_CFG.obs};
+    d.items.forEach(it=>{ const m=$(`[data-m="${it[0]}"]`).value.trim(), f=$(`[data-f="${it[0]}"]`).value.trim(); const o={};
+      if(m && m!==it[2]) o.m=m; if(f && f!==it[3]) o.f=f; if(Object.keys(o).length) ov[it[0]]=o; else delete ov[it[0]]; });
+    d.obs.forEach(o=>{ const v=$(`[data-o="${o[0]}"]`).value.trim(); if(v && v!==o[1]) ob[k+":"+o[0]]=v; else delete ob[k+":"+o[0]]; });
+    const val={overrides:ov, obs:ob, updatedAt:new Date().toISOString()};
+    const {data} = await sb.rpc("sm_save_config",{p_pass:adminPass, p_key:"adapted", p_value:val});
+    if(data===true){ ADAPTED_CFG=val; applyWording(); renderEditor(k); $("#ed-msg").innerHTML=`<div class="msg ok">הנוסחים נשמרו ויופיעו בכל מילוי חדש.</div>`; }
+    else $("#ed-msg").innerHTML=`<div class="msg err">השמירה לא אושרה. יוצאים ונכנסים שוב עם הסיסמה.</div>`;
+  };
+}
+
+/* ================= Excel (fills the analysis template) ================= */
+async function exportExcel(){
+  const b=$("#ad-xl"), out=$("#xl-msg"); b.disabled=true; b.textContent="מכין קובץ…"; out.innerHTML="";
+  try{
+    await loadResults();
+    const buf = await (await fetch("adapted-template.xlsx",{cache:"no-store"})).arrayBuffer();
+    const wb = new ExcelJS.Workbook(); await wb.xlsx.load(buf);
+    const font={name:"Arial",size:10};
+    const yn=v=> v===1?"כן": v===0?"לא": v==="na"?"": "לא ענה";
+    const ex=v=> v==="1"?"כן": v==="0"?"לא": "";
+    const vf=v=> v==="1"?"כן": v==="h"?"חלקית": v==="0"?"לא": "";
+    const modeName=m=> ({touch:"מגע או לחיצה",gaze:"מבט",scan:"מתג",staff:"תיווך מבוגר/ת"})[m]||"";
+    const sortRes=a=>[...a].sort((x,y)=>(x.cls||"").localeCompare(y.cls||"","he")||(x.name||"").localeCompare(y.name||"","he")||TP_ORDER.indexOf(x.tp)-TP_ORDER.indexOf(y.tp));
+    const put=(ws,row,vals,ncols)=>{ for(let c=1;c<=ncols;c++){ const cell=ws.getCell(row,c); cell.value = vals[c-1]??null; cell.font=font; } };
+    const well=sortRes(RES.filter(r=>r.q==="well")), me=sortRes(RES.filter(r=>r.q==="me"));
+    if(well.length>200||me.length>200) out.innerHTML=`<div class="msg err">יש יותר מ־200 מילויים בשאלון אחד. בקובץ נכנסו 200 הראשונים.</div>`;
+    const W=wb.getWorksheet("רווחה - קליטה"), M=wb.getWorksheet("זה אני - קליטה");
+    put(W,5,[],30); put(M,5,[],25);
+    well.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, o=r.obs||{};
+      put(W,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
+        ex(r.calExp?.cal1),yn(a.cal1),ex(r.calExp?.cal2),yn(a.cal2),
+        ...["s1","s2","l1","l2","e1","i1","i2","c1","c2"].map(k=>yn(a[k])),
+        ...["social","social2","learning","learning2","emotion","emotion2","indep","indep2","climate"].map(k=>o[k]?Number(o[k]):null),
+        r.notes||""],30); });
+    me.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, v=r.verify||{};
+      put(M,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
+        a.p1===1?"בחר/ה בעצמו/ה":a.p1===0?"בחר/ה באחר/ת":"לא נבדק", yn(a.y1), yn(a.y2),
+        ...["a1","a2","a3","a4","a5"].map(k=>yn(a[k])), ...["a1","a2","a3","a4","a5"].map(k=>vf(v[k])),
+        yn(a.w1),yn(a.w2),yn(a.k1), r.obs?.pride?Number(r.obs.pride):null, r.notes||""],25); });
+    const uniq=a=>[...new Map(a.map(r=>[nk(r.name),r.name])).values()].sort((x,y)=>x.localeCompare(y,"he"));
+    const fillCol=(ws,vals,max)=>{ for(let i=0;i<max;i++){ const c=ws.getCell(5+i,1); c.value=vals[i]??null; c.font=font; } };
+    fillCol(wb.getWorksheet("רווחה - מעקב"), uniq(well), 200);
+    fillCol(wb.getWorksheet("זה אני - מעקב"), uniq(me), 200);
+    fillCol(wb.getWorksheet("סיכום כיתתי"), [...new Set(RES.map(r=>r.cls))].sort((x,y)=>x.localeCompare(y,"he")), 40);
+    wb.calcProperties.fullCalcOnLoad = true;
+    const outBuf = await wb.xlsx.writeBuffer();
+    const d=new Date(); saveBlob(new Blob([outBuf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), `שאלונים מותאמים - נתונים ${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}.xlsx`);
+    if(!out.innerHTML) out.innerHTML=`<div class="msg ok">הקובץ ירד: ${well.length} מילויי רווחה, ${me.length} מילויי ״זה אני״. מתחילים מהגיליון ״הסבר״.</div>`;
+  }catch(e){ out.innerHTML=`<div class="msg err">לא הצלחתי להכין את הקובץ. בודקים את האינטרנט ומנסים שוב.</div>`; }
+  b.disabled=false; b.textContent="הורדת קובץ Excel";
+}
+
+/* ================= boot ================= */
+async function boot(){
+  if(!sb){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
+  if(!staffCode) return renderGate();
+  loading();
+  try{ const {data} = await sb.rpc("sm_check_staff",{p_code:staffCode}); if(data!==true){ staffCode=""; return renderGate(); } await loadConfig(); }
+  catch(e){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
+  route();
+}
+boot();
+</script>
+</body></html>
