@@ -194,7 +194,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pchart .sm{width:16px;height:3px;border-radius:2px;background:#1E2A4F;display:inline-block}
 
 /* print pages (A4 at 96dpi) */
-.prctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.panel.prctl,.prctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .prctl .seg button{font-size:.9rem}
 .pwrap{overflow-x:auto;padding:16px 4px;display:flex;flex-direction:column;align-items:center;gap:22px;background:#DCE2EE;border-radius:20px}
 .ppage{width:794px;height:1123px;flex:none;background:#fff;color:#1E2A4F;padding:34px 40px 50px;box-sizing:border-box;position:relative;overflow:hidden;direction:rtl;font-family:var(--font-body);font-size:13px;line-height:1.4;box-shadow:0 6px 20px rgba(30,42,79,.18);display:flex;flex-direction:column;gap:12px}
@@ -248,6 +248,21 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pwbox h3{font-size:1.3rem}.pwbox p{margin:0}
 .pwbox input{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:10px 12px;min-height:46px}
 .pwbox .row{display:flex;gap:8px}
+
+.trk{gap:10px}
+.trk-h{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.trk-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chipc{border-radius:999px;padding:4px 12px;background:var(--bg);border:1px solid var(--line);font-size:.9rem}
+.chipc.ok{background:var(--yes-col);border-color:#9fd8ae}
+.trk-bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}
+.trk-bar span{display:block;height:100%;background:var(--yes-btn);border-radius:4px}
+.trk-t tr.miss td:first-child{border-inline-start:4px solid var(--help)}
+.st{display:inline-block;border-radius:999px;padding:2px 10px;font-weight:700;font-size:.85rem}
+.st.ok{background:var(--yes-col);color:#1E6B33}.st.no{background:var(--help-col);color:#9B2530}
+.ro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.ro-card textarea{min-height:180px}
+#f-student{border:1.5px solid var(--line);background:#F8FAFD;border-radius:12px;padding:9px 12px;min-height:46px;width:100%}
+#f-student:not([hidden])+#f-name:not([hidden]){margin-top:6px}
 /* summary boxes */
 .sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .sbox{--sb:var(--pink-band);--ss:var(--pink-soft);--c:var(--pink);background:var(--ss);border:2px solid var(--sb);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
@@ -358,6 +373,7 @@ td.dn{font-weight:700}
       <button class="tab" role="tab" id="tab-high" data-tab="high" aria-selected="true">תלמיד/ה</button>
       <button class="tab" role="tab" id="tab-visual" data-tab="visual" aria-selected="false">תלמיד/ה · חזותי</button>
       <button class="tab" role="tab" id="tab-staff" data-tab="staff" aria-selected="false">צוות</button>
+      <button class="tab" role="tab" id="tab-track" data-tab="track" aria-selected="false">מעקב מילוי</button>
       <button class="tab" role="tab" id="tab-data" data-tab="data" aria-selected="false">נתונים ו־Excel</button>
     </nav>
   </header>
@@ -483,7 +499,7 @@ function getUser(){ return Promise.resolve(null); }
 /* ---------- form state ---------- */
 let state, currentTab = "high", unlocked = true;
 function newState(type){
-  return {type, name:"", cls:CLASSES[0], clsOther:"", tp:"", date:today(), answers:{},
+  return {type, name:"", cls:(rosterClasses()[0]||CLASSES[0]), clsOther:"", tp:"", date:today(), answers:{},
     goals:{social:"",learning:"",emotion:"",indep:""}, other:{},
     strengths:new Set(), helps:new Set(), interests:new Set(),
     sStrength:"", sNeed:"", sHelps:new Set(), note:""};
@@ -562,9 +578,9 @@ function renderForm(type){
     <span class="deco d-mount">${ILL.mountain}</span><span class="deco d-pencil">${ILL.pencil}</span><span class="deco d-rays2">${ILL.rays("#3D8BE0")}</span><span class="deco d-spark">${ILL.sparkle("#9B6BDF")}</span>
     <h2><span class="hl">${B[0]}</span></h2><div class="legend">${B[1]}</div><p class="binst">${B[2]}</p></header>
   <section class="meta" aria-label="פרטי המילוי">
-    <div class="field"><label for="f-name">שם התלמיד/ה <span class="req">*</span></label><input id="f-name" list="names" autocomplete="off" placeholder="שם פרטי ומשפחה"></div>
+    <div class="field"><label for="f-student">שם התלמיד/ה <span class="req">*</span></label><select id="f-student" hidden></select><input id="f-name" list="names" autocomplete="off" placeholder="שם פרטי ומשפחה" aria-label="שם התלמיד/ה"></div>
     <div class="field"><label for="f-class">כיתה <span class="req">*</span></label>
-      <select id="f-class">${CLASSES.map(c=>`<option>${esc(c)}</option>`).join("")}<option value="__other">כיתה אחרת</option></select>
+      <select id="f-class">${(rosterClasses().length? rosterClasses() : CLASSES).map(c=>`<option ${c===state.cls?"selected":""}>${esc(c)}</option>`).join("")}<option value="__other">כיתה אחרת</option></select>
       <input id="f-class-other" placeholder="שם הכיתה, למשל: כיתת רונית" hidden></div>
     <div class="field"><span class="lbl">מועד הערכה <span class="req">*</span></span><div class="seg" role="group" aria-label="מועד הערכה">${TP_ORDER.map(k=>`<button type="button" data-tp="${k}" aria-pressed="false">${TP[k]}</button>`).join("")}</div></div>
     <div class="field"><label for="f-date">תאריך</label><input id="f-date" type="date" value="${state.date}"></div>
@@ -631,6 +647,7 @@ function renderForm(type){
   <div class="submitbar"><p id="progress"></p><button class="btn" type="submit" id="submitbtn">שמירת השאלון</button></div></form>`;
   $("#view").innerHTML = h;
   updateProgress();
+  refreshStudentField();
   fillNames();
 }
 
@@ -641,9 +658,10 @@ async function fillNames(){
     const snap = await db.collection("responses").limit(1000).get();
     const names = new Set(); const classes = new Set();
     snap.docs.forEach(d=>{const x=d.data(); if(x?.name) names.add(x.name); if(x?.className) classes.add(x.className);});
+    FILLS = snap.docs.map(d=>d.data()).filter(isV2); refreshStudentField();
     const dl = $("#names"); if(dl) dl.innerHTML = [...names].sort().map(n=>`<option value="${esc(n)}">`).join("");
     const sel = $("#f-class");
-    if(sel){ [...classes].filter(c=>!CLASSES.includes(c)).sort().forEach(c=>{ const o=document.createElement("option"); o.textContent=c; sel.insertBefore(o, sel.querySelector('[value="__other"]')); }); }
+    if(sel){ [...classes].filter(c=>!CLASSES.includes(c) && !rosterClasses().includes(c)).sort().forEach(c=>{ const o=document.createElement("option"); o.textContent=c; sel.insertBefore(o, sel.querySelector('[value="__other"]')); }); }
   }catch(e){}
 }
 
@@ -791,6 +809,7 @@ async function loadTexts(){
     const snap = await db.doc("config/texts").get();
     if(!snap.exists) return;
     const d = snap.data()||{};
+    configCache = d; ROSTER = (d.roster && typeof d.roster==="object")? d.roster : {};
     applyTexts(d.overrides); textsVersion = d.updatedAt || "default";
     const untouched = state && !Object.keys(state.answers).length && !state.name;
     if(untouched && currentTab!=="data") renderForm(currentTab);
@@ -841,7 +860,8 @@ async function saveTexts(){
   const db = await getDb();
   try{
     const updatedAt = new Date().toISOString();
-    await db.doc("config/texts").set({overrides:ov, updatedAt});
+    await db.doc("config/texts").set({...configCache, overrides:ov, updatedAt});
+    configCache = {...configCache, overrides:ov, updatedAt};
     applyTexts(ov); textsVersion=updatedAt; pendingEdits={};
     renderEditor(`<div class="msg ok">✅ הנוסחים נשמרו. הם יופיעו בשאלון מהמילוי הבא.</div>`);
   }catch(e){
@@ -976,11 +996,120 @@ async function makePdf(){
   }catch(e){ console.log("pdf err",e&&(e.message||e.code||e)); if(e?.code!=="cancelled" && e?.code!=="declined") m.innerHTML=`<div class="msg err">יצירת הקובץ לא הושלמה. לוחצים שוב.</div>`; }
   finally{ btn.disabled=false; btn.textContent="⬇️ הורדת PDF להדפסה"; }
 }
+/* ---------- roster (classes & students) and completion tracking ---------- */
+let ROSTER = {};          // { "כיתת נופר": ["שם", ...], ... }
+let configCache = {};     // whole config/texts document
+let FILLS = [];           // v2 rows, for "already filled" marks
+const rosterClasses = () => Object.keys(ROSTER).sort((a,b)=>a.localeCompare(b,"he"));
+const nk = s => nameKey(s).toLowerCase();
+const isSelfType = t => t==="high"||t==="visual";
+
+async function saveRoster(r){
+  const db = await getDb();
+  const v = {...configCache, overrides:textOverrides, updatedAt:configCache.updatedAt||textsVersion, roster:r};
+  await db.doc("config/texts").set(v);
+  configCache = v; ROSTER = r;
+}
+function filledSet(cls, tp, group){
+  return new Set(FILLS.filter(r=>r.className===cls && r.timepoint===tp && (group==="staff"? r.type==="staff" : isSelfType(r.type))).map(r=>nk(r.name)));
+}
+function refreshStudentField(){
+  const sel=$("#f-student"), inp=$("#f-name"); if(!sel||!state) return;
+  const cls = state.cls==="__other"? "" : state.cls, list = ROSTER[cls]||[];
+  if(!list.length){ sel.hidden=true; inp.hidden=false; return; }
+  const done = state.tp? filledSet(cls, state.tp, state.type==="staff"?"staff":"self") : new Set();
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">בחרו תלמיד/ה…</option>${list.map(n=>`<option value="${esc(n)}">${esc(n)}${done.has(nk(n))?"  ✓ כבר מולא":""}</option>`).join("")}<option value="__other">תלמיד/ה שלא ברשימה (הקלדה)</option>`;
+  if(cur && [...sel.options].some(o=>o.value===cur)) sel.value=cur;
+  sel.hidden=false; inp.hidden = sel.value!=="__other";
+}
+document.addEventListener("change", e=>{
+  if(!state) return;
+  if(e.target.id==="f-student"){
+    const v=e.target.value, inp=$("#f-name");
+    if(v==="__other"){ inp.hidden=false; inp.value=""; state.name=""; inp.focus(); }
+    else { inp.hidden=true; state.name=v; }
+  }
+  if(e.target.id==="f-class"){ state.name=""; const s=$("#f-student"); if(s) s.value=""; const i=$("#f-name"); if(i) i.value=""; refreshStudentField(); }
+});
+document.addEventListener("click", e=>{ if(e.target.closest("[data-tp]") && e.target.closest("#qform")) setTimeout(refreshStudentField,0); });
+
+let trTp = "", trCls = "__all";
+async function renderTrack(){
+  stopData();
+  $("#view").innerHTML = `<div class="empty">טוען את מצב המילוי…</div>`;
+  const db = await getDb(); let rows=[];
+  try{ rows = db? (await db.collection("responses").get()).docs.map(d=>({id:d.id,...d.data()})) : []; }catch(e){}
+  rows = rows.filter(isV2); FILLS = rows;
+  if(!trTp){ const used = TP_ORDER.filter(t=>rows.some(r=>r.timepoint===t)); trTp = used.at(-1) || "start"; }
+  const classes = [...new Set([...rosterClasses(), ...rows.map(r=>r.className).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"he"));
+  const shown = trCls==="__all"? classes : classes.filter(c=>c===trCls);
+  let totS=0, doneS=0, doneT=0, h="";
+  shown.forEach(cls=>{
+    const roster = ROSTER[cls]||[];
+    const inData = [...new Map(rows.filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
+    const names = [...roster, ...inData.filter(n=>!roster.some(x=>nk(x)===nk(n)))];
+    const sSet = filledSet(cls, trTp, "self"), tSet = filledSet(cls, trTp, "staff");
+    const cS = names.filter(n=>sSet.has(nk(n))).length, cT = names.filter(n=>tSet.has(nk(n))).length;
+    totS += names.length; doneS += cS; doneT += cT;
+    const pct = names.length? Math.round(cS/names.length*100) : 0;
+    h += `<section class="panel trk"><div class="trk-h"><h3>${esc(cls)}</h3>
+      <div class="trk-chips"><span class="chipc ${cS===names.length&&names.length?"ok":""}">🧒 תלמידים: <b>${cS}</b> / ${names.length}</span><span class="chipc ${cT===names.length&&names.length?"ok":""}">👩‍🏫 צוות: <b>${cT}</b> / ${names.length}</span></div></div>
+      <div class="trk-bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
+      ${names.length? `<div class="tablewrap"><table class="trk-t"><thead><tr><th>תלמיד/ה</th><th>שאלון תלמיד</th><th>שאלון צוות</th></tr></thead><tbody>
+      ${names.map(n=>{ const s=sSet.has(nk(n)), t=tSet.has(nk(n)), extra=!roster.some(x=>nk(x)===nk(n)) && roster.length;
+        return `<tr class="${s&&t?"":"miss"}"><td><b>${esc(n)}</b>${extra?' <span class="pill">לא ברשימת הכיתה</span>':""}</td><td>${s?'<span class="st ok">✓ מולא</span>':'<span class="st no">חסר</span>'}</td><td>${t?'<span class="st ok">✓ מולא</span>':'<span class="st no">חסר</span>'}</td></tr>`; }).join("")}
+      </tbody></table></div>` : `<p class="muted" style="margin:0">אין עדיין תלמידים ברשימה של הכיתה הזו.</p>`}</section>`;
+  });
+  $("#view").innerHTML = `<div class="dash">
+    <div class="toolbar"><div><h2 style="font-size:1.5rem">📋 מעקב מילוי</h2><p class="muted" style="margin:4px 0 0">מי כבר מילא/ה ומי עוד צריך/ה להשלים, לפי כיתה ומועד.</p></div>
+      <button class="btn ghost" type="button" id="roster-edit">👥 עריכת כיתות ותלמידים</button></div>
+    <section class="panel prctl">
+      <div class="field"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===trTp?"selected":""}>${TP[t]}</option>`).join("")}</select></div>
+      <div class="field"><label for="tr-cls">כיתה</label><select id="tr-cls"><option value="__all">כל הכיתות</option>${classes.map(c=>`<option ${c===trCls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="kpi"><b>${doneS} / ${totS}</b><span>שאלוני תלמידים · ${TP[trTp]}</span></div>
+      <div class="kpi"><b>${doneT} / ${totS}</b><span>שאלוני צוות · ${TP[trTp]}</span></div>
+    </section>
+    ${classes.length? h : `<div class="empty">עוד אין כיתות. לוחצים "👥 עריכת כיתות ותלמידים" ומוסיפים את הכיתות ואת שמות התלמידים.</div>`}</div>`;
+  $("#tr-tp").onchange=e=>{ trTp=e.target.value; renderTrack(); };
+  $("#tr-cls").onchange=e=>{ trCls=e.target.value; renderTrack(); };
+  $("#roster-edit").onclick=()=>requirePass(renderRosterEditor);
+}
+
+let rosterDraft = null;
+function renderRosterEditor(msg){
+  if(!rosterDraft) rosterDraft = rosterClasses().map(c=>({name:c, text:(ROSTER[c]||[]).join("\n")}));
+  if(!rosterDraft.length) rosterDraft.push({name:"", text:""});
+  $("#view").innerHTML = `<div class="dash">
+    <div class="toolbar"><div><h2 style="font-size:1.5rem">👥 כיתות ותלמידים</h2><p class="muted" style="margin:4px 0 0">שם הכיתה, ומתחתיו שם תלמיד/ה בכל שורה. אפשר להדביק רשימה מ־Excel או מ־Word.</p></div>
+      <button class="btn ghost" type="button" id="ro-back">חזרה למעקב</button></div>
+    ${msg||""}
+    <div class="ro-grid">${rosterDraft.map((c,i)=>`<section class="panel ro-card">
+      <div class="field"><label for="ro-n${i}">שם הכיתה</label><input id="ro-n${i}" data-ro-n="${i}" value="${esc(c.name)}" placeholder="למשל: כיתת נופר"></div>
+      <div class="field"><label for="ro-t${i}">תלמידים (שם בכל שורה) · <span class="muted" id="ro-c${i}">${c.text.split("\n").filter(x=>x.trim()).length} תלמידים</span></label><textarea id="ro-t${i}" data-ro-t="${i}" rows="8" placeholder="שם פרטי ומשפחה">${esc(c.text)}</textarea></div>
+      <button class="linkbtn" type="button" data-ro-del="${i}">הסרת הכיתה</button></section>`).join("")}</div>
+    <div><button class="btn ghost" type="button" id="ro-add">➕ הוספת כיתה</button></div>
+    <div class="submitbar"><p>השמות יופיעו ברשימה הנפתחת בשאלונים ובמעקב המילוי.</p><button class="btn" type="button" id="ro-save">שמירת הכיתות</button></div></div>`;
+  const sync=()=>{ rosterDraft.forEach((c,i)=>{ const n=$("#ro-n"+i), t=$("#ro-t"+i); if(n) c.name=n.value; if(t) c.text=t.value; }); };
+  document.querySelectorAll("[data-ro-t]").forEach(t=>t.oninput=()=>{ const i=t.dataset.roT; $("#ro-c"+i).textContent=`${t.value.split("\n").filter(x=>x.trim()).length} תלמידים`; });
+  $("#ro-add").onclick=()=>{ sync(); rosterDraft.push({name:"",text:""}); renderRosterEditor(); };
+  document.querySelectorAll("[data-ro-del]").forEach(b=>b.onclick=()=>{ sync(); rosterDraft.splice(+b.dataset.roDel,1); renderRosterEditor(); });
+  $("#ro-back").onclick=()=>{ rosterDraft=null; renderTrack(); };
+  $("#ro-save").onclick=async()=>{
+    sync(); const r={}; const errs=[];
+    rosterDraft.forEach(c=>{ const name=nameKey(c.name); const list=[...new Map(c.text.split(/\n|,/).map(x=>nameKey(x.replace(/^\d+[.)]\s*/,""))).filter(Boolean).map(x=>[x.toLowerCase(),x])).values()];
+      if(!name && list.length) errs.push("יש רשימת תלמידים בלי שם כיתה."); if(name) r[name]=list; });
+    if(errs.length){ renderRosterEditor(`<div class="msg err">${errs[0]}</div>`); return; }
+    const btn=$("#ro-save"); btn.disabled=true; btn.textContent="שומר…";
+    try{ await saveRoster(r); rosterDraft=null; renderRosterEditor(`<div class="msg ok">✅ נשמר. ${Object.keys(r).length} כיתות, ${Object.values(r).reduce((s,a)=>s+a.length,0)} תלמידים.</div>`); }
+    catch(e){ renderRosterEditor(`<div class="msg err">השמירה לא אושרה. יוצאים מניהול ונכנסים שוב עם הסיסמה.</div>`); }
+  };
+}
 /* ---------- tabs ---------- */
 function switchTab(tab){
   currentTab = tab;
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab?"true":"false"));
-  if(tab==="data") renderData(); else { stopData(); renderForm(tab); }
+  if(tab==="data") renderData(); else if(tab==="track"){ stopData(); renderTrack(); } else { stopData(); renderForm(tab); }
   window.scrollTo({top:0});
 }
 
