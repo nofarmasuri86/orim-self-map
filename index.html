@@ -384,7 +384,7 @@ td.dn{font-weight:700}
     </div>
     <nav class="tabs" role="tablist" aria-label="בחירת שאלון">
       <button class="tab" role="tab" id="tab-high" data-tab="high" aria-selected="true">תלמיד/ה</button>
-      <button class="tab" role="tab" id="tab-visual" data-tab="visual" aria-selected="false">תלמיד/ה · חזותי</button>
+      <button class="tab" role="tab" id="tab-visual" data-tab="visual" aria-selected="false">שאלון בתת״ח</button>
       <button class="tab" role="tab" id="tab-staff" data-tab="staff" aria-selected="false">צוות</button>
       <button class="tab" role="tab" id="tab-track" data-tab="track" aria-selected="false">מעקב מילוי</button>
       <button class="tab" role="tab" id="tab-data" data-tab="data" aria-selected="false">נתונים ו־Excel</button>
@@ -398,7 +398,7 @@ td.dn{font-weight:700}
 const STAFF_CODE = "orim";
 const TP = {start:"תחילת שנה", mid:"אמצע שנה", end:"סוף שנה"};
 const TP_ORDER = ["start","mid","end"];
-const TYPE_LABEL = {high:"תלמיד/ה – גרסה מילולית", visual:"תלמיד/ה – גרסה חזותית", staff:"צוות/מורה"};
+const TYPE_LABEL = {high:"תלמיד/ה – גרסה מילולית", visual:"תלמיד/ה – שאלון בתת״ח", staff:"צוות/מורה"};
 const CLASSES = ["כיתת נופר"];
 const ICONS = {
   social:'<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><circle cx="16" cy="9" r="4.5"/><circle cx="7" cy="12" r="3.5"/><circle cx="25" cy="12" r="3.5"/><path d="M8.5 27c0-4.6 3.4-8.5 7.5-8.5s7.5 3.9 7.5 8.5z"/><path d="M1.5 26c0-3.6 2.4-6.6 5.5-6.6 1.2 0 2.3.4 3.2 1.1A11 11 0 0 0 7.3 26z"/><path d="M30.5 26c0-3.6-2.4-6.6-5.5-6.6-1.2 0-2.3.4-3.2 1.1A11 11 0 0 1 24.7 26z"/></svg>',
@@ -674,7 +674,7 @@ function renderForm(type){
   const scale = SCALE[type];
   const B = {
     high:["מיפוי עצמי – איך אני מרגיש/ה בתחומים שונים?","מסמנים: מצליח/ה / לפעמים / צריך/ה עזרה","אין תשובות נכונות או לא נכונות. בוחרים את מה שמתאים לך."],
-    visual:["מיפוי עצמי חזותי","מסמנים: מצליח/ה / לפעמים / צריך/ה עזרה","לוחצים על התמונה שמתאימה לך."],
+    visual:["שאלון בתת״ח – מיפוי עצמי","מסמנים: מצליח/ה / לפעמים / צריך/ה עזרה","לוחצים על התמונה שמתאימה לך."],
     staff:["שאלון צוות – התרשמות מתפקוד התלמיד/ה","מסמנים: רוב הזמן / לפעמים / נדרש סיוע","בוחרים את מה שנצפה אצל התלמיד/ה בתקופה האחרונה."]
   }[type];
   let h = `<form id="qform" novalidate style="display:flex;flex-direction:column;gap:16px">
@@ -702,9 +702,9 @@ function renderForm(type){
     } else {
       h += `<div class="drow staffrow" data-d="${d.k}"><section class="dcard" aria-labelledby="h-${d.k}"><div class="grid">
         <div class="dtitle"><h3 id="h-${d.k}">${di+1}. ${d.t[type]}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL[d.k]}</div></div>
-        ${colHeads(scale,true)}${rowsGrid(ids,texts,scale,ITEM_ICONS[d.k])}
+        ${colHeads(scale,true)}${rowsGrid(ids,texts,scale)}
       </div>
-      ${staff? "" : `<div class="goalpanel"><h4>${GOAL_TITLE}<span class="ghint">בוחרים מטרה אחת</span></h4><div class="chips single gp" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[0],SYM[o[2]]||"",false)).join("")}${otherChip(g)}</div></div>`}
+      ${staff? "" : `<div class="goalpanel"><h4>${GOAL_TITLE}<span class="ghint">בוחרים מטרה אחת</span></h4><div class="chips single gp" role="group" aria-label="מטרה אישית – ${d.name}">${imp.map(o=>chip(g,o[0],o[0],"",false)).join("")}${otherChip(g)}</div></div>`}
       </section></div>`;
     }
   });
@@ -720,7 +720,7 @@ function renderForm(type){
     } else {
       h += `<div class="drow staffrow" data-d="climate"><section class="dcard" aria-labelledby="h-climate"><div class="grid">
         <div class="dtitle"><h3 id="h-climate">${esc(CLIMATE.title.high)}</h3><span class="dray">${ILL.rays("var(--d)")}</span><div class="art">${ILL.school}</div></div>
-        ${colHeads(cs,true)}${rowsGrid(ids,CLIMATE.high,cs,CLIMATE.icons)}
+        ${colHeads(cs,true)}${rowsGrid(ids,CLIMATE.high,cs)}
       </div></section></div>`;
     }
   } else {
@@ -885,7 +885,7 @@ function buildDoc(className){
 }
 
 /* ---------- editable wording ---------- */
-const QNAME = {high:"תלמיד/ה – מילולי", visual:"תלמיד/ה – חזותי", staff:"צוות"};
+const QNAME = {high:"תלמיד/ה – מילולי", visual:"שאלון בתת״ח", staff:"צוות"};
 function textEntries(){
   const E=[];
   for(const q of ["high","visual","staff"]){
@@ -1345,7 +1345,7 @@ async function subscribe(){
     if(currentTab==="data") drawDash();
   }, err=>{ $("#view").innerHTML=`<div class="empty">טעינת הנתונים נעצרה. עוברים ללשונית אחרת וחוזרים כדי לטעון מחדש.</div>`; });
 }
-const typeLabel = r => r.type==="staff"?"צוות":r.type==="visual"?"חזותי":"מילולי";
+const typeLabel = r => r.type==="staff"?"צוות":r.type==="visual"?"תת״ח":"מילולי";
 function drawDash(){
   const classes = [...new Set(allRows.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"he"));
   const rows = classFilter==="__all"? allRows : allRows.filter(r=>r.className===classFilter);
@@ -1502,7 +1502,7 @@ function buildWorkbook(rows){
   const chg = vals => { const v=vals.filter(x=>x!=null); return v.length>=2? Math.round((v.at(-1)-v[0])*100)/100 : ""; };
   DOMAINS.forEach(dm=>d.push([dm.name,...TP_ORDER.flatMap(t=>[avgs[t].self[dm.k]??"",avgs[t].staff[dm.k]??""]), chg(TP_ORDER.map(t=>avgs[t].self[dm.k]))]));
   d.push(["אקלים בית־ספרי",...TP_ORDER.flatMap(t=>[avgs[t].climate??"",""]), chg(TP_ORDER.map(t=>avgs[t].climate))]);
-  d.push([]); ttl.push(d.length); d.push(["מקרא שאלות"]); hdr.push(d.length); d.push(["עמודה","תלמיד/ה – מילולי","תלמיד/ה – חזותי","צוות"]);
+  d.push([]); ttl.push(d.length); d.push(["מקרא שאלות"]); hdr.push(d.length); d.push(["עמודה","תלמיד/ה – מילולי","תלמיד/ה – תת״ח","צוות"]);
   ITEM_IDS.forEach(id=>{ const k=id.slice(0,-1), i=+id.slice(-1)-1; d.push([`${DNAME[k]} ${i+1}`,ITEMS.high[k][i],ITEMS.visual[k][i],ITEMS.staff[k][i]]); });
   CLIM_IDS.forEach((_,i)=>d.push([`אקלים ${i+1}`,CLIMATE.high[i],CLIMATE.visual[i],"—"]));
   STAFF_OBS.forEach(o=>d.push([o.k,"—","—",o.t]));
@@ -1939,7 +1939,7 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
   ];
   how.forEach((x,i)=>{ const n=5+i; cell(wsLegend,n,1,x[0],{bold:true,fill:C.yellow[0]}); wsLegend.mergeCells(`B${n}:D${n}`); cell(wsLegend,n,2,x[1]); wsLegend.getRow(n).height=30; });
   let lr = 13;
-  headerRow(wsLegend, lr, ["עמודה","תלמיד/ה – מילולי","תלמיד/ה – חזותי","צוות"]); lr++;
+  headerRow(wsLegend, lr, ["עמודה","תלמיד/ה – מילולי","תלמיד/ה – תת״ח","צוות"]); lr++;
   ITEM_IDS.forEach(id=>{ const k=id.slice(0,-1), i=+id.slice(-1)-1; cell(wsLegend,lr,1,`${DNAME[k]} ${i+1}`,{fill:DCOLOR[k][0],bold:true}); cell(wsLegend,lr,2,ITEMS.high[k][i]); cell(wsLegend,lr,3,ITEMS.visual[k][i]); cell(wsLegend,lr,4,ITEMS.staff[k][i]); lr++; });
   CLIMATE.high.forEach((q,i)=>{ cell(wsLegend,lr,1,`אקלים ${i+1}`,{fill:C.climate[0],bold:true}); cell(wsLegend,lr,2,q); cell(wsLegend,lr,3,CLIMATE.visual[i]); cell(wsLegend,lr,4,"—"); lr++; });
   STAFF_OBS.forEach(o=>{ cell(wsLegend,lr,1,o.k,{fill:C.orange[0],bold:true}); cell(wsLegend,lr,2,"—"); cell(wsLegend,lr,3,"—"); cell(wsLegend,lr,4,o.t); lr++; });
