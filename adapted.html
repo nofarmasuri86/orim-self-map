@@ -245,7 +245,7 @@ const Q = {
       ["climate","נראה/ית שמח/ה כשמגיע/ה בבוקר","חיוך, ערנות, תנועה לקראת"],
     ]},
   me:{ name:"זה אני", short:"זה אני", sym:"me",
-    desc:"בדיקה ניסיונית של תפיסה עצמית: זיהוי עצמי, ״אני יכול/ה״, גאווה ושייכות.",
+    desc:"איך התלמיד/ה רואה את עצמו/ה: זיהוי עצמי בתמונה, ״אני יכול/ה״, גאווה ושייכות.",
     items:[
       ["p1","id","איפה אני?","איפה אני?","me","self","pick",1],
       ["y1","id","זה אני?","זה אני?","me","self","yn",1],
@@ -546,8 +546,8 @@ const S = { q:"well", cls:"", name:"", tp:"start", gender:"m", mode:"touch", dwe
   calExp:{cal1:"",cal2:""}, ans:{}, obs:{}, verify:{}, resp:[], und:"", notes:"" };
 const txt = it => S.gender==="f"? it[3] : it[2];
 function renderPick(){
-  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>ממלאים את אותו שאלון בכל שלוש התקופות: תחילת שנה, אמצע שנה וסוף שנה.</p></div><div class="qpick">
-    ${Object.entries(Q).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"ניסיוני":"מדד מרכזי"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
+  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>לכל תלמיד/ה ממלאים את <b>שני השאלונים</b>, בכל אחת משלוש התקופות. אפשר בימים שונים.</p></div><div class="qpick">
+    ${Object.entries(Q).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"שאלון 2":"שאלון 1"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
   document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ S.q=b.dataset.q; renderSetup(); });
 }
 async function renderSetup(msg){
@@ -759,10 +759,10 @@ async function renderTrack(){
     const done=(q)=>new Set(RES.filter(r=>r.q===q&&r.cls===c&&r.tp===trTp).map(r=>nk(r.name)));
     const w=done("well"), m=done("me");
     h+=`<section class="card"><h2>${esc(c)}</h2>${names.length?`<div class="tablewrap"><table class="obs"><thead><tr><th scope="col">תלמיד/ה</th><th scope="col">רווחה והשתתפות</th><th scope="col">זה אני</th><th scope="col">תמונות</th></tr></thead><tbody>
-      ${names.map(n=>`<tr><td class="d">${esc(n)}</td><td>${w.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${m.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">—</span>'}</td><td>${counts[n]||0}/${SLOTS.length}</td></tr>`).join("")}
+      ${names.map(n=>`<tr><td class="d">${esc(n)}</td><td>${w.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${m.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${counts[n]||0}/${SLOTS.length}</td></tr>`).join("")}
       </tbody></table></div>`:`<p class="hint">אין תלמידים בכיתה הזו.</p>`}</section>`;
   }
-  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">מעקב מילוי</h1><p>״זה אני״ הוא ניסיוני, ולכן לא חובה למלא אותו לכולם. את רשימת הכיתות והתלמידים עורכים <a href="index.html#track">באפליקציה הראשית</a>.</p></div>
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">מעקב מילוי</h1><p>ממלאים את שני השאלונים לכל תלמיד/ה. את רשימת הכיתות והתלמידים עורכים <a href="index.html#track">באפליקציה הראשית</a>.</p></div>
     <section class="card"><div class="field" style="max-width:280px"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(k=>`<option value="${k}" ${k===trTp?"selected":""}>${TPN[k]}</option>`).join("")}</select></div></section>
     ${cl.length?h:`<div class="empty">עוד אין כיתות. מוסיפים באפליקציה הראשית.</div>`}</div>`;
   $("#tr-tp").onchange=e=>{ trTp=e.target.value; renderTrack(); };
