@@ -82,6 +82,8 @@ textarea{min-height:80px;resize:vertical}
 .ans svg{width:min(14vh,110px);height:min(14vh,110px)}
 .ans.yes{background:var(--yes-btn)}
 .ans.no{background:var(--no-btn)}
+.ans.some{background:#B57F00}
+.sh-a.s{background:#B57F00}
 .ans.scan{outline:10px solid var(--focus);outline-offset:-10px;transform:scale(1.03)}
 .ans:not(.scan).dim{opacity:.45}
 .ans:focus-visible{outline:8px solid var(--focus);outline-offset:-8px}
@@ -201,25 +203,28 @@ input[type=password]{font:inherit;color:var(--ink);background:var(--bg);border:1
 const DOM = {
   cal:{name:"חימום",color:"#5B6584"}, social:{name:"חברתי",color:"#24448F"}, learning:{name:"למידה",color:"#17775A"},
   emotion:{name:"רגשי",color:"#C2295A"}, indep:{name:"השתתפות",color:"#5B3FB8"}, climate:{name:"בית הספר",color:"#13879A"},
-  id:{name:"זה אני",color:"#B4541A"}, can:{name:"אני יכול/ה",color:"#17775A"}, pride:{name:"גאווה ושייכות",color:"#C2295A"},
+  id:{name:"זה אני",color:"#B4541A"}, selfcare:{name:"עצמאות",color:"#5B3FB8"}, can:{name:"אני יכול/ה",color:"#17775A"}, pride:{name:"גאווה ושייכות",color:"#C2295A"},
 };
 /* photo slots a teacher uploads for each student (class photo is shared by the class) */
 const SLOTS = [
   {k:"self", t:"תמונת פנים של התלמיד/ה", d:"פנים ברורות, רקע פשוט. לשאלות ״איפה אני?״ ו״זה אני?״.", req:true, sym:"me"},
   {k:"other", t:"ילד/ה שהתלמיד/ה לא מכיר/ה", d:"מספר או ממאגר, לא תלמיד/ה מבית הספר. להשוואה ב״איפה אני?״.", req:true, sym:"otherkid"},
-  {k:"act_social", t:"אומר/ת שלום", d:"התלמיד/ה עם חבר/ה או מבוגר/ת בברכת שלום. לשאלה ״אני יודע/ת להגיד שלום״.", sym:"greet"},
-  {k:"act_choose", t:"בוחר/ת בין שני דברים", d:"מבט או הצבעה על אחת משתי אפשרויות. לשאלה ״אני יודע/ת לבחור״.", sym:"choose"},
-  {k:"act_switch", t:"מפעיל/ה מתג או מסך", d:"בזמן פעילות עם מתג, טאבלט או צעצוע. לשאלה ״אני יכול/ה להפעיל״.", sym:"switchpress"},
-  {k:"act_help", t:"משתתף/ת באוכל או בלבוש", d:"מחזיק/ה כוס, מושיט/ה יד לשרוול. לשאלה ״אני עוזר/ת באוכל או בלבוש״.", sym:"helpself"},
-  {k:"smile", t:"מחייך/ת", d:"רגע של שמחה אמיתית בבית הספר. לשאלה ״אני יודע/ת להראות שאני שמח/ה״.", sym:"happy"},
-  {k:"work", t:"עבודה שהתלמיד/ה יצר/ה", d:"ציור, יצירה או תוצר. לשאלות ״את זה אני עשיתי״ ו״זה יפה״.", sym:"artwork"},
+  {k:"act_social", t:"אומר/ת שלום", d:"עם חבר/ה או מבוגר/ת. חברתי: ״אני יכול/ה להגיד שלום לחברים״.", sym:"greet"},
+  {k:"act_play", t:"משחק/ת עם חבר/ה", d:"משחק משותף עם ילד/ה. חברתי: ״אני יכול/ה לשחק עם חבר/ה״.", sym:"playwc"},
+  {k:"act_switch", t:"מפעיל/ה מתג או מסך", d:"מתג, טאבלט או צעצוע. למידה: ״אני יכול/ה להפעיל את המתג או המסך״.", sym:"switchpress"},
+  {k:"act_join", t:"משתתף/ת בפעילות", d:"במעגל, בשיר או בפעילות כיתתית. למידה: ״אני יכול/ה להשתתף בפעילות״.", sym:"activity"},
+  {k:"smile", t:"מחייך/ת", d:"רגע של שמחה אמיתית. רגשות: ״אני יכול/ה להראות שאני שמח/ה״.", sym:"happy"},
+  {k:"act_calm", t:"רגוע/ה", d:"נרגע/ת עם מוזיקה, חיבוק או פינה שקטה. רגשות: ״אני יכול/ה להירגע״.", sym:"calmwc"},
+  {k:"act_choose", t:"בוחר/ת בין שני דברים", d:"מבט או הצבעה על אחת משתי אפשרויות. עצמאות: ״אני יכול/ה לבחור״.", sym:"choose"},
+  {k:"act_help", t:"משתתף/ת באוכל או בלבוש", d:"מחזיק/ה כוס, מושיט/ה יד לשרוול. עצמאות: ״אני יכול/ה לעזור באוכל או בלבוש״.", sym:"helpself"},
+  {k:"work", t:"עבודה שהתלמיד/ה יצר/ה", d:"ציור, יצירה או תוצר. גאווה: ״את זה אני עשיתי״.", sym:"artwork"},
 ];
 const CLASS_SLOT = {t:"תמונה של הכיתה", d:"החדר או הקבוצה, משותפת לכל הכיתה. לשאלה ״זו הכיתה שלי״.", sym:"myclass"};
 
 /* item: [id, domain, male, female, symbol, photoSlot|null, type, expected] */
 const Q = {
   well:{ name:"מיפוי רווחה והשתתפות", short:"רווחה והשתתפות", sym:"goodschool",
-    desc:"איך טוב לי? מה אני אוהב/ת ואיך אני מרגיש/ה בבית הספר. עם סמלים, ותצפית צוות.",
+    desc:"תוספת לבחירה: איך טוב לי? מה אני אוהב/ת ואיך אני מרגיש/ה בבית הספר. עם סמלים, ותצפית צוות.",
     items:[
       ["cal1","cal","אני אוהב מוזיקה.","אני אוהבת מוזיקה.","music",null,"yn"],
       ["cal2","cal","אני אוהב בועות סבון.","אני אוהבת בועות סבון.","bubbles",null,"yn"],
@@ -245,24 +250,26 @@ const Q = {
       ["climate","נראה/ית שמח/ה כשמגיע/ה בבוקר","חיוך, ערנות, תנועה לקראת"],
     ]},
   me:{ name:"זה אני", short:"זה אני", sym:"me",
-    desc:"מי אני ומה אני יכול/ה? זיהוי עצמי, ״אני יכול/ה״ וגאווה. עם תמונות של התלמיד/ה.",
+    desc:"איך אני רואה את עצמי? ״אני יכול/ה״ בארבעה תחומים, זיהוי עצמי וגאווה. עם תמונות של התלמיד/ה.",
     items:[
       ["p1","id","איפה אני?","איפה אני?","me","self","pick",1],
       ["y1","id","זה אני?","זה אני?","me","self","yn",1],
       ["y2","id","זה אני?","זה אני?","otherkid","other","yn",0],
-      ["a1","can","אני יודע להגיד שלום לחברים.","אני יודעת להגיד שלום לחברים.","greet","act_social","yn"],
-      ["a2","can","אני יודע לבחור מה אני רוצה.","אני יודעת לבחור מה אני רוצה.","choose","act_choose","yn"],
-      ["a3","can","אני יכול להפעיל את המתג או המסך.","אני יכולה להפעיל את המתג או המסך.","switchpress","act_switch","yn"],
-      ["a4","can","אני עוזר באוכל או בלבוש.","אני עוזרת באוכל או בלבוש.","helpself","act_help","yn"],
-      ["a5","can","אני יודע להראות שאני שמח.","אני יודעת להראות שאני שמחה.","happy","smile","yn"],
-      ["w1","pride","את זה אני עשיתי.","את זה אני עשיתי.","artwork","work","yn"],
-      ["w2","pride","זה יפה.","זה יפה.","pretty","work","yn"],
-      ["k1","pride","זו הכיתה שלי.","זו הכיתה שלי.","myclass","class","yn"],
+      ["me_s1","social","אני יכול להגיד שלום לחברים.","אני יכולה להגיד שלום לחברים.","greet","act_social","can"],
+      ["me_s2","social","אני יכול לשחק עם חבר.","אני יכולה לשחק עם חברה.","playwc","act_play","can"],
+      ["me_l1","learning","אני יכול להפעיל את המתג או המסך.","אני יכולה להפעיל את המתג או המסך.","switchpress","act_switch","can"],
+      ["me_l2","learning","אני יכול להשתתף בפעילות בכיתה.","אני יכולה להשתתף בפעילות בכיתה.","activity","act_join","can"],
+      ["me_e1","emotion","אני יכול להראות שאני שמח.","אני יכולה להראות שאני שמחה.","happy","smile","can"],
+      ["me_e2","emotion","אני יכול להירגע כשעוזרים לי.","אני יכולה להירגע כשעוזרים לי.","calmwc","act_calm","can"],
+      ["me_i1","selfcare","אני יכול לבחור מה אני רוצה.","אני יכולה לבחור מה אני רוצה.","choose","act_choose","can"],
+      ["me_i2","selfcare","אני יכול לעזור באוכל או בלבוש.","אני יכולה לעזור באוכל או בלבוש.","helpself","act_help","can"],
+      ["me_w1","pride","את זה אני עשיתי.","את זה אני עשיתי.","artwork","work","yn"],
+      ["me_k1","pride","זו הכיתה שלי.","זו הכיתה שלי.","myclass","class","yn"],
     ],
     obs:[["pride","מראה גאווה כשמצליח/ה","חיוך, מבט למבוגר/ת, קול"]]},
 };
 const FREQ = [["3","הרבה"],["2","לפעמים"],["1","כמעט לא"]];
-const VERIFY = [["1","כן"],["h","חלקית"],["0","לא"]];
+const VERIFY = [["1","רוב הזמן"],["h","לפעמים"],["0","עדיין לא"]];
 const MODES = [
   ["touch","מגע או לחיצה","התלמיד/ה נוגע/ת בכפתור או לוחץ/ת בעכבר."],
   ["gaze","מבט (השהיה)","מסתכלים על התשובה, והיא נבחרת אחרי כמה שניות."],
@@ -387,6 +394,8 @@ const SYM = (()=>{
   S.myclass = svg(`<rect x="8" y="10" width="84" height="58" rx="6" fill="#E3EEFF" ${st}/>${person(24,62,.6,{shirt:"#F6A43A"})}${wc(50,64,.62,{shirt:"#4A86E8"})}${person(76,62,.6,{shirt:"#2E9E57",hair:"#2b2b2b"})}<path d="M34 82 h32" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"/>${heart(50,86,.6)}`);
   S.me = svg(`<rect x="22" y="8" width="56" height="64" rx="6" fill="#fff" stroke="#F6A43A" stroke-width="5"/>${wc(50,66,.78,{shirt:"#4A86E8"})}<path d="M50 78 v10" stroke="#1d1d1f" stroke-width="3"/><path d="M44 84 l6 6 l6 -6" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
   S.otherkid = svg(`<rect x="22" y="8" width="56" height="64" rx="6" fill="#fff" stroke="#9AA3B5" stroke-width="5"/>${person(50,66,.78,{shirt:"#9B6BDF",hair:"#C98B4E"})}`);
+  S.playwc = svg(`${wc(30,94,.9,{shirt:"#4A86E8",r:"fwd"})}${person(76,92,.85,{shirt:"#F6A43A",l:"fwd",hair:"#2b2b2b"})}${ball(54,60,8)}`);
+  S.calmwc = svg(`${wc(42,94,1,{shirt:"#2E9E57",face:"calm"})}${note(78,34,"#9B6BDF")}<path d="M66 60 q8 -6 16 0 M64 72 q8 -6 16 0" fill="none" stroke="#4A86E8" stroke-width="3" stroke-linecap="round"/>`);
   return S;
 })();
 
@@ -542,12 +551,12 @@ async function renderPhotos(msg){
 }
 
 /* ================= fill: pick + setup ================= */
-const S = { q:"well", cls:"", name:"", tp:"start", gender:"m", mode:"touch", dwell:"1.5", scan:"2.5", voice:true, cvi:false, yesSide:"right", filler:ss.get("sm_filler"),
+const S = { q:"me", scale:"2", scaleFor:"", cls:"", name:"", tp:"start", gender:"m", mode:"touch", dwell:"1.5", scan:"2.5", voice:true, cvi:false, yesSide:"right", filler:ss.get("sm_filler"),
   calExp:{cal1:"",cal2:""}, ans:{}, obs:{}, verify:{}, resp:[], und:"", notes:"" };
 const txt = it => S.gender==="f"? it[3] : it[2];
 function renderPick(){
-  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>לכל תלמיד/ה ממלאים את <b>שני השאלונים</b>, בכל אחת משלוש התקופות. אפשר בימים שונים.</p></div><div class="qpick">
-    ${Object.entries(Q).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"שאלון 2":"שאלון 1"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
+  $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>לכל תלמיד/ה ממלאים את <b>״זה אני״</b> בכל אחת משלוש התקופות. ״רווחה והשתתפות״ הוא תוספת לבחירה.</p></div><div class="qpick">
+    ${["me","well"].map(k=>[k,Q[k]]).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"שאלון התלמיד":"תוספת לבחירה"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
   document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ S.q=b.dataset.q; renderSetup(); });
 }
 async function renderSetup(msg){
@@ -555,6 +564,8 @@ async function renderSetup(msg){
   if(S.name){ loading("טוען את התמונות של התלמיד/ה…"); try{ await loadPhotos(S.cls,S.name); }catch(e){} }
   if(!RES.length){ try{ await loadResults(); }catch(e){} }
   const filled = new Set(RES.filter(r=>r.q===S.q && r.cls===S.cls && r.tp===S.tp).map(r=>nk(r.name)));
+  const prevMe = RES.find(r=>r.q==="me" && r.cls===S.cls && nk(r.name)===nk(S.name));
+  const skey = S.cls+"|"+S.name; if(S.scaleFor!==skey){ S.scale = prevMe?.scale || "2"; S.scaleFor = skey; }
   const r=(n,v,l,c)=>`<label><input type="radio" name="${n}" value="${v}" ${c===v?"checked":""}> ${l}</label>`;
   const needs=[...new Set(q.items.map(i=>i[5]).filter(Boolean))];
   const have=needs.filter(s=>photoFor(s,S.cls,S.name));
@@ -575,6 +586,8 @@ async function renderSetup(msg){
     <div class="field" id="dwell-f" ${S.mode==="gaze"?"":"hidden"}><span class="flabel">כמה זמן מסתכלים עד שהתשובה נבחרת</span><div class="seg">${["1","1.5","2","3"].map(v=>r("dw",v,v+" שנ׳",S.dwell)).join("")}</div><p class="hint">אם תוכנת המבט כבר לוחצת בעצמה, בוחרים ״מגע או לחיצה״.</p></div>
     <div class="field" id="scan-f" ${S.mode==="scan"?"":"hidden"}><span class="flabel">מהירות הסריקה</span><div class="seg">${["1.5","2.5","3.5","5"].map(v=>r("sc",v,v+" שנ׳",S.scan)).join("")}</div><p class="hint">המתג מוגדר כ״רווח״ או ״Enter״. אפשר גם לגעת בכל מקום במסך.</p></div>
     <div class="grid2"><label class="check"><input type="checkbox" id="s-voice" ${S.voice?"checked":""}> הקראה קולית</label><label class="check"><input type="checkbox" id="s-cvi" ${S.cvi?"checked":""}> רקע שחור (CVI)</label></div>
+    ${S.q==="me"?`<div class="field"><span class="flabel">כמה תשובות ב״אני יכול/ה״</span><div class="seg">${r("scl","2","2: כן · עוד לא",S.scale)}${r("scl","3","3: כן · קצת · עוד לא",S.scale)}</div>
+      <p class="hint">${prevMe? "נקבע לפי המילוי הקודם של התלמיד/ה. כדי להשוות לאורך השנה, משאירים כך." : "קובעים פעם אחת לכל השנה. 3 תשובות רק לתלמיד/ה שמבחין/ה ביניהן."}</p></div>`:""}
     <div class="field"><span class="flabel">איפה תופיע התשובה ״כן״</span><div class="seg">${r("ys","right","מימין",S.yesSide)}${r("ys","left","משמאל",S.yesSide)}</div></div>
   </section>
   ${S.q==="well"?`<section class="card"><h2>שאלות חימום: מה התשובה הצפויה?</h2><p class="hint">דברים שהצוות כבר יודע על התלמיד/ה. לא נספרות בתוצאות.</p>
@@ -582,7 +595,7 @@ async function renderSetup(msg){
   <div class="actions"><button class="btn" type="button" id="go" ${!S.name?"disabled":""}>התחלת השאלון</button><button class="btn ghost" type="button" id="back">חזרה</button></div></div>`;
   const sync=()=>{ if($("#s-c")){ S.cls=$("#s-c").value; S.name=$("#s-n").value; S.tp=$("#s-tp").value; S.gender=document.querySelector("[name=g]:checked").value; S.filler=$("#s-fill").value.trim(); ss.set("sm_filler",S.filler); }
     S.mode=document.querySelector("[name=mode]:checked").value; S.dwell=document.querySelector("[name=dw]:checked")?.value||S.dwell; S.scan=document.querySelector("[name=sc]:checked")?.value||S.scan;
-    S.voice=$("#s-voice").checked; S.cvi=$("#s-cvi").checked; S.yesSide=document.querySelector("[name=ys]:checked").value;
+    S.voice=$("#s-voice").checked; S.cvi=$("#s-cvi").checked; S.yesSide=document.querySelector("[name=ys]:checked").value; S.scale=document.querySelector("[name=scl]:checked")?.value||S.scale||"2";
     if(S.q==="well") ["cal1","cal2"].forEach(k=>S.calExp[k]=document.querySelector(`[name=ce-${k}]:checked`)?.value??""); };
   $("#app").onchange=e=>{ const id=e.target.id, nm=e.target.name;
     if(id==="s-c"){ S.cls=e.target.value; S.name=""; return renderSetup(); }
@@ -595,6 +608,7 @@ async function renderSetup(msg){
 let idx=0, scanTimer=null, scanIdx=0, lockUntil=0, dwellTimer=null, busy=false;
 const ICON_YES=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="6"/><path d="M28 52 l15 15 l30 -32" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ICON_NO=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="6"/><path d="M32 32 l36 36 M68 32 l-36 36" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>`;
+const ICON_SOME=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="6"/><path d="M28 54 q11 -14 22 0 t22 0" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>`;
 const items = () => Q[S.q].items;
 const imgOf = it => { const p=photoFor(it[5],S.cls,S.name); return p? `<img src="${p}" alt="">` : (SYM[it[4]]||""); };
 function startRun(){ const run=$("#run"); run.hidden=false; run.classList.toggle("cvi",S.cvi); document.body.style.overflow="hidden"; try{ run.requestFullscreen&&run.requestFullscreen().catch(()=>{}); }catch(e){} showItem(); }
@@ -611,9 +625,12 @@ function showItem(){
     const opts=[[1,photoFor("self",S.cls,S.name)],[0,photoFor("other",S.cls,S.name)]]; if((idx+S.name.length)%2) opts.reverse();
     pair=opts.map(([v,src])=>`<button type="button" class="ans pick" data-v="${v}" aria-label="תמונה ${v?"א":"ב"}"><span class="fill"></span><img src="${src}" alt=""></button>`).join("");
   } else {
-    const yes=`<button type="button" class="ans yes" data-v="1" aria-label="כן"><span class="fill"></span>${ICON_YES}כן</button>`;
-    const no=`<button type="button" class="ans no" data-v="0" aria-label="לא"><span class="fill"></span>${ICON_NO}לא</button>`;
-    pair = S.yesSide==="right"? yes+no : no+yes;
+    const isCan = it[6]==="can", noLab = isCan? "עוד לא" : "לא";
+    const yes=`<button type="button" class="ans yes" data-v="1" data-say="כן" aria-label="כן"><span class="fill"></span>${ICON_YES}כן</button>`;
+    const some=`<button type="button" class="ans some" data-v="0.5" data-say="קצת" aria-label="קצת"><span class="fill"></span>${ICON_SOME}קצת</button>`;
+    const no=`<button type="button" class="ans no" data-v="0" data-say="${noLab}" aria-label="${noLab}"><span class="fill"></span>${ICON_NO}${noLab}</button>`;
+    const set = isCan && S.scale==="3" ? [yes,some,no] : [yes,no];
+    pair = (S.yesSide==="right"? set : set.reverse()).join("");
   }
   const hint={touch:"נוגעים בתשובה.",gaze:`מסתכלים על התשובה ${S.dwell} שניות.`,scan:"לוחצים על המתג כשהתשובה הנכונה מוארת.",staff:"המבוגר/ת לוחץ/ת על התשובה שהתלמיד/ה הראה/תה."}[S.mode];
   $("#run").innerHTML=`<div class="rtop"><div class="dots" aria-label="שאלה ${idx+1} מתוך ${list.length}">${list.map((_,i)=>`<i class="${i<=idx?"on":""}"></i>`).join("")}</div>
@@ -635,16 +652,16 @@ function showItem(){
 function readItem(){ const it=items()[idx]; if(S.mode==="scan"){ clearInterval(scanTimer); scanTimer=null; document.querySelectorAll(".ans").forEach(b=>b.classList.remove("scan","dim")); }
   say(txt(it), ()=>{ if(S.mode==="scan" && !busy) startScan(); }); }
 function startScan(){ const btns=[...document.querySelectorAll(".ans")]; if(!btns.length) return; const pick=items()[idx][6]==="pick"; scanIdx=0;
-  const step=()=>{ btns.forEach((b,i)=>{ b.classList.toggle("scan",i===scanIdx); b.classList.toggle("dim",i!==scanIdx); }); say(pick? (scanIdx? "התמונה הזו" : "התמונה הזו") : (btns[scanIdx].dataset.v==="1"?"כן":"לא")); };
+  const step=()=>{ btns.forEach((b,i)=>{ b.classList.toggle("scan",i===scanIdx); b.classList.toggle("dim",i!==scanIdx); }); say(pick? "התמונה הזו" : (btns[scanIdx].dataset.say||"")); };
   step(); clearInterval(scanTimer); scanTimer=setInterval(()=>{ scanIdx=(scanIdx+1)%btns.length; step(); }, parseFloat(S.scan)*1000); }
 function selectScan(){ if(busy||!scanTimer||Date.now()<lockUntil) return; const b=document.querySelector(".ans.scan"); if(b) record(+b.dataset.v); }
 function record(v){
   if(busy) return; busy=true; clearInterval(scanTimer); scanTimer=null; clearTimeout(dwellTimer);
   const it=items()[idx]; S.ans[it[0]]=v;
   const pick=it[6]==="pick";
-  const label = v===null? "דילוג" : pick? "בחרת" : v===1? "כן" : "לא";
-  const ov=document.createElement("div"); ov.className="done"; ov.style.background = v===null? "#5B6584" : pick? "#2F56B0" : v===1? "var(--yes-btn)" : "var(--no-btn)";
-  ov.innerHTML=(pick||v===null? "" : v===1? ICON_YES : ICON_NO)+label; $("#run").appendChild(ov); if(v!==null) say(label);
+  const label = v===null? "דילוג" : pick? "בחרת" : v===1? "כן" : v===0.5? "קצת" : it[6]==="can"? "עוד לא" : "לא";
+  const ov=document.createElement("div"); ov.className="done"; ov.style.background = v===null? "#5B6584" : pick? "#2F56B0" : v===1? "var(--yes-btn)" : v===0.5? "#B57F00" : "var(--no-btn)";
+  ov.innerHTML=(pick||v===null? "" : v===1? ICON_YES : v===0.5? ICON_SOME : ICON_NO)+label; $("#run").appendChild(ov); if(v!==null) say(label);
   setTimeout(()=>{ idx++; showItem(); }, 1100);
 }
 document.addEventListener("keydown",e=>{ if($("#run").hidden) return; if((e.key===" "||e.key==="Enter") && S.mode==="scan"){ e.preventDefault(); selectScan(); } if(e.key==="Escape") route(); });
@@ -653,11 +670,11 @@ $("#run").addEventListener("pointerdown",e=>{ if(S.mode==="scan" && !e.target.cl
 /* ================= staff sheet + save ================= */
 function renderStaff(msg){
   const q=Q[S.q];
-  const can = S.q==="me"? q.items.filter(i=>i[1]==="can") : [];
+  const can = S.q==="me"? q.items.filter(i=>i[6]==="can") : [];
   $("#app").innerHTML=`<div class="wrap"><div class="hero"><div class="eyebrow">${q.name} · ${esc(S.name)}</div><h1 style="font-size:28px">לאיש/אשת הצוות</h1>
     <p>${S.q==="me"?"בדקו אם מה שהתלמיד/ה אמר/ה על עצמו/ה מתאים למה שאתם רואים ביום־יום.":"מה אתם רואים ביום־יום? החלק הזה הוא המדד המרכזי."}</p></div>${msg||""}
-  ${can.length?`<section class="card"><h2>האם זה נכון לפי מה שאתם רואים?</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התלמיד/ה ענה/תה</th>${VERIFY.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
-    ${can.map(it=>{ const a=S.ans[it[0]]; return `<tr><td class="d">${esc(txt(it))}<small>התשובה: ${a===1?"כן":a===0?"לא":"לא ענה/תה"}</small></td>${VERIFY.map(f=>`<td class="o"><input type="radio" name="vf-${it[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.verify[it[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>`:""}
+  ${can.length?`<section class="card"><h2>מה אתם רואים בפועל?</h2><p class="hint">ליד כל ״אני יכול/ה״: האם התלמיד/ה עושה את זה ביום־יום.</p><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התלמיד/ה ענה/תה</th>${VERIFY.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
+    ${can.map(it=>{ const a=S.ans[it[0]]; return `<tr><td class="d">${esc(txt(it))}<small>התשובה: ${a===1?"כן":a===0.5?"קצת":a===0?"עוד לא":"לא ענה/תה"}</small></td>${VERIFY.map(f=>`<td class="o"><input type="radio" name="vf-${it[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.verify[it[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>`:""}
   <section class="card"><h2>תצפית: כמה פעמים רואים את זה?</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התנהגות</th>${FREQ.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
     ${q.obs.map(o=>{ const dm=DOM[o[0].replace(/2$/,"")]; return `<tr><td class="d"><span style="color:${dm.color}">${dm.name}:</span> ${esc(o[1])}<small>${esc(o[2])}</small></td>${FREQ.map(f=>`<td class="o"><input type="radio" name="ob-${o[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.obs[o[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>
   <section class="card"><h2>איך התלמיד/ה ענה/תה?</h2><div class="seg">${RESP.map(x=>`<label><input type="checkbox" name="resp" value="${x}" ${S.resp.includes(x)?"checked":""}> ${x}</label>`).join("")}</div>
@@ -670,7 +687,7 @@ function renderStaff(msg){
     can.forEach(it=>{ S.verify[it[0]]=document.querySelector(`[name=vf-${it[0]}]:checked`)?.value||""; });
     S.resp=[...document.querySelectorAll("[name=resp]:checked")].map(x=>x.value); S.und=document.querySelector("[name=und]:checked")?.value||""; S.notes=$("#s-notes").value.trim();
     if(q.obs.some(o=>!S.obs[o[0]])) return renderStaff(`<div class="msg err">חסרה תשובה בתצפית. מסמנים תשובה בכל שורה.</div>`);
-    const doc={version:VERSION, q:S.q, className:S.cls, name:S.name, timepoint:S.tp, gender:S.gender, date:new Date().toISOString(), mode:S.mode, filler:S.filler,
+    const doc={version:VERSION, q:S.q, scale:S.q==="me"?S.scale:undefined, className:S.cls, name:S.name, timepoint:S.tp, gender:S.gender, date:new Date().toISOString(), mode:S.mode, filler:S.filler,
       calExp:{...S.calExp}, ans:{...S.ans}, obs:{...S.obs}, verify:{...S.verify}, resp:[...S.resp], und:S.und, notes:S.notes,
       wording:Object.fromEntries(q.items.map(it=>[it[0], txt(it)]))};
     $("#fin").disabled=true; $("#fin").textContent="שומר…";
@@ -684,7 +701,7 @@ function renderStaff(msg){
 /* ================= parent sheet ================= */
 let printSel="", justSaved=false;
 const ansBadge = (it,v) => it[6]==="pick"? (v===1?`<span class="sh-a y">בחר/ה בעצמו/ה ✓</span>`:v===0?`<span class="sh-a n">בחר/ה בתמונה האחרת</span>`:`<span class="sh-a u">לא נבדק</span>`)
-  : v===1?`<span class="sh-a y">כן</span>`: v===0?`<span class="sh-a n">לא</span>`: v==="na"?`<span class="sh-a u">לא נבדק</span>`:`<span class="sh-a u">לא ענה/תה</span>`;
+  : v===1?`<span class="sh-a y">כן</span>`: v===0.5?`<span class="sh-a s">קצת</span>`: v===0?`<span class="sh-a n">${it[6]==="can"?"עוד לא":"לא"}</span>`: v==="na"?`<span class="sh-a u">לא נבדק</span>`:`<span class="sh-a u">לא ענה/תה</span>`;
 function sheetHTML(r){
   const q=Q[r.q]; if(!q) return "";
   const T=it=> r.wording?.[it[0]] || (r.gender==="f"?it[3]:it[2]);
@@ -695,11 +712,13 @@ function sheetHTML(r){
   let story="";
   if(r.q==="me"){
     const idOk = r.ans.p1===1 && r.ans.y1===1 && r.ans.y2===0, idNA = r.ans.p1==="na";
-    const can=q.items.filter(i=>i[1]==="can"); const yes=can.filter(i=>r.ans[i[0]]===1).length;
-    const vmap={"1":1,"0":0}; const checked=can.filter(i=>r.verify?.[i[0]] && r.ans[i[0]]!=null && r.verify[i[0]]!=="h");
-    const match=checked.filter(i=>vmap[r.verify[i[0]]]===r.ans[i[0]]).length;
+    const can=q.items.filter(i=>i[6]==="can"); const V={"1":1,"h":0.5,"0":0};
+    const lvl=dk=>{ const v=can.filter(i=>i[1]===dk).map(i=>r.ans[i[0]]).filter(x=>typeof x==="number"); if(!v.length) return null; const m=v.reduce((a,b)=>a+b,0)/v.length; return `${DOM[dk].name}: ${m>=.75?"בטוח/ה":m>=.4?"חלקית":"עוד לא"}`; };
+    const doms=["social","learning","emotion","selfcare"].map(lvl).filter(Boolean);
+    const checked=can.filter(i=>typeof r.ans[i[0]]==="number" && r.verify?.[i[0]]);
+    const match=checked.filter(i=>Math.abs(V[r.verify[i[0]]]-r.ans[i[0]])<.01).length;
     story=`<b>מה ראינו:</b> ${idNA?"שאלות הזיהוי לא נבדקו הפעם. ":idOk?"זיהה/תה את עצמו/ה בתמונה. ":"זיהוי עצמי בתמונה עדיין בתהליך. "}
-      ענה/תה ״כן״ על ${yes} מתוך ${can.length} דברים שהוא/היא יודע/ת לעשות${checked.length?`, ו־${match} מתוך ${checked.length} תשובות תואמות את מה שהצוות רואה`:""}.
+      ${doms.length?`<b>תחושת מסוגלות:</b> ${doms.join(" · ")}. `:""}${checked.length?`${match} מתוך ${checked.length} תשובות תואמות את מה שהצוות רואה.`:""}
       ${r.obs?.pride?` גאווה כשמצליח/ה: ${fq(r.obs.pride)}.`:""}`;
   } else {
     const parts=["social","learning","emotion","indep","climate"].map(dk=>{ const os=q.obs.filter(o=>o[0].startsWith(dk)); const v=os.map(o=>+r.obs?.[o[0]]).filter(Boolean); if(!v.length) return null; const a=v.reduce((s,x)=>s+x,0)/v.length; return `${DOM[dk].name}: ${a>=2.5?"הרבה":a>=1.75?"לפעמים":"כמעט לא"}`; }).filter(Boolean);
@@ -758,11 +777,11 @@ async function renderTrack(){
     const names=ROSTER[c]||[]; let counts={}; try{ counts=await photoCounts(c); }catch(e){}
     const done=(q)=>new Set(RES.filter(r=>r.q===q&&r.cls===c&&r.tp===trTp).map(r=>nk(r.name)));
     const w=done("well"), m=done("me");
-    h+=`<section class="card"><h2>${esc(c)}</h2>${names.length?`<div class="tablewrap"><table class="obs"><thead><tr><th scope="col">תלמיד/ה</th><th scope="col">רווחה והשתתפות</th><th scope="col">זה אני</th><th scope="col">תמונות</th></tr></thead><tbody>
-      ${names.map(n=>`<tr><td class="d">${esc(n)}</td><td>${w.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${m.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${counts[n]||0}/${SLOTS.length}</td></tr>`).join("")}
+    h+=`<section class="card"><h2>${esc(c)}</h2>${names.length?`<div class="tablewrap"><table class="obs"><thead><tr><th scope="col">תלמיד/ה</th><th scope="col">זה אני</th><th scope="col">רווחה (לבחירה)</th><th scope="col">תמונות</th></tr></thead><tbody>
+      ${names.map(n=>`<tr><td class="d">${esc(n)}</td><td>${m.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">חסר</span>'}</td><td>${w.has(nk(n))?'<span class="pill y">✓ מולא</span>':'<span class="pill u">—</span>'}</td><td>${counts[n]||0}/${SLOTS.length}</td></tr>`).join("")}
       </tbody></table></div>`:`<p class="hint">אין תלמידים בכיתה הזו.</p>`}</section>`;
   }
-  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">מעקב מילוי</h1><p>ממלאים את שני השאלונים לכל תלמיד/ה. את רשימת הכיתות והתלמידים עורכים <a href="index.html#track">באפליקציה הראשית</a>.</p></div>
+  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">מעקב מילוי</h1><p>״זה אני״ לכל תלמיד/ה בכל תקופה. ״רווחה״ לפי בחירה. את רשימת הכיתות והתלמידים עורכים <a href="index.html#track">באפליקציה הראשית</a>.</p></div>
     <section class="card"><div class="field" style="max-width:280px"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(k=>`<option value="${k}" ${k===trTp?"selected":""}>${TPN[k]}</option>`).join("")}</select></div></section>
     ${cl.length?h:`<div class="empty">עוד אין כיתות. מוסיפים באפליקציה הראשית.</div>`}</div>`;
   $("#tr-tp").onchange=e=>{ trTp=e.target.value; renderTrack(); };
@@ -827,14 +846,16 @@ async function exportExcel(){
     const font={name:"Arial",size:10};
     const yn=v=> v===1?"כן": v===0?"לא": v==="na"?"": "לא ענה";
     const ex=v=> v==="1"?"כן": v==="0"?"לא": "";
-    const vf=v=> v==="1"?"כן": v==="h"?"חלקית": v==="0"?"לא": "";
+    const vf=v=> v==="1"?"רוב הזמן": v==="h"?"לפעמים": v==="0"?"עדיין לא": "";
+    const can3=v=> v===1?"כן": v===0.5?"קצת": v===0?"עוד לא": v==="na"?"": "לא ענה";
+    const ME_CAN=["me_s1","me_s2","me_l1","me_l2","me_e1","me_e2","me_i1","me_i2"];
     const modeName=m=> ({touch:"מגע או לחיצה",gaze:"מבט",scan:"מתג",staff:"תיווך מבוגר/ת"})[m]||"";
     const sortRes=a=>[...a].sort((x,y)=>(x.cls||"").localeCompare(y.cls||"","he")||(x.name||"").localeCompare(y.name||"","he")||TP_ORDER.indexOf(x.tp)-TP_ORDER.indexOf(y.tp));
     const put=(ws,row,vals,ncols)=>{ for(let c=1;c<=ncols;c++){ const cell=ws.getCell(row,c); cell.value = vals[c-1]??null; cell.font=font; } };
     const well=sortRes(RES.filter(r=>r.q==="well")), me=sortRes(RES.filter(r=>r.q==="me"));
     if(well.length>200||me.length>200) out.innerHTML=`<div class="msg err">יש יותר מ־200 מילויים בשאלון אחד. בקובץ נכנסו 200 הראשונים.</div>`;
     const W=wb.getWorksheet("רווחה - קליטה"), M=wb.getWorksheet("זה אני - קליטה");
-    put(W,5,[],30); put(M,5,[],25);
+    put(W,5,[],30); put(M,5,[],31);
     well.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, o=r.obs||{};
       put(W,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         ex(r.calExp?.cal1),yn(a.cal1),ex(r.calExp?.cal2),yn(a.cal2),
@@ -844,8 +865,8 @@ async function exportExcel(){
     me.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, v=r.verify||{};
       put(M,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         a.p1===1?"בחר/ה בעצמו/ה":a.p1===0?"בחר/ה באחר/ת":"לא נבדק", yn(a.y1), yn(a.y2),
-        ...["a1","a2","a3","a4","a5"].map(k=>yn(a[k])), ...["a1","a2","a3","a4","a5"].map(k=>vf(v[k])),
-        yn(a.w1),yn(a.w2),yn(a.k1), r.obs?.pride?Number(r.obs.pride):null, r.notes||""],25); });
+        ...ME_CAN.map(k=>can3(a[k])), ...ME_CAN.map(k=>vf(v[k])),
+        yn(a.me_w1), yn(a.me_k1), r.obs?.pride?Number(r.obs.pride):null, Number(r.scale||2), r.notes||""],31); });
     const uniq=a=>[...new Map(a.map(r=>[nk(r.name),r.name])).values()].sort((x,y)=>x.localeCompare(y,"he"));
     const fillCol=(ws,vals,max)=>{ for(let i=0;i<max;i++){ const c=ws.getCell(5+i,1); c.value=vals[i]??null; c.font=font; } };
     fillCol(wb.getWorksheet("רווחה - מעקב"), uniq(well), 200);
