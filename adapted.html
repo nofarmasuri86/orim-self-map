@@ -192,6 +192,13 @@ input[type=password]{font:inherit;color:var(--ink);background:var(--bg);border:1
 .topbar a,.brand a{color:var(--accent)}
 .obs input[type=text]{min-width:180px}
 .pill.y{background:var(--yes-soft);color:var(--yes-btn)}
+.aguide{background:#241A45;color:#fff;border-radius:18px;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.aguide h2{font-size:1.15rem;margin:0;color:#fff}
+.aguide ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;counter-reset:g}
+.aguide li{counter-increment:g;display:flex;gap:10px;align-items:flex-start;line-height:1.4;color:#E4DFF4}
+.aguide li b{color:#fff}
+.aguide li::before{content:counter(g);flex:none;width:24px;height:24px;border-radius:50%;background:#FFC93C;color:#241A45;font-weight:800;font-size:.85rem;line-height:24px;text-align:center}
+@media (max-width:700px){.aguide ol{grid-template-columns:minmax(0,1fr)}}
 </style></head><body>
 <div id="top"></div><div id="app"></div><div id="run" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -577,6 +584,11 @@ async function renderSetup(msg){
   const have=needs.filter(s=>photoFor(s,S.cls,S.name));
   const missingReq = S.q==="me" && S.name && (!photoFor("self",S.cls,S.name) || !photoFor("other",S.cls,S.name));
   $("#app").innerHTML = `<div class="wrap"><div class="hero"><div class="eyebrow">${q.name}</div><h1 style="font-size:28px">הכנה למילוי</h1></div>${msg||""}
+  <section class="aguide" aria-label="הנחיות למילוי"><h2>🧑‍🏫 לפני שמתחילים</h2><ol>
+    <li><span><b>מסך בגובה העיניים</b>, בתנוחה נוחה ובמקום שקט.</span></li>
+    <li><span>ההיגד <b>מוקרא כפי שהוא</b>. מחכים בסבלנות, בלי לרמוז.</span></li>
+    <li><span><b>כל בחירה היא תשובה</b>, כמו לחיצה בטאצ׳צ׳אט. אין תגובה? ״לא ענה/תה״.</span></li>
+    <li><span>שתי <b>שאלות הבדיקה</b> בהתחלה לא נספרות. מסמנים למטה מה התשובה הצפויה.</span></li></ol></section>
   <section class="card"><h2>מי ממלא/ת?</h2>
     ${!cls.length?`<div class="empty">עוד אין כיתות. מוסיפים באפליקציה הראשית, בלשונית <a href="index.html#track">״מעקב מילוי״</a>.</div>`:`<div class="grid2">
       <div class="field"><label for="s-c">כיתה</label><select id="s-c">${cls.map(c=>`<option ${c===S.cls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>

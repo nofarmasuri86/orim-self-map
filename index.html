@@ -52,6 +52,24 @@ button,input,select,textarea{font:inherit;color:inherit}
 .banner h2{font-size:2rem;line-height:1.2;font-weight:700}
 .banner .hl{background:linear-gradient(transparent 52%,color-mix(in srgb,var(--bi) 26%,transparent) 52%);padding:0 8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .legend{display:inline-block;background:var(--idea-band);border-radius:12px;padding:4px 16px;font-family:var(--font-display);font-weight:700;font-size:1.15rem}
+/* fill instructions: card at the top + reminder bar that stays while scrolling */
+.guide{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:14px}
+.guide .gs{background:color-mix(in srgb,var(--gb) 55%,#fff);border:2px solid var(--gb);border-radius:20px;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.guide .gs h3,.guide .ga h3{font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.guide .gs p{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:1.35}
+.guide .gs small{font-size:1rem;color:var(--ink);font-weight:600}
+.guide .ga{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.guide ol{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:g}
+.guide li{counter-increment:g;display:flex;gap:10px;align-items:flex-start;font-size:1rem;line-height:1.4}
+.guide li::before{content:counter(g);flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font:800 .85rem/26px var(--font-display);text-align:center}
+.guide[data-kind="high"]{--gb:var(--social-band)}.guide[data-kind="visual"]{--gb:var(--teal-band)}.guide[data-kind="staff"]{--gb:var(--staff-band)}
+.remind{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;justify-content:space-between;background:var(--ink);color:#fff;border-radius:0 0 16px 16px;padding:8px 16px;box-shadow:0 6px 16px rgba(30,42,79,.18)}
+.remind .rs{display:flex;flex-wrap:wrap;gap:6px}
+.remind .rs span{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:999px;padding:3px 10px 3px 6px;font-weight:700;font-size:.9rem}
+.remind .rs svg{width:22px;height:22px}
+.remind .rt{font-weight:600;font-size:.92rem;color:#E3E8F4}
+.remind .rp{font-weight:800;font-size:.92rem;background:#fff;color:var(--ink);border-radius:999px;padding:3px 12px}
+@media (max-width:760px){.guide{grid-template-columns:minmax(0,1fr)}.guide .gs p{font-size:1.1rem}.remind .rt{display:none}.remind{padding:6px 10px;gap:6px;flex-wrap:nowrap}.remind .rs{gap:4px}.remind .rs span{font-size:.72rem;padding:2px 7px 2px 4px;gap:4px}.remind .rs svg{width:16px;height:16px}}
 .banner .binst{margin:0;color:var(--muted);font-weight:600;font-size:.95rem}
 .deco{position:absolute;pointer-events:none;display:block;line-height:0}
 .deco svg{width:100%;height:auto;display:block}
@@ -689,6 +707,20 @@ function rowsVis(ids, texts, icons, scale){
 const colHeads = (scale, tinted) => scale.map(s=>`<div class="colh ${tinted? s.t : ""}">${pic(s.ic)}<span>${s.l}</span></div>`).join("");
 const GOAL_TITLE = `<span class="tg">${ILL.target}</span>השנה הייתי רוצה לעבוד על...`;
 
+const GUIDE = {
+  high:{who:"לתלמיד/ה", say:"קוראים כל משפט ובוחרים מה הכי מתאים לך <u>עכשיו</u>.", sub:"אין תשובות נכונות או לא נכונות. תשובה אחת בכל שורה.",
+    tips:["מקריאים כל משפט כפי שהוא כתוב, בלי להסביר ובלי לרמוז על תשובה.","כל בחירה היא תשובה. לא מתקנים ולא שואלים ״בטוח/ה?״.","שתי ״שאלות בדיקה״ לא נספרות בציון. הן מראות אם השאלות ברורות.","עייפות או קושי? עוצרים וממשיכים באותו שבוע. בסוף: ״שמירת השאלון״."]},
+  visual:{who:"לתלמיד/ה", say:"שומעים את המשפט ולוחצים על התמונה שמתאימה לך.", sub:"👍 מצליח/ה · 😐 לפעמים · 🛟 צריך/ה עזרה. אין תשובה נכונה.",
+    tips:["מקריאים כל משפט כפי שהוא, ומצביעים על שלוש התמונות בלי לרמוז.","כל בחירה היא תשובה, כמו לחיצה בטאצ׳צ׳אט. לא מתקנים ולא בוחרים במקומו/ה.","שתי ״שאלות בדיקה״ לא נספרות בציון. הן מראות אם השאלות ברורות.","עייפות או קושי? עוצרים וממשיכים באותו שבוע. בסוף: ״שמירת השאלון״."]},
+  staff:{who:"לצוות", say:"מסמנים מה <u>רואים</u> אצל התלמיד/ה בתקופה האחרונה.", sub:"רוב הזמן · לפעמים · נדרש סיוע.",
+    tips:["ממלאים לבד, בלי לראות קודם את תשובות התלמיד/ה.","מסמנים לפי היום־יום בתקופה האחרונה, לא לפי יום אחד.","בוחרים את אותו מועד הערכה כמו בשאלון של התלמיד/ה.","בסוף: ״שמירת השאלון״."]}
+};
+function guideHTML(type){
+  const g=GUIDE[type];
+  return `<section class="guide" data-kind="${type}" aria-label="הנחיות למילוי">
+    <div class="gs"><h3>🗣️ ${g.who}</h3><p>${g.say}</p><small>${g.sub}</small></div>
+    <div class="ga"><h3>🧑‍🏫 ${type==="staff"?"איך ממלאים":"למבוגר/ת המלווה"}</h3><ol>${g.tips.map(t=>`<li>${t}</li>`).join("")}</ol></div></section>`;
+}
 function renderForm(type){
   state = newState(type);
   const vis = type==="visual", staff = type==="staff";
@@ -702,7 +734,9 @@ function renderForm(type){
   <header class="banner" data-kind="${type}">
     <span class="deco d-star">${ILL.star}</span><span class="deco d-rays1">${ILL.rays("#FFC93C")}</span><span class="deco d-cloud1">${ILL.cloud}</span><span class="deco d-squig">${ILL.squiggle}</span>
     <span class="deco d-mount">${ILL.mountain}</span><span class="deco d-pencil">${ILL.pencil}</span><span class="deco d-rays2">${ILL.rays("#3D8BE0")}</span><span class="deco d-spark">${ILL.sparkle("#9B6BDF")}</span>
-    <h2><span class="hl">${B[0]}</span></h2><div class="legend">${B[1]}</div><p class="binst">${B[2]}</p></header>
+    <h2><span class="hl">${B[0]}</span></h2><div class="legend">${B[1]}</div></header>
+  ${guideHTML(type)}
+  <div class="remind" aria-label="תזכורת למילוי"><div class="rs">${scale.map(x=>`<span>${pic(x.ic)}${x.l}</span>`).join("")}</div><span class="rt">${staff?"לפי מה שרואים ביום־יום":"אין תשובה נכונה · תשובה אחת בכל שורה"}</span><span class="rp" id="progress2"></span></div>
   <section class="meta" aria-label="פרטי המילוי">
     <div class="field"><label for="f-student">שם התלמיד/ה <span class="req">*</span></label><select id="f-student" hidden></select><input id="f-name" list="names" autocomplete="off" placeholder="שם פרטי ומשפחה" aria-label="שם התלמיד/ה"></div>
     <div class="field"><label for="f-class">כיתה <span class="req">*</span></label>
@@ -809,6 +843,7 @@ function updateProgress(){
   const total = state.type==="staff"? 14 : 18;
   const n = Object.keys(state.answers).length;
   const p = $("#progress"); if(p) p.textContent = `${n} מתוך ${total} שאלות נענו`;
+  const p2 = $("#progress2"); if(p2) p2.textContent = `${n}/${total}`;
 }
 
 document.addEventListener("click", e=>{
