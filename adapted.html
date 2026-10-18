@@ -217,7 +217,7 @@ const SLOTS = [
   {k:"act_calm", t:"רגוע/ה", d:"נרגע/ת עם מוזיקה, חיבוק או פינה שקטה. רגשות: ״אני יכול/ה להירגע״.", sym:"calmwc"},
   {k:"act_choose", t:"בוחר/ת בין שני דברים", d:"מבט או הצבעה על אחת משתי אפשרויות. עצמאות: ״אני יכול/ה לבחור״.", sym:"choose"},
   {k:"act_help", t:"משתתף/ת באוכל או בלבוש", d:"מחזיק/ה כוס, מושיט/ה יד לשרוול. עצמאות: ״אני יכול/ה לעזור באוכל או בלבוש״.", sym:"helpself"},
-  {k:"work", t:"עבודה שהתלמיד/ה יצר/ה", d:"ציור, יצירה או תוצר. גאווה: ״את זה אני עשיתי״.", sym:"artwork"},
+  {k:"work", t:"עבודה שהתלמיד/ה יצר/ה", d:"ציור, יצירה או תוצר. גאווה: ״את זה אני עשיתי״ ו״עשיתי משהו יפה״.", sym:"artwork"},
 ];
 const CLASS_SLOT = {t:"תמונה של הכיתה", d:"החדר או הקבוצה, משותפת לכל הכיתה. לשאלה ״זו הכיתה שלי״.", sym:"myclass"};
 
@@ -233,6 +233,7 @@ const Q = {
       ["l1","learning","אני אוהב את הפעילויות בכיתה.","אני אוהבת את הפעילויות בכיתה.","activity",null,"yn"],
       ["l2","learning","אני אוהב לשחק ולנסות דברים חדשים.","אני אוהבת לשחק ולנסות דברים חדשים.","switchpress",null,"yn"],
       ["e1","emotion","רגוע ונעים לי בכיתה.","רגוע ונעים לי בכיתה.","calm",null,"yn"],
+      ["e2","emotion","אני שמח בבית הספר.","אני שמחה בבית הספר.","goodschool",null,"yn"],
       ["i1","indep","אני אוהב לבחור בעצמי.","אני אוהבת לבחור בעצמי.","choose",null,"yn"],
       ["i2","indep","אני אוהב לעזור ולהשתתף.","אני אוהבת לעזור ולהשתתף.","helpself",null,"yn"],
       ["c1","climate","המבוגרים פה נחמדים אליי.","המבוגרים פה נחמדים אליי.","niceadults",null,"yn"],
@@ -264,6 +265,7 @@ const Q = {
       ["me_i1","selfcare","אני יכול לבחור מה אני רוצה.","אני יכולה לבחור מה אני רוצה.","choose","act_choose","can"],
       ["me_i2","selfcare","אני יכול לעזור באוכל או בלבוש.","אני יכולה לעזור באוכל או בלבוש.","helpself","act_help","can"],
       ["me_w1","pride","את זה אני עשיתי.","את זה אני עשיתי.","artwork","work","yn"],
+      ["me_w2","pride","עשיתי משהו יפה.","עשיתי משהו יפה.","pretty","work","yn"],
       ["me_k1","pride","זו הכיתה שלי.","זו הכיתה שלי.","myclass","class","yn"],
     ],
     obs:[["pride","מראה גאווה כשמצליח/ה","חיוך, מבט למבוגר/ת, קול"]]},
@@ -579,7 +581,7 @@ async function renderSetup(msg){
       <div class="field"><span class="flabel">נוסח השאלות</span><div class="seg">${r("g","m","בן",S.gender)}${r("g","f","בת",S.gender)}</div></div>
       <div class="field"><label for="s-fill">שם איש/אשת הצוות</label><input type="text" id="s-fill" value="${esc(S.filler)}" placeholder="מי מלווה את המילוי"></div></div>
     <div class="progress"><span>${needs.length? `תמונות לשאלון הזה: ${have.length} מתוך ${needs.length}. שאלה בלי תמונה תוצג עם סמל.` : "השאלון הזה עובד עם סמלים. לא צריך תמונות."}</span></div>
-    ${missingReq?`<div class="msg err">חסרות תמונת הפנים או התמונה להשוואה. בלעדיהן שאלות הזיהוי יידלגו. מעלים בלשונית <b>״תמונות לתלמידים״</b>.</div>`:""}`}
+    ${missingReq?`<div class="msg err">חסרות תמונת הפנים או התמונה להשוואה, ולכן 3 שאלות הזיהוי יידלגו: זיהוי עצמי אפשר לבדוק רק מול תמונה אמיתית. שאר השאלות יוצגו עם סמלי תת״ח. מעלים בלשונית <b>״תמונות לתלמידים״</b>.</div>`:""}`}
   </section>
   <section class="card"><h2>איך התלמיד/ה עונה?</h2>
     <div class="modes">${MODES.map(m=>`<label class="mode"><input type="radio" name="mode" value="${m[0]}" ${S.mode===m[0]?"checked":""}><span><b>${m[1]}</b><small>${m[2]}</small></span></label>`).join("")}</div>
@@ -685,7 +687,7 @@ function renderStaff(msg){
     can.forEach(it=>{ S.verify[it[0]]=document.querySelector(`[name=vf-${it[0]}]:checked`)?.value||""; });
     S.resp=[...document.querySelectorAll("[name=resp]:checked")].map(x=>x.value); S.und=document.querySelector("[name=und]:checked")?.value||""; S.notes=$("#s-notes").value.trim();
     if(q.obs.some(o=>!S.obs[o[0]])) return renderStaff(`<div class="msg err">חסרה תשובה בתצפית. מסמנים תשובה בכל שורה.</div>`);
-    const doc={version:VERSION, q:S.q, className:S.cls, name:S.name, timepoint:S.tp, gender:S.gender, date:new Date().toISOString(), mode:S.mode, filler:S.filler,
+    const doc={version:VERSION, q:S.q, shown:Object.fromEntries(q.items.map(it=>[it[0], photoFor(it[5],S.cls,S.name)?"photo":"symbol"])), className:S.cls, name:S.name, timepoint:S.tp, gender:S.gender, date:new Date().toISOString(), mode:S.mode, filler:S.filler,
       calExp:{...S.calExp}, ans:{...S.ans}, obs:{...S.obs}, verify:{...S.verify}, resp:[...S.resp], und:S.und, notes:S.notes,
       wording:Object.fromEntries(q.items.map(it=>[it[0], txt(it)]))};
     $("#fin").disabled=true; $("#fin").textContent="שומר…";
@@ -853,18 +855,18 @@ async function exportExcel(){
     const well=sortRes(RES.filter(r=>r.q==="well")), me=sortRes(RES.filter(r=>r.q==="me"));
     if(well.length>200||me.length>200) out.innerHTML=`<div class="msg err">יש יותר מ־200 מילויים בשאלון אחד. בקובץ נכנסו 200 הראשונים.</div>`;
     const W=wb.getWorksheet("רווחה - קליטה"), M=wb.getWorksheet("זה אני - קליטה");
-    put(W,5,[],30); put(M,5,[],31);
+    put(W,5,[],31); put(M,5,[],31);
     well.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, o=r.obs||{};
       put(W,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         ex(r.calExp?.cal1),yn(a.cal1),ex(r.calExp?.cal2),yn(a.cal2),
-        ...["s1","s2","l1","l2","e1","i1","i2","c1","c2"].map(k=>yn(a[k])),
+        ...["s1","s2","l1","l2","e1","e2","i1","i2","c1","c2"].map(k=>yn(a[k])),
         ...["social","social2","learning","learning2","emotion","emotion2","indep","indep2","climate"].map(k=>o[k]?Number(o[k]):null),
-        r.notes||""],30); });
+        r.notes||""],31); });
     me.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, v=r.verify||{};
       put(M,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         a.p1===1?"בחר/ה בעצמו/ה":a.p1===0?"בחר/ה באחר/ת":"לא נבדק", yn(a.y1), yn(a.y2),
         ...ME_CAN.map(k=>can3(a[k])), ...ME_CAN.map(k=>vf(v[k])),
-        yn(a.me_w1), yn(a.me_k1), r.obs?.pride?Number(r.obs.pride):null, Number(r.scale||2), r.notes||""],31); });
+        yn(a.me_w1), yn(a.me_w2), yn(a.me_k1), r.obs?.pride?Number(r.obs.pride):null, r.notes||""],31); });
     const uniq=a=>[...new Map(a.map(r=>[nk(r.name),r.name])).values()].sort((x,y)=>x.localeCompare(y,"he"));
     const fillCol=(ws,vals,max)=>{ for(let i=0;i<max;i++){ const c=ws.getCell(5+i,1); c.value=vals[i]??null; c.font=font; } };
     fillCol(wb.getWorksheet("רווחה - מעקב"), uniq(well), 200);
