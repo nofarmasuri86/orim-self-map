@@ -253,6 +253,8 @@ const Q = {
   me:{ name:"זה אני", short:"זה אני", sym:"me",
     desc:"איך אני רואה את עצמי? ״אני יכול/ה״ בארבעה תחומים, זיהוי עצמי וגאווה. עם תמונות של התלמיד/ה.",
     items:[
+      ["cal1","cal","אני אוהב לשמוע סיפור.","אני אוהבת לשמוע סיפור.","story",null,"yn"],
+      ["cal2","cal","אני אוהב רעש חזק.","אני אוהבת רעש חזק.","loud",null,"yn"],
       ["p1","id","איפה אני?","איפה אני?","me","self","pick",1],
       ["y1","id","זה אני?","זה אני?","me","self","yn",1],
       ["y2","id","זה אני?","זה אני?","otherkid","other","yn",0],
@@ -376,6 +378,8 @@ const SYM = (()=>{
   const star=(x,y,r=8,c="#FFD34D")=>{ let d=""; for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*.45:r; d+=(i?"L":"M")+(x+rr*Math.cos(a)).toFixed(1)+" "+(y+rr*Math.sin(a)).toFixed(1); } return `<path d="${d}Z" fill="${c}" ${st}/>`; };
   const cup=(x,y)=>`<path d="M${x} ${y} h14 l-2 16 h-10Z" fill="#9FDCE6" ${st}/><path d="M${x+14} ${y+4} q6 1 0 8" fill="none" ${st}/>`;
   S.music = svg(`${wc(44,94,.95,{shirt:"#4A86E8"})}${note(70,30)}${note(84,52,"#E5484D")}${note(22,20,"#2E9E57")}`);
+  S.story = svg(`${wc(36,94,.95,{shirt:"#2E9E57"})}${book(56,22,34,"#E5484D")}`);
+  S.loud = svg(`${wc(32,94,.95,{shirt:"#F6A43A"})}<path d="M58 34 h8 l12 -10 v40 l-12 -10 h-8z" fill="#5B6584" ${st}/><path d="M84 30 q6 14 0 28 M90 22 q10 22 0 44" fill="none" stroke="#E5484D" stroke-width="3.6" stroke-linecap="round"/>`);
   S.bubbles = svg(`${wc(40,94,.95,{shirt:"#F6A43A"})}${[[70,24,10],[86,42,7],[64,50,6],[82,14,5],[56,20,4]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#CFEFFF" stroke="#4A86E8" stroke-width="2"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.25}" fill="#fff"/>`).join("")}`);
   S.withkids = svg(`<circle cx="50" cy="58" r="40" fill="#E3EEFF" stroke="#9DB9E8" stroke-width="2" stroke-dasharray="4 4"/>${person(18,90,.72,{shirt:"#F6A43A",r:"side"})}${person(82,90,.72,{shirt:"#2E9E57",l:"side",hair:"#2b2b2b"})}${wc(50,94,.82,{shirt:"#4A86E8",l:"side",r:"side"})}`);
   S.talktome = svg(`${person(28,94,1.12,{hair:"#6B4A2B",r:"fwd"})}${wc(72,94,.8,{shirt:"#4A86E8"})}${bubble(40,4,34,20,"left")}<path d="M47 12 h20 M47 18 h12" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round"/>${heart(84,30,.55)}`);
@@ -559,7 +563,7 @@ const txt = it => S.gender==="f"? it[3] : it[2];
 function renderPick(){
   $("#app").innerHTML = `<div class="wrap"><div class="hero"><h1 style="font-size:28px">איזה שאלון ממלאים?</h1><p>לכל תלמיד/ה ממלאים את <b>״זה אני״</b> בכל אחת משלוש התקופות. ״רווחה והשתתפות״ הוא תוספת לבחירה.</p></div><div class="qpick">
     ${["me","well"].map(k=>[k,Q[k]]).map(([k,q])=>`<button class="qcard" type="button" data-q="${k}"><span class="ic">${SYM[q.sym]}</span><span><span class="badge">${k==="me"?"שאלון התלמיד":"תוספת לבחירה"}</span><h2>${q.name}</h2><p>${q.desc}</p></span></button>`).join("")}</div></div>`;
-  document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ S.q=b.dataset.q; renderSetup(); });
+  document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ if(S.q!==b.dataset.q) S.calExp={cal1:"",cal2:""}; S.q=b.dataset.q; renderSetup(); });
 }
 async function renderSetup(msg){
   const q=Q[S.q], cls=classes(); if(!cls.includes(S.cls)) S.cls=cls[0]||""; const names=ROSTER[S.cls]||[]; if(!names.includes(S.name)) S.name=names[0]||"";
@@ -590,13 +594,13 @@ async function renderSetup(msg){
     <div class="grid2"><label class="check"><input type="checkbox" id="s-voice" ${S.voice?"checked":""}> הקראה קולית</label><label class="check"><input type="checkbox" id="s-cvi" ${S.cvi?"checked":""}> רקע שחור (CVI)</label></div>
     <div class="field"><span class="flabel">איפה תופיע התשובה ״כן״</span><div class="seg">${r("ys","right","מימין",S.yesSide)}${r("ys","left","משמאל",S.yesSide)}</div></div>
   </section>
-  ${S.q==="well"?`<section class="card"><h2>שאלות חימום: מה התשובה הצפויה?</h2><p class="hint">דברים שהצוות כבר יודע על התלמיד/ה. לא נספרות בתוצאות.</p>
-    ${q.items.slice(0,2).map(it=>`<div class="calrow"><span class="q">${esc(txt(it))}</span><div class="seg">${r("ce-"+it[0],"1","כן",S.calExp[it[0]])}${r("ce-"+it[0],"0","לא",S.calExp[it[0]])}${r("ce-"+it[0],"","לא ידוע",S.calExp[it[0]])}</div></div>`).join("")}</section>`:""}
+  <section class="card"><h2>שתי שאלות בדיקה: מה התשובה הצפויה?</h2><p class="hint">דברים שהצוות כבר יודע על התלמיד/ה. הן בודקות שה״כן״ וה״לא״ של התלמיד/ה אמינים, ולא נספרות בתוצאות. כדאי שלפחות אחת מהן תהיה ״לא״, כדי לזהות ״כן״ על הכול.</p>
+    ${q.items.filter(i=>i[1]==="cal").map(it=>`<div class="calrow"><span class="q">${esc(txt(it))}</span><div class="seg">${r("ce-"+it[0],"1","כן",S.calExp[it[0]])}${r("ce-"+it[0],"0","לא",S.calExp[it[0]])}${r("ce-"+it[0],"","לא ידוע",S.calExp[it[0]])}</div></div>`).join("")}</section>
   <div class="actions"><button class="btn" type="button" id="go" ${!S.name?"disabled":""}>התחלת השאלון</button><button class="btn ghost" type="button" id="back">חזרה</button></div></div>`;
   const sync=()=>{ if($("#s-c")){ S.cls=$("#s-c").value; S.name=$("#s-n").value; S.tp=$("#s-tp").value; S.gender=document.querySelector("[name=g]:checked").value; S.filler=$("#s-fill").value.trim(); ss.set("sm_filler",S.filler); }
     S.mode=document.querySelector("[name=mode]:checked").value; S.dwell=document.querySelector("[name=dw]:checked")?.value||S.dwell; S.scan=document.querySelector("[name=sc]:checked")?.value||S.scan;
     S.voice=$("#s-voice").checked; S.cvi=$("#s-cvi").checked; S.yesSide=document.querySelector("[name=ys]:checked").value; S.scale=document.querySelector("[name=scl]:checked")?.value||S.scale||"2";
-    if(S.q==="well") ["cal1","cal2"].forEach(k=>S.calExp[k]=document.querySelector(`[name=ce-${k}]:checked`)?.value??""); };
+    ["cal1","cal2"].forEach(k=>S.calExp[k]=document.querySelector(`[name=ce-${k}]:checked`)?.value??""); };
   $("#app").onchange=e=>{ const id=e.target.id, nm=e.target.name;
     if(id==="s-c"){ S.cls=e.target.value; S.name=""; return renderSetup(); }
     sync(); if(id==="s-n" || id==="s-tp" || nm==="g") return renderSetup();
@@ -668,11 +672,16 @@ document.addEventListener("keydown",e=>{ if($("#run").hidden) return; if((e.key=
 $("#run").addEventListener("pointerdown",e=>{ if(S.mode==="scan" && !e.target.closest(".staffbar")){ e.preventDefault(); selectScan(); } });
 
 /* ================= staff sheet + save ================= */
+function calSummary(exp,ans){
+  const k=["cal1","cal2"].filter(x=>exp?.[x]==="1"||exp?.[x]==="0"); if(!k.length) return "";
+  const ok=k.filter(x=>ans?.[x]===+exp[x]).length;
+  return ok===k.length? `<b>שאלות הבדיקה: ${ok} מתוך ${k.length} כמצופה.</b>` : `<b style="color:#9B1C24">שאלות הבדיקה: ${ok} מתוך ${k.length} כמצופה. כדאי לפרש את התשובות בזהירות.</b>`;
+}
 function renderStaff(msg){
   const q=Q[S.q];
   const can = S.q==="me"? q.items.filter(i=>i[6]==="can") : [];
   $("#app").innerHTML=`<div class="wrap"><div class="hero"><div class="eyebrow">${q.name} · ${esc(S.name)}</div><h1 style="font-size:28px">לאיש/אשת הצוות</h1>
-    <p>${S.q==="me"?"בדקו אם מה שהתלמיד/ה אמר/ה על עצמו/ה מתאים למה שאתם רואים ביום־יום.":"מה אתם רואים ביום־יום? החלק הזה הוא המדד המרכזי."}</p></div>${msg||""}
+    <p>${calSummary(S.calExp,S.ans)} ${S.q==="me"?"בדקו אם מה שהתלמיד/ה אמר/ה על עצמו/ה מתאים למה שאתם רואים ביום־יום.":"מה אתם רואים ביום־יום? החלק הזה הוא המדד המרכזי."}</p></div>${msg||""}
   ${can.length?`<section class="card"><h2>מה אתם רואים בפועל?</h2><p class="hint">ליד כל ״אני יכול/ה״: האם התלמיד/ה עושה את זה ביום־יום.</p><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התלמיד/ה ענה/תה</th>${VERIFY.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
     ${can.map(it=>{ const a=S.ans[it[0]]; return `<tr><td class="d">${esc(txt(it))}<small>התשובה: ${a===1?"כן":a===0?"לא":"לא ענה/תה"}</small></td>${VERIFY.map(f=>`<td class="o"><input type="radio" name="vf-${it[0]}" value="${f[0]}" aria-label="${f[1]}" ${S.verify[it[0]]===f[0]?"checked":""}></td>`).join("")}</tr>`; }).join("")}</tbody></table></div></section>`:""}
   <section class="card"><h2>תצפית: כמה פעמים רואים את זה?</h2><div class="tablewrap"><table class="obs"><thead><tr><th scope="col">התנהגות</th>${FREQ.map(f=>`<th scope="col" class="o">${f[1]}</th>`).join("")}</tr></thead><tbody>
@@ -855,7 +864,7 @@ async function exportExcel(){
     const well=sortRes(RES.filter(r=>r.q==="well")), me=sortRes(RES.filter(r=>r.q==="me"));
     if(well.length>200||me.length>200) out.innerHTML=`<div class="msg err">יש יותר מ־200 מילויים בשאלון אחד. בקובץ נכנסו 200 הראשונים.</div>`;
     const W=wb.getWorksheet("רווחה - קליטה"), M=wb.getWorksheet("זה אני - קליטה");
-    put(W,5,[],31); put(M,5,[],31);
+    put(W,5,[],31); put(M,5,[],31); for(let j=44;j<=47;j++) M.getCell(5,j).value=null;
     well.slice(0,200).forEach((r,i)=>{ const a=r.ans||{}, o=r.obs||{};
       put(W,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         ex(r.calExp?.cal1),yn(a.cal1),ex(r.calExp?.cal2),yn(a.cal2),
@@ -866,7 +875,8 @@ async function exportExcel(){
       put(M,5+i,[r.name,r.cls,TPN[r.tp],fmtDate(r.date),r.filler||"",modeName(r.mode),r.und||"",
         a.p1===1?"בחר/ה בעצמו/ה":a.p1===0?"בחר/ה באחר/ת":"לא נבדק", yn(a.y1), yn(a.y2),
         ...ME_CAN.map(k=>can3(a[k])), ...ME_CAN.map(k=>vf(v[k])),
-        yn(a.me_w1), yn(a.me_w2), yn(a.me_k1), r.obs?.pride?Number(r.obs.pride):null, r.notes||""],31); });
+        yn(a.me_w1), yn(a.me_w2), yn(a.me_k1), r.obs?.pride?Number(r.obs.pride):null, r.notes||""],31);
+      [ex(r.calExp?.cal1),yn(a.cal1),ex(r.calExp?.cal2),yn(a.cal2)].forEach((x,j)=>{ const c=M.getCell(5+i,44+j); c.value=x||null; c.font=font; }); });
     const uniq=a=>[...new Map(a.map(r=>[nk(r.name),r.name])).values()].sort((x,y)=>x.localeCompare(y,"he"));
     const fillCol=(ws,vals,max)=>{ for(let i=0;i<max;i++){ const c=ws.getCell(5+i,1); c.value=vals[i]??null; c.font=font; } };
     fillCol(wb.getWorksheet("רווחה - מעקב"), uniq(well), 200);
