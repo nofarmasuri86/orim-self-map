@@ -134,6 +134,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vgrid{--c:84px;display:grid;grid-template-columns:64px minmax(0,1fr) repeat(3,var(--c));column-gap:0}
 .vgrid .colh{background:transparent;padding-block:6px}
 .vgrid .sp{grid-column:span 2}
+.vgrid.yn{grid-template-columns:64px minmax(0,1fr) repeat(2,var(--c))}
 .pic{border-top:1px solid var(--line);display:grid;place-items:center;padding:8px 0 8px 4px}
 .pic span{width:54px;height:54px;border-radius:12px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:2rem;line-height:1}
 .vgrid .qtext{font-size:1.12rem;font-weight:700;padding-inline:10px}
@@ -292,6 +293,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pic span{width:76px!important;height:76px!important;border-radius:12px;border:2.5px solid #1d1d1f!important;background:#fff;padding:3px;overflow:hidden}
 .pic span svg{width:100%;height:100%;display:block}
 .vgrid{grid-template-columns:88px minmax(0,1fr) repeat(3,var(--c))!important}
+.vgrid.yn{grid-template-columns:88px minmax(0,1fr) repeat(2,var(--c))!important}
 .qtext .qsym{flex:none;width:40px;height:40px;border:2px solid #1d1d1f;border-radius:8px;background:#fff;padding:1px;line-height:0}
 .qtext .qsym svg{width:100%;height:100%}
 .chips.cards .chip .ce{width:72px!important;height:72px!important;border:2.5px solid #1d1d1f;border-radius:10px;background:#fff;padding:2px}
@@ -471,13 +473,19 @@ const CLIMATE = {
   icons:["cometoschool","safe","adult","helper"]
 };
 /* reliability checks: not scored. expect = the scale value a student who reads/attends will pick */
+/* expect: the answer value a student who understands will pick (null = depends on the student, not judged automatically).
+   visual checks are yes/no picture questions: כן = 1, לא = 0 */
 const CHECK = {
-  high:["אני יודע/ת באיזה בית ספר אני לומד/ת.","כדי לבדוק שהשאלות ברורות: בשאלה הזאת מסמנים ״לפעמים / עם קצת עזרה״."],
-  visual:["אני יודע/ת באיזה בית ספר אני לומד/ת","בשאלה הזאת בוחרים ״לפעמים״"],
-  icons:["myschool","pointsome"], emoji:["🏫","☝️"], expect:[3,2], after:[-1,1]
+  high:["אני נוהג/ת לבד לבית הספר.","אני מכין/ה לעצמי ארוחת בוקר."],
+  visual:["זה כדור?","זה תפוח?"],
+  icons:{high:["🚗","🍳"], visual:["ball","banana"]},
+  expect:{high:[1,null], visual:[1,0]}, after:[-1,1]
 };
+const YN = [{v:1,l:"כן",t:"yes",ic:"yes"},{v:0,l:"לא",t:"help",ic:"no"}];
 const CHECK_IDS = ["check1","check2"];
-const checkPass = r => CHECK_IDS.filter((id,i)=>r?.answers?.[id]===CHECK.expect[i]).length;
+const checkExp = r => CHECK.expect[r?.type==="visual"?"visual":"high"];
+const checkJudged = r => checkExp(r).filter(x=>x!=null).length;
+const checkPass = r => CHECK_IDS.filter((id,i)=>checkExp(r)[i]!=null && r?.answers?.[id]===checkExp(r)[i]).length;
 const checkDone = r => CHECK_IDS.filter(id=>typeof r?.answers?.[id]==="number").length;
 const STAFF_OBS = [
   {k:"teacher_observation_entry", id:"obs1", t:"התלמיד/ה נכנס/ת לשגרת בית הספר ברוב הימים.", label:"כניסה לשגרה", icon:"🚪"},
@@ -599,7 +607,8 @@ const STRENGTH_ICON = {"חברים":"social","למידה":"learning","רגשות
 const BUOY = '<svg class="face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6" fill="#F2636A" stroke="#B8323A" stroke-width="1.4"/><circle cx="12" cy="12" r="7.6" fill="none" stroke="#fff" stroke-width="5.6" stroke-dasharray="5.2 6.74" stroke-dashoffset="2.6"/><circle cx="12" cy="12" r="4.6" fill="#EEF2F8" stroke="#B8323A" stroke-width="1.2"/></svg>';
 ILL.school = `<svg viewBox="0 0 64 56" aria-hidden="true"><g ${SK}><path d="M32 4v10" fill="none"/><path d="M32 4l11 3-11 4z" fill="#F6A43A"/><path d="M6 24 32 12l26 12z" fill="#F6A43A"/><rect x="9" y="24" width="46" height="28" fill="#fff"/><rect x="27" y="36" width="10" height="16" fill="#13879A"/><rect x="14" y="30" width="8" height="7" fill="#9FDCE6"/><rect x="42" y="30" width="8" height="7" fill="#9FDCE6"/><rect x="14" y="41" width="8" height="7" fill="#9FDCE6"/><rect x="42" y="41" width="8" height="7" fill="#9FDCE6"/><path d="M3 52h58" fill="none"/></g></svg>`;
 ILL.eye = `<svg viewBox="0 0 64 44" aria-hidden="true"><g ${SK}><path d="M3 22C11 10 21 4 32 4s21 6 29 18c-8 12-18 18-29 18S11 34 3 22z" fill="#fff"/><circle cx="32" cy="22" r="11" fill="#13879A"/><circle cx="32" cy="22" r="4.5" fill="#1E2A4F"/></g><circle cx="35.5" cy="18.5" r="2" fill="#fff"/></svg>`;
-function pic(ic){ return ic==="buoy"? BUOY : ic==="sad"? face("help") : face(ic); }
+const NOX = `<svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#E5484D" stroke="#1E2A4F" stroke-width="2"/><path d="M13 13l14 14M27 13L13 27" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg>`;
+function pic(ic){ return ic==="buoy"? BUOY : ic==="no"? NOX : ic==="sad"? face("help") : face(ic); }
 function vpic(ic){ return ic==="yes"? THUMB : pic(ic); }
 
 /* Original AAC-style pictograms: thick outline, flat colours, simple figures. viewBox 0 0 100 100 */
@@ -693,8 +702,8 @@ const SYM = (()=>{
   return S;
 })();
 
-SYM.myschool = `<svg viewBox="0 0 100 100" aria-hidden="true">${ILL.school.replace(/^<svg[^>]*>|<\/svg>$/g,"").replace("<g ",'<g transform="translate(18 22)" ')}</svg>`;
-SYM.pointsome = vpic("some");
+SYM.ball = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="34" fill="#F6A43A" stroke="#1E2A4F" stroke-width="3"/><path d="M16 52 Q50 34 84 52 M50 18 Q66 52 50 86" fill="none" stroke="#1E2A4F" stroke-width="3"/></svg>`;
+SYM.banana = `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M20 30 C24 66 52 84 84 72 C86 70 85 66 82 66 C56 70 38 56 32 30 C31 25 21 25 20 30Z" fill="#FFD34D" stroke="#1E2A4F" stroke-width="3" stroke-linejoin="round"/><path d="M24 27 l-3 -9 l7 2z" fill="#6B4A2B" stroke="#1E2A4F" stroke-width="2" stroke-linejoin="round"/></svg>`;
 const symHtml = k => SYM[k]? `<span class="sym">${SYM[k]}</span>` : "";
 function rowsGrid(ids, texts, scale, icons){
   return ids.map((id,i)=>`<div class="qtext" id="t-${id}">${icons&&icons[i]? `<span class="qemo" aria-hidden="true">${icons[i]}</span>` : ""}<span>${esc(texts[i])}</span></div>
@@ -751,11 +760,11 @@ function renderForm(type){
     const id=CHECK_IDS[i], note=`<span class="chknote">לא נספרת בציון</span>`;
     return vis? `<div class="drow vis" data-d="check"><section class="dcard vcard" aria-labelledby="h-${id}">
         <div class="vside"><div class="di art">${ILL.star}</div><h3 id="h-${id}">שאלת בדיקה</h3></div>
-        <div><div class="vgrid"><div class="sp"></div>${colHeads(scale,false)}${rowsVis([id],[CHECK.visual[i]],[CHECK.icons[i]],scale)}</div></div>
+        <div><div class="vgrid yn"><div class="sp"></div>${colHeads(YN,false)}${rowsVis([id],[CHECK.visual[i]],[CHECK.icons.visual[i]],YN)}</div></div>
       </section></div>`
     : `<div class="drow staffrow" data-d="check"><section class="dcard" aria-labelledby="h-${id}"><div class="grid">
         <div class="dtitle"><h3 id="h-${id}">שאלת בדיקה</h3>${note}</div>
-        ${colHeads(scale,true)}${rowsGrid([id],[CHECK.high[i]],scale,[CHECK.emoji[i]])}
+        ${colHeads(scale,true)}${rowsGrid([id],[CHECK.high[i]],scale,[CHECK.icons.high[i]])}
       </div></section></div>`;
   };
   h += checkRow(0);
@@ -933,10 +942,11 @@ document.addEventListener("submit", async e=>{
 });
 
 function checkMsg(doc){
-  const n=doc.check_pass, a=doc.check_answered;
+  const n=doc.check_pass, k=doc.check_judged, a=doc.check_answered;
+  const extra = doc.type==="high"? ` ״ארוחת בוקר״: ${(SCALE.high.find(x=>x.v===doc.answers?.check2)||{l:"לא נענתה"}).l}. משווים למה שאתם יודעים על התלמיד/ה.` : "";
   if(a<2) return `<div class="msg">לצוות: לא נענו כל שאלות הבדיקה (${a} מתוך 2), ולכן אי אפשר לדעת עד כמה התשובות אמינות.</div>`;
-  return n===2? `<div class="msg ok">לצוות: שתי שאלות הבדיקה נענו כמצופה. התשובות נראות אמינות.</div>`
-    : `<div class="msg err">לצוות: ${n===1?"שאלת בדיקה אחת":"שתי שאלות הבדיקה"} לא נענו כמצופה. כדאי לפרש את התשובות בזהירות, ולבדוק אם השאלות היו ברורות לתלמיד/ה.</div>`;
+  return n===k? `<div class="msg ok">לצוות: שאלות הבדיקה נענו כמצופה. נראה שהתלמיד/ה מבין/ה מה הוא/היא בוחר/ת.${extra}</div>`
+    : `<div class="msg err">לצוות: ${k-n} מתוך ${k} שאלות בדיקה לא נענו כמצופה. ייתכן שהתלמיד/ה לוחץ/ת בלי להבין. כדאי לפרש את התשובות בזהירות.${extra}</div>`;
 }
 function buildDoc(className){
   const s=state;
@@ -946,7 +956,7 @@ function buildDoc(className){
   DOMAINS.forEach(d=>{ doc[d.field] = avg([1,2,3].map(i=>s.answers[d.k+i])); });
   if(s.type!=="staff"){
     doc.school_climate_score = avg([1,2,3,4].map(i=>s.answers["climate"+i]));
-    doc.check_pass = checkPass(doc); doc.check_answered = checkDone(doc);
+    doc.check_pass = checkPass(doc); doc.check_judged = checkJudged(doc); doc.check_answered = checkDone(doc);
     DOMAINS.forEach(d=>{ const v=s.goals[d.k], g="goal:"+d.k; doc[GOAL_FIELD[d.k]] = v==="__other"? ((s.other[g]||"").trim()? "אחר: "+s.other[g].trim() : "אחר") : v; });
     doc.perceived_strengths = withOther([...s.strengths],"strengths");
     doc.supports_that_help = withOther([...s.helps],"helps");
@@ -1722,7 +1732,7 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
   DOMAINS.forEach(d=>add("s_"+d.k, d.field, 12, DCOLOR[d.k][0]));
   CLIM_IDS.forEach((id,i)=>add("i_"+id, `אקלים ${i+1}`, 9, C.climate[0]));
   add("s_climate","school_climate_score",13,C.climate[0]);
-  add("i_check1","בדיקה 1 (צפוי 3)",10,"FFE3E7F1"); add("i_check2","בדיקה 2 (צפוי 2)",10,"FFE3E7F1"); add("check_pass","שאלות בדיקה תקינות (מתוך 2)",12,"FFE3E7F1");
+  add("i_check1","בדיקה 1",10,"FFE3E7F1"); add("i_check2","בדיקה 2",10,"FFE3E7F1"); add("check_pass","בדיקות שנענו כמצופה",12,"FFE3E7F1"); add("check_judged","מתוך",8,"FFE3E7F1");
   DOMAINS.forEach(d=>add("g_"+d.k, GOAL_FIELD[d.k], 24, C.yellow[0]));
   add("strengths","perceived_strengths",22); add("supports","supports_that_help",26); add("interests","interests_and_empowerment",28);
   add("t_strength","teacher_strength",14,C.orange[0]); add("t_need","teacher_need",14,C.orange[0]); add("t_supports","teacher_supports",26,C.orange[0]); add("t_note","teacher_note",30,C.orange[0]);
@@ -1768,7 +1778,7 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
     COLS.forEach((c,i)=>{ if(c.key in val){ const x=wsData.getCell(n,i+1); x.value = val[c.key]===""? null : val[c.key]; } });
     DOMAINS.forEach(d=>{ const a=L("i_"+d.k+"1"), b=L("i_"+d.k+"3"); wsData.getCell(n,ci("s_"+d.k)).value={formula:`IF(COUNT(${a}${n}:${b}${n})=0,"",ROUND(AVERAGE(${a}${n}:${b}${n}),2))`}; });
     { const a=L("i_climate1"), b=L("i_climate4"); wsData.getCell(n,ci("s_climate")).value={formula:`IF(COUNT(${a}${n}:${b}${n})=0,"",ROUND(AVERAGE(${a}${n}:${b}${n}),2))`}; }
-    { const a=L("i_check1"), b=L("i_check2"); wsData.getCell(n,ci("check_pass")).value={formula:`IF(COUNT(${a}${n}:${b}${n})=0,"",(${a}${n}=3)+(${b}${n}=2))`}; }
+    if(r.type!=="staff" && typeof r.answers?.check1==="number"){ wsData.getCell(n,ci("check_pass")).value=checkPass(r); wsData.getCell(n,ci("check_judged")).value=checkJudged(r); }
     wsData.getCell(n,ci("key")).value = {formula:`${L("class")}${n}&" | "&${L("name")}${n}`};
     wsData.getCell(n,ci("grp")).value = {formula:`IF(${L("qtype")}${n}="${TYPE_LABEL.staff}","צוות","תלמיד")`};
     wsData.getCell(n,ci("tpo")).value = {formula:`IF(${L("tp")}${n}="${TPN[0]}",1,IF(${L("tp")}${n}="${TPN[1]}",2,IF(${L("tp")}${n}="${TPN[2]}",3,0)))`};
@@ -2015,7 +2025,7 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
     ["הוספת נתונים","הדרך המומלצת: ייצוא חדש מהמערכת (לשונית \"נתונים ו־Excel\"). תלמיד/ה חדש/ה מצטרף/ת לרשימות בייצוא הבא."],
     ["סולם","3 = מצליח/ה / רוב הזמן / כן · 2 = לפעמים · 1 = צריך/ה עזרה / נדרש סיוע / לא"],
     ["צבעים","ירוק = 3 · צהוב = 2 · אדום = 1 · כתום = פער של "+GAP_FLAG+" ומעלה בין תלמיד/ה לצוות · חיצים = כיוון השינוי"],
-    ["שאלות בדיקה","שתי שאלות בשאלוני התלמיד/ה שלא נספרות בציון. בדיקה 1 צפוי 3, בדיקה 2 צפוי 2. ״2 מתוך 2״ = התשובות נראות אמינות. פחות מזה = לפרש בזהירות."],
+    ["שאלות בדיקה","לא נספרות בציון. מילולי: ״נוהג/ת לבד לבית הספר״ צפוי 1 (צריך/ה עזרה); ״ארוחת בוקר״ משווים לידוע. תת״ח: ״זה כדור?״ צפוי כן (1), ״זה תפוח?״ צפוי לא (0). פחות מהמצופה = לפרש בזהירות."],
     ["חשוב","זהו כלי מיפוי בית־ספרי ולא כלי אבחוני. התובנות מנוסחות כנקודות לחשיבה מקצועית."]
   ];
   how.forEach((x,i)=>{ const n=5+i; cell(wsLegend,n,1,x[0],{bold:true,fill:C.yellow[0]}); wsLegend.mergeCells(`B${n}:D${n}`); cell(wsLegend,n,2,x[1]); wsLegend.getRow(n).height=30; });
