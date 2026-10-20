@@ -452,9 +452,9 @@ async function loadConfig(){
 }
 let RES = [];
 async function loadResults(){
-  const {data,error} = await sb.from("sm_responses").select("id,created_at,data").eq("data->>version", VERSION).order("created_at",{ascending:false}).limit(3000);
+  const {data,error} = await sb.rpc("sm_responses_list",{p_code:staffCode});
   if(error) throw error;
-  RES = (data||[]).map(r=>({id:r.id, created:r.created_at, ...r.data, cls:r.data.className, tp:r.data.timepoint}));
+  RES = (data||[]).filter(r=>r.data?.version===VERSION).reverse().map(r=>({id:r.id, created:r.created_at, ...r.data, cls:r.data.className, tp:r.data.timepoint}));
   return RES;
 }
 
@@ -713,7 +713,8 @@ function renderStaff(msg){
       calExp:{...S.calExp}, ans:{...S.ans}, obs:{...S.obs}, verify:{...S.verify}, resp:[...S.resp], und:S.und, notes:S.notes,
       wording:Object.fromEntries(q.items.map(it=>[it[0], txt(it)]))};
     $("#fin").disabled=true; $("#fin").textContent="שומר…";
-    const {data,error} = await sb.from("sm_responses").insert({data:doc}).select("id").single();
+    const newId = crypto.randomUUID();
+    const {error} = await sb.from("sm_responses").insert({id:newId, data:doc}); const data = {id:newId};
     if(error){ return renderStaff(`<div class="msg err">השמירה לא הצליחה. בודקים את האינטרנט ולוחצים שוב על ״שמירה וסיכום״. התשובות לא נמחקו.</div>`); }
     try{ await loadResults(); }catch(e){}
     printSel=data.id; justSaved=true; TAB="print"; route();

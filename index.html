@@ -526,7 +526,11 @@ const SB_URL = "https://rbtsrxscaaeigjasqiwf.supabase.co", SB_KEY = "eyJhbGciOiJ
 const sb = (window.supabase && SB_URL.startsWith("https"))? supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:false}}) : null;
 let adminPass = (()=>{ try{ return sessionStorage.getItem("sm_pass")||""; }catch(e){ return ""; } })();
 const snapOf = list => ({docs:list.map(r=>({id:r.id, exists:true, data:()=>r.data})), size:list.length, empty:!list.length, docChanges:()=>[]});
-async function fetchAll(){ const {data,error} = await sb.from("sm_responses").select("id,data").order("created_at").limit(3000); if(error) throw {code:"unavailable", message:error.message}; return data||[]; }
+/* responses are readable only with the staff code or the admin password (checked on the server) */
+let viewCode = (()=>{ try{ return sessionStorage.getItem("sm_view")||""; }catch(e){ return ""; } })();
+const STUDENT = new URLSearchParams(location.search).has("student");
+async function fetchAll(){ const code = adminPass||viewCode; if(!code) throw {code:"locked"};
+  const {data,error} = await sb.rpc("sm_responses_list",{p_code:code}); if(error) throw {code:"unavailable", message:error.message}; return data||[]; }
 const dbAdapter = {
   collection(){ const q = {orderBy(){return q}, limit(){return q}, where(){return q},
       async get(){ return snapOf(await fetchAll()); },
@@ -1301,8 +1305,19 @@ function renderRosterEditor(msg){
   };
 }
 /* ---------- tabs ---------- */
+function renderViewGate(tab){
+  stopData();
+  $("#view").innerHTML = `<section class="pwbox" style="margin:40px auto;box-shadow:none;border:2px solid var(--line)" aria-labelledby="vg-t"><h3 id="vg-t">🔒 לצוות בלבד</h3><p class="muted">המעקב והנתונים כוללים מידע על תלמידים. מקלידים את קוד הצוות.</p><label for="vg-in" class="lbl">קוד צוות</label><input id="vg-in" type="password" autocomplete="off"><div id="vg-msg"></div><div class="row"><button class="btn" type="button" id="vg-ok">כניסה</button></div></section>`;
+  const inp=$("#vg-in"); inp.focus();
+  const go=async()=>{ const v=inp.value.trim(); if(!v) return; const {data} = await sb.rpc("sm_check_staff",{p_code:v});
+    if(data===true){ viewCode=v; try{ sessionStorage.setItem("sm_view",v); }catch(e){} switchTab(tab); }
+    else $("#vg-msg").innerHTML=`<div class="msg err">הקוד לא נכון.</div>`; };
+  $("#vg-ok").onclick=go; inp.onkeydown=e=>{ if(e.key==="Enter") go(); };
+}
 function switchTab(tab){
+  if(STUDENT && !["high","visual"].includes(tab)) tab = "high";
   currentTab = tab;
+  if((tab==="data"||tab==="track") && !(adminPass||viewCode)){ document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab?"true":"false")); return renderViewGate(tab); }
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab?"true":"false"));
   if(tab==="data") renderData(); else if(tab==="track"){ stopData(); renderTrack(); } else { stopData(); renderForm(tab); }
   window.scrollTo({top:0});
@@ -1516,7 +1531,7 @@ function scoreCell(v){ return v==null? '<span class="muted">—</span>' : `<span
 function bindDash(){
   const cf=$("#cf"); if(cf) cf.onchange=e=>{ classFilter=e.target.value; drawDash(); };
   const sf=$("#sf"); if(sf) sf.onchange=e=>{ selectedStudent=e.target.value; drawDash(); };
-  $("#lock").onclick=()=>{ adminPass=""; try{ sessionStorage.removeItem("sm_pass"); }catch(e){} drawDash(); };
+  $("#lock").onclick=()=>{ adminPass=""; viewCode=""; try{ sessionStorage.removeItem("sm_pass"); sessionStorage.removeItem("sm_view"); }catch(e){} switchTab("data"); };
   $("#xlsx").onclick=()=>requirePass(exportExcel);
   $("#edit-texts").onclick=()=>requirePass(()=>{ pendingEdits={}; renderEditor(); });
   $("#print-view").onclick=renderPrint;
@@ -2049,7 +2064,8 @@ function buildSmartWorkbook(ExcelJS, allRowsIn, scopeLabel){
 
 
 /* direct links: index.html#visual opens the TT"CH questionnaire, #staff the staff one, etc. */
-const DEEP = ["high","visual","staff","track","data"];
+const DEEP = STUDENT? ["high","visual"] : ["high","visual","staff","track","data"];
+if(STUDENT){ const nav=document.querySelector("nav.tabs"); if(nav) nav.hidden=true; }
 const hashTab = () => { const h = decodeURIComponent(location.hash.slice(1)); return DEEP.includes(h)? h : null; };
 window.addEventListener("hashchange", ()=>{ const h=hashTab(); if(h && h!==currentTab) switchTab(h); });
 if(hashTab()) switchTab(hashTab()); else renderForm("high");
