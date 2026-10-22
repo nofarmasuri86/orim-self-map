@@ -1554,7 +1554,7 @@ function drawDash(){
   h += `<section class="panel"><h3>תחומי עניין והעצמה</h3><p class="sub">מספר התלמידים שבחרו כל תחום (לפי המילוי האחרון של כל תלמיד/ה).</p>
     ${ic.length? ic.map(([k,n])=>`<div class="ibar"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${n/mx*100}%"></div></div><b style="font-variant-numeric:tabular-nums">${n}</b></div>`).join("") : `<p class="muted" style="margin:0">עוד לא נבחרו תחומי עניין.</p>`}</section>`;
   h += `<section class="panel"><h3>כל המילויים</h3><div class="tablewrap"><table><thead><tr><th>תאריך</th><th>שם</th><th>כיתה</th><th>מועד</th><th>שאלון</th>${DOMAINS.map(d=>`<th>${d.name}</th>`).join("")}<th>אקלים</th><th></th></tr></thead><tbody>
-    ${[...rows].reverse().map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.name)}</td><td>${esc(r.className)}</td><td>${TP[r.timepoint]||""}</td><td><span class="pill">${typeLabel(r)}${isV2(r)?"":" · גרסה קודמת"}</span></td>${DOMAINS.map(d=>`<td>${f2(dscore(r,d.k))}</td>`).join("")}<td>${f2(r.school_climate_score)}</td><td><button class="linkbtn" type="button" data-del="${esc(r.id)}">מחיקה</button></td></tr>`).join("")}
+    ${[...rows].reverse().map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.name)}</td><td>${esc(r.className)}</td><td>${TP[r.timepoint]||""}</td><td><span class="pill">${typeLabel(r)}${isV2(r)?"":" · גרסה קודמת"}</span></td>${DOMAINS.map(d=>`<td>${f2(dscore(r,d.k))}</td>`).join("")}<td>${f2(r.school_climate_score)}</td><td style="white-space:nowrap"><button class="linkbtn" type="button" data-edit="${esc(r.id)}">תיקון</button> · <button class="linkbtn" type="button" data-del="${esc(r.id)}">מחיקה</button></td></tr>`).join("")}
   </tbody></table></div></section></div>`;
   $("#view").innerHTML = h; bindDash();
 }
@@ -1587,11 +1587,39 @@ function bindDash(){
   $("#xlsx").onclick=()=>requirePass(exportExcel);
   $("#edit-texts").onclick=()=>requirePass(()=>{ pendingEdits={}; renderEditor(); });
   $("#print-view").onclick=renderPrint;
+  document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{ const r=allRows.find(x=>x.id===b.dataset.edit); if(!r) return; requirePass(()=>editResponse(r)); });
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
     if(!adminPass){ requirePass(()=>drawDash()); return; }
     if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="ללחוץ שוב למחיקה"; setTimeout(()=>{ if(b.isConnected){ b.dataset.armed=""; b.textContent="מחיקה"; } },4000); return; }
     const db=await getDb(); try{ await db.doc("responses/"+b.dataset.del).delete(); }catch(e){ $("#xmsg").innerHTML=`<div class="msg err">המחיקה לא הצליחה. נסו שוב.</div>`; }
   });
+}
+
+/* fix the name, class or period of a saved fill (admin password; the answers stay as they are) */
+function editResponse(r){
+  const classes = [...new Set([...rosterClasses(), r.className].filter(Boolean))];
+  const ov=document.createElement("div"); ov.className="pwov";
+  ov.innerHTML=`<div class="pwbox" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width:440px"><h3 id="ed-t">✏️ תיקון פרטי המילוי</h3>
+    <p class="muted" style="margin:0">${esc(typeLabel(r))} · ${esc(String(r.date||"").slice(0,10))} · נשמר בשם <b>${esc(r.name)}</b>. התשובות עצמן לא משתנות.</p>
+    <label class="lbl" for="ed-c">כיתה</label><select id="ed-c">${classes.map(c=>`<option ${c===r.className?"selected":""}>${esc(c)}</option>`).join("")}</select>
+    <label class="lbl" for="ed-n">שם התלמיד/ה</label><select id="ed-n"></select><input id="ed-o" placeholder="שם פרטי ומשפחה" hidden>
+    <label class="lbl" for="ed-tp">מועד</label><select id="ed-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===r.timepoint?"selected":""}>${TP[t]}</option>`).join("")}</select>
+    <div id="ed-msg"></div><div class="row"><button class="btn" type="button" id="ed-ok">שמירת התיקון</button><button class="btn ghost" type="button" id="ed-x">ביטול</button></div></div>`;
+  document.body.appendChild(ov);
+  const fillNames=()=>{ const c=ov.querySelector("#ed-c").value, list=[...(ROSTER[c]||[])]; if(c===r.className && !list.some(n=>nk(n)===nk(r.name))) list.unshift(r.name);
+    ov.querySelector("#ed-n").innerHTML = list.map(n=>`<option ${nk(n)===nk(r.name)?"selected":""}>${esc(n)}</option>`).join("")+`<option value="__other">שם שלא ברשימה (הקלדה)</option>`;
+    ov.querySelector("#ed-o").hidden = ov.querySelector("#ed-n").value!=="__other"; };
+  fillNames();
+  ov.querySelector("#ed-c").onchange=fillNames;
+  ov.querySelector("#ed-n").onchange=()=>{ const o=ov.querySelector("#ed-o"); o.hidden = ov.querySelector("#ed-n").value!=="__other"; if(!o.hidden) o.focus(); };
+  ov.querySelector("#ed-x").onclick=()=>ov.remove();
+  ov.querySelector("#ed-ok").onclick=async()=>{
+    const sel=ov.querySelector("#ed-n").value, name=nameKey(sel==="__other"? ov.querySelector("#ed-o").value : sel);
+    if(!name){ ov.querySelector("#ed-msg").innerHTML=`<div class="msg err">חסר שם.</div>`; return; }
+    const {data,error} = await sb.rpc("sm_update_response_meta",{p_pass:adminPass, p_id:r.id, p_name:name, p_class:ov.querySelector("#ed-c").value, p_tp:ov.querySelector("#ed-tp").value});
+    if(error||data!==true){ ov.querySelector("#ed-msg").innerHTML=`<div class="msg err">התיקון לא נשמר. נסו שוב.</div>`; return; }
+    ov.remove(); if(dbAdapter._refresh) dbAdapter._refresh();
+  };
 }
 
 /* ---------- Excel ---------- */
