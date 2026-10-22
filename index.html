@@ -1553,8 +1553,8 @@ function drawDash(){
   const ic = interestCounts(students), mx = Math.max(1,...ic.map(x=>x[1]));
   h += `<section class="panel"><h3>תחומי עניין והעצמה</h3><p class="sub">מספר התלמידים שבחרו כל תחום (לפי המילוי האחרון של כל תלמיד/ה).</p>
     ${ic.length? ic.map(([k,n])=>`<div class="ibar"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${n/mx*100}%"></div></div><b style="font-variant-numeric:tabular-nums">${n}</b></div>`).join("") : `<p class="muted" style="margin:0">עוד לא נבחרו תחומי עניין.</p>`}</section>`;
-  h += `<section class="panel"><h3>כל המילויים</h3><div class="tablewrap"><table><thead><tr><th>תאריך</th><th>שם</th><th>כיתה</th><th>מועד</th><th>שאלון</th>${DOMAINS.map(d=>`<th>${d.name}</th>`).join("")}<th>אקלים</th><th></th></tr></thead><tbody>
-    ${[...rows].reverse().map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.name)}</td><td>${esc(r.className)}</td><td>${TP[r.timepoint]||""}</td><td><span class="pill">${typeLabel(r)}${isV2(r)?"":" · גרסה קודמת"}</span></td>${DOMAINS.map(d=>`<td>${f2(dscore(r,d.k))}</td>`).join("")}<td>${f2(r.school_climate_score)}</td><td style="white-space:nowrap"><button class="linkbtn" type="button" data-edit="${esc(r.id)}">תיקון</button> · <button class="linkbtn" type="button" data-del="${esc(r.id)}">מחיקה</button></td></tr>`).join("")}
+  h += `<section class="panel"><h3>כל המילויים</h3><div class="tablewrap"><table><thead><tr><th>שם</th><th>כיתה</th><th>מועד</th><th>שאלון</th><th>תאריך</th>${DOMAINS.map(d=>`<th>${d.name}</th>`).join("")}<th>אקלים</th></tr></thead><tbody>
+    ${[...rows].reverse().map(r=>`<tr><td style="white-space:nowrap"><b>${esc(r.name)}</b><br><button class="linkbtn" type="button" data-edit="${esc(r.id)}">✏️ תיקון</button> · <button class="linkbtn" type="button" data-del="${esc(r.id)}">מחיקה</button></td><td>${esc(r.className)}</td><td>${TP[r.timepoint]||""}</td><td><span class="pill">${typeLabel(r)}${isV2(r)?"":" · גרסה קודמת"}</span></td><td>${esc(String(r.date||"").slice(0,10))}</td>${DOMAINS.map(d=>`<td>${f2(dscore(r,d.k))}</td>`).join("")}<td>${f2(r.school_climate_score)}</td></tr>`).join("")}
   </tbody></table></div></section></div>`;
   $("#view").innerHTML = h; bindDash();
 }
@@ -1596,11 +1596,33 @@ function bindDash(){
 }
 
 /* fix the name, class or period of a saved fill (admin password; the answers stay as they are) */
+function answersHTML(r){
+  const q = r.type==="staff"?"staff": r.type==="visual"?"visual":"high";
+  const sc = r.type==="staff"? SCALE.staff : SCALE[q]||SCALE.high;
+  const lab = (v,scale)=> v==null? '<span class="muted">לא נענה</span>' : esc((scale.find(x=>x.v===v)||{l:v}).l);
+  const row = (t,a)=>`<tr><td style="white-space:normal">${esc(t)}</td><td style="white-space:nowrap;font-weight:700">${a}</td></tr>`;
+  let h = "";
+  if(r.type==="visual" && r.answers?.check1!=null) CHECK.visual.forEach((t,i)=>h+=row("בדיקה: "+t, lab(r.answers["check"+(i+1)],sc)));
+  DOMAINS.forEach(d=>ITEMS[q][d.k].forEach((t,i)=>h+=row(t, lab(r.answers?.[d.k+(i+1)],sc))));
+  if(r.type!=="staff"){
+    CLIMATE[q].forEach((t,i)=>h+=row(t, lab(r.answers?.["climate"+(i+1)],SCALE.climate)));
+    DOMAINS.forEach(d=>h+=row("מטרה – "+d.name, esc(r[GOAL_FIELD[d.k]]||"—")));
+    h+=row("טוב/ה ב־", esc((r.perceived_strengths||[]).join(", ")||"—"));
+    h+=row("עוזר לי", esc((r.supports_that_help||[]).join(", ")||"—"));
+    h+=row("אוהב/ת לעשות", esc((r.interests_and_empowerment||[]).join(", ")||"—"));
+  } else {
+    STAFF_OBS.forEach(o=>h+=row(o.t, lab(r.answers?.[o.id],sc)));
+    h+=row("הערה", esc(r.teacher_note||"—"));
+  }
+  return `<details style="border:1px solid var(--line);border-radius:12px;padding:8px 12px"><summary style="cursor:pointer;font-weight:700">👀 מה נענה בשאלון הזה</summary><div style="max-height:260px;overflow:auto;margin-top:8px"><table style="font-size:.9rem"><tbody>${h}</tbody></table></div></details>`;
+}
 function editResponse(r){
   const classes = [...new Set([...rosterClasses(), r.className].filter(Boolean))];
   const ov=document.createElement("div"); ov.className="pwov";
-  ov.innerHTML=`<div class="pwbox" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width:440px"><h3 id="ed-t">✏️ תיקון פרטי המילוי</h3>
-    <p class="muted" style="margin:0">${esc(typeLabel(r))} · ${esc(String(r.date||"").slice(0,10))} · נשמר בשם <b>${esc(r.name)}</b>. התשובות עצמן לא משתנות.</p>
+  const when = r.createdAt? new Date(r.createdAt).toLocaleString("he-IL",{day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"}) : String(r.date||"").slice(0,10);
+  ov.innerHTML=`<div class="pwbox" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width:560px;max-height:92vh;overflow:auto"><h3 id="ed-t">✏️ תיקון פרטי המילוי</h3>
+    <p class="muted" style="margin:0">${esc(typeLabel(r))} · נשמר ב־${esc(when)} · בשם <b>${esc(r.name)}</b>${r.originalName&&r.originalName!==r.name?` (במקור: ${esc(r.originalName)})`:""}. התשובות עצמן לא משתנות.</p>
+    ${answersHTML(r)}
     <label class="lbl" for="ed-c">כיתה</label><select id="ed-c">${classes.map(c=>`<option ${c===r.className?"selected":""}>${esc(c)}</option>`).join("")}</select>
     <label class="lbl" for="ed-n">שם התלמיד/ה</label><select id="ed-n"></select><input id="ed-o" placeholder="שם פרטי ומשפחה" hidden>
     <label class="lbl" for="ed-tp">מועד</label><select id="ed-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===r.timepoint?"selected":""}>${TP[t]}</option>`).join("")}</select>

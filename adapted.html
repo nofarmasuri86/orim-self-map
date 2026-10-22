@@ -811,6 +811,33 @@ async function renderTrack(){
 }
 
 /* ================= admin ================= */
+function fixResponse(r){
+  const q=Q[r.q]; const T=it=> r.wording?.[it[0]] || (r.gender==="f"?it[3]:it[2]);
+  const ans=(it,v)=> it[6]==="pick"? (v===1?"בחר/ה בעצמו/ה":v===0?"בחר/ה בתמונה האחרת":"לא נבדק") : v===1?"כן": v===0?"לא": v==="na"?"לא נבדק":"לא ענה/תה";
+  const classes=[...new Set([...Object.keys(ROSTER), r.cls].filter(Boolean))];
+  const ov=document.createElement("div"); ov.className="gate"; ov.style.cssText="position:fixed;inset:0;z-index:60;background:rgba(30,42,79,.45);display:grid;place-items:center;padding:16px";
+  ov.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="fx-t" style="max-width:560px;width:100%;max-height:92vh;overflow:auto"><h2 id="fx-t">✏️ תיקון פרטי המילוי</h2>
+    <p class="hint">${esc(q?.short||"")} · ${fmtDate(r.date)} · בשם <b>${esc(r.name)}</b>${r.originalName&&r.originalName!==r.name?` (במקור: ${esc(r.originalName)})`:""}. התשובות לא משתנות.</p>
+    <details><summary style="cursor:pointer;font-weight:700">👀 מה נענה בשאלון הזה</summary><div class="tablewrap" style="max-height:240px;overflow:auto"><table class="obs"><tbody>${(q?.items||[]).map(it=>`<tr><td class="d">${esc(T(it))}</td><td class="o"><b>${ans(it,r.ans?.[it[0]])}</b></td></tr>`).join("")}${r.notes?`<tr><td class="d">הערות</td><td class="o">${esc(r.notes)}</td></tr>`:""}</tbody></table></div></details>
+    <div class="field"><label for="fx-c">כיתה</label><select id="fx-c">${classes.map(c=>`<option ${c===r.cls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+    <div class="field"><label for="fx-n">תלמיד/ה</label><select id="fx-n"></select><input type="text" id="fx-o" placeholder="שם פרטי ומשפחה" hidden></div>
+    <div class="field"><label for="fx-tp">מועד</label><select id="fx-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===r.tp?"selected":""}>${TPN[t]}</option>`).join("")}</select></div>
+    <div id="fx-msg"></div><div class="actions"><button class="btn" type="button" id="fx-ok">שמירת התיקון</button><button class="btn ghost" type="button" id="fx-x">ביטול</button></div></div>`;
+  document.body.appendChild(ov);
+  const fill=()=>{ const c=ov.querySelector("#fx-c").value, list=[...(ROSTER[c]||[])]; if(c===r.cls && !list.some(n=>nk(n)===nk(r.name))) list.unshift(r.name);
+    ov.querySelector("#fx-n").innerHTML=list.map(n=>`<option ${nk(n)===nk(r.name)?"selected":""}>${esc(n)}</option>`).join("")+`<option value="__other">שם שלא ברשימה (הקלדה)</option>`;
+    ov.querySelector("#fx-o").hidden=ov.querySelector("#fx-n").value!=="__other"; };
+  fill(); ov.querySelector("#fx-c").onchange=fill;
+  ov.querySelector("#fx-n").onchange=()=>{ ov.querySelector("#fx-o").hidden=ov.querySelector("#fx-n").value!=="__other"; };
+  ov.querySelector("#fx-x").onclick=()=>ov.remove();
+  ov.querySelector("#fx-ok").onclick=async()=>{
+    const sel=ov.querySelector("#fx-n").value, name=(sel==="__other"? ov.querySelector("#fx-o").value : sel).trim().replace(/\s+/g," ");
+    if(!name){ ov.querySelector("#fx-msg").innerHTML=`<div class="msg err">חסר שם.</div>`; return; }
+    const {data,error}=await sb.rpc("sm_update_response_meta",{p_pass:adminPass, p_id:r.id, p_name:name, p_class:ov.querySelector("#fx-c").value, p_tp:ov.querySelector("#fx-tp").value});
+    if(error||data!==true){ ov.querySelector("#fx-msg").innerHTML=`<div class="msg err">התיקון לא נשמר. בודקים את סיסמת הניהול ומנסים שוב.</div>`; return; }
+    ov.remove(); renderAdmin(`<div class="msg ok">✅ המילוי עודכן: ${esc(name)}.</div>`);
+  };
+}
 function renderAdmin(msg){
   requirePass(()=>{
     $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">ניהול</h1></div>${msg||""}
@@ -821,7 +848,7 @@ function renderAdmin(msg){
     <section class="card"><h2>קוד צוות</h2><p class="hint">הקוד שהמורים מקלידים כדי להיכנס לעמוד הזה ולתמונות. לפחות 4 תווים.</p>
       <div class="grid2"><div class="field"><label for="ad-code">קוד חדש</label><input type="text" id="ad-code" autocomplete="off"></div></div>
       <div class="actions"><button class="btn ghost" type="button" id="ad-code-go">שמירת הקוד</button></div><div id="code-msg"></div></section>
-    <section class="card"><h2>מחיקת מילוי</h2><p class="hint">למילוי שנעשה בטעות. לוחצים פעמיים לאישור.</p><div id="ad-del" class="reslist"><span class="hint">טוען…</span></div></section></div>`;
+    <section class="card"><h2>תיקון או מחיקה של מילוי</h2><p class="hint">״תיקון״: שם, כיתה או מועד שנבחרו בטעות, עם צפייה בתשובות. ״מחיקה״: למילוי שנעשה בטעות, לוחצים פעמיים.</p><div id="ad-del" class="reslist"><span class="hint">טוען…</span></div></section></div>`;
     $("#ad-xl").onclick=exportExcel;
     document.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>renderEditor(b.dataset.ed));
     $("#ad-code-go").onclick=async()=>{ const v=$("#ad-code").value.trim(); if(v.length<4){ $("#code-msg").innerHTML=`<div class="msg err">הקוד צריך להיות לפחות 4 תווים.</div>`; return; }
@@ -829,7 +856,8 @@ function renderAdmin(msg){
       if(data===true){ staffCode=v; ss.set("sm_staff",v); $("#code-msg").innerHTML=`<div class="msg ok">הקוד עודכן. מעבירים את הקוד החדש לצוות.</div>`; $("#ad-code").value=""; }
       else $("#code-msg").innerHTML=`<div class="msg err">הקוד לא נשמר. יוצאים ונכנסים שוב עם הסיסמה.</div>`; };
     loadResults().then(()=>{ const box=$("#ad-del"); if(!box) return;
-      box.innerHTML = RES.length? RES.map(r=>`<div class="resrow" style="cursor:default"><span><b>${esc(r.name)}</b> · ${Q[r.q]?.short||""} · ${esc(r.cls)} · ${TPN[r.tp]||""} · ${fmtDate(r.date)}</span><button class="linkbtn" type="button" data-del="${r.id}">מחיקה</button></div>`).join("") : `<span class="hint">אין מילויים.</span>`;
+      box.innerHTML = RES.length? RES.map(r=>`<div class="resrow" style="cursor:default"><span><b>${esc(r.name)}</b> · ${Q[r.q]?.short||""} · ${esc(r.cls)} · ${TPN[r.tp]||""} · ${fmtDate(r.date)}</span><span style="white-space:nowrap"><button class="linkbtn" type="button" data-fix="${r.id}">תיקון</button> · <button class="linkbtn" type="button" data-del="${r.id}">מחיקה</button></span></div>`).join("") : `<span class="hint">אין מילויים.</span>`;
+      box.querySelectorAll("[data-fix]").forEach(b=>b.onclick=()=>{ const r=RES.find(x=>x.id===b.dataset.fix); if(r) fixResponse(r); });
       box.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{ if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="ללחוץ שוב לאישור"; return; }
         const {data} = await sb.rpc("sm_delete_response",{p_pass:adminPass, p_id:b.dataset.del});
         renderAdmin(data===true? `<div class="msg ok">המילוי נמחק.</div>` : `<div class="msg err">המחיקה לא הצליחה.</div>`); });
