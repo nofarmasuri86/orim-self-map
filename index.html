@@ -1616,12 +1616,24 @@ function answersHTML(r){
   }
   return `<details style="border:1px solid var(--line);border-radius:12px;padding:8px 12px"><summary style="cursor:pointer;font-weight:700">👀 מה נענה בשאלון הזה</summary><div style="max-height:260px;overflow:auto;margin-top:8px"><table style="font-size:.9rem"><tbody>${h}</tbody></table></div></details>`;
 }
+/* the whole filled questionnaire, as on the printout, on top of the fix dialog */
+function viewFilled(r){
+  const v=document.createElement("div"); v.className="pwov"; v.style.cssText="z-index:70;align-items:start;overflow:auto";
+  const z=Math.min(1,(innerWidth-40)/794);
+  v.innerHTML=`<div style="width:100%;max-width:860px;display:flex;flex-direction:column;gap:10px;margin:12px auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:10px 14px"><b>השאלון כפי שמולא · ${esc(r.name)}</b><button class="btn" type="button" id="vf-x">סגירה וחזרה לתיקון</button></div>
+    <div class="pwrap" style="zoom:${z}">${filledPage(r,1)}</div></div>`;
+  document.body.appendChild(v);
+  v.querySelector("#vf-x").onclick=()=>v.remove();
+  v.onclick=e=>{ if(e.target===v) v.remove(); };
+}
 function editResponse(r){
   const classes = [...new Set([...rosterClasses(), r.className].filter(Boolean))];
   const ov=document.createElement("div"); ov.className="pwov";
   const when = r.createdAt? new Date(r.createdAt).toLocaleString("he-IL",{day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"}) : String(r.date||"").slice(0,10);
   ov.innerHTML=`<div class="pwbox" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width:560px;max-height:92vh;overflow:auto"><h3 id="ed-t">✏️ תיקון פרטי המילוי</h3>
     <p class="muted" style="margin:0">${esc(typeLabel(r))} · נשמר ב־${esc(when)} · בשם <b>${esc(r.name)}</b>${r.originalName&&r.originalName!==r.name?` (במקור: ${esc(r.originalName)})`:""}. התשובות עצמן לא משתנות.</p>
+    <button class="btn ghost" type="button" id="ed-view" style="align-self:flex-start">📄 פתיחת השאלון המלא</button>
     ${answersHTML(r)}
     <label class="lbl" for="ed-c">כיתה</label><select id="ed-c">${classes.map(c=>`<option ${c===r.className?"selected":""}>${esc(c)}</option>`).join("")}</select>
     <label class="lbl" for="ed-n">שם התלמיד/ה</label><select id="ed-n"></select><input id="ed-o" placeholder="שם פרטי ומשפחה" hidden>
@@ -1635,6 +1647,7 @@ function editResponse(r){
   ov.querySelector("#ed-c").onchange=fillNames;
   ov.querySelector("#ed-n").onchange=()=>{ const o=ov.querySelector("#ed-o"); o.hidden = ov.querySelector("#ed-n").value!=="__other"; if(!o.hidden) o.focus(); };
   ov.querySelector("#ed-x").onclick=()=>ov.remove();
+  ov.querySelector("#ed-view").onclick=()=>viewFilled(r);
   ov.querySelector("#ed-ok").onclick=async()=>{
     const sel=ov.querySelector("#ed-n").value, name=nameKey(sel==="__other"? ov.querySelector("#ed-o").value : sel);
     if(!name){ ov.querySelector("#ed-msg").innerHTML=`<div class="msg err">חסר שם.</div>`; return; }

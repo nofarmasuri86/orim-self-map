@@ -818,6 +818,7 @@ function fixResponse(r){
   const ov=document.createElement("div"); ov.className="gate"; ov.style.cssText="position:fixed;inset:0;z-index:60;background:rgba(30,42,79,.45);display:grid;place-items:center;padding:16px";
   ov.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="fx-t" style="max-width:560px;width:100%;max-height:92vh;overflow:auto"><h2 id="fx-t">✏️ תיקון פרטי המילוי</h2>
     <p class="hint">${esc(q?.short||"")} · ${fmtDate(r.date)} · בשם <b>${esc(r.name)}</b>${r.originalName&&r.originalName!==r.name?` (במקור: ${esc(r.originalName)})`:""}. התשובות לא משתנות.</p>
+    <button class="btn ghost" type="button" id="fx-view" style="align-self:flex-start">📄 פתיחת השאלון המלא</button>
     <details><summary style="cursor:pointer;font-weight:700">👀 מה נענה בשאלון הזה</summary><div class="tablewrap" style="max-height:240px;overflow:auto"><table class="obs"><tbody>${(q?.items||[]).map(it=>`<tr><td class="d">${esc(T(it))}</td><td class="o"><b>${ans(it,r.ans?.[it[0]])}</b></td></tr>`).join("")}${r.notes?`<tr><td class="d">הערות</td><td class="o">${esc(r.notes)}</td></tr>`:""}</tbody></table></div></details>
     <div class="field"><label for="fx-c">כיתה</label><select id="fx-c">${classes.map(c=>`<option ${c===r.cls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
     <div class="field"><label for="fx-n">תלמיד/ה</label><select id="fx-n"></select><input type="text" id="fx-o" placeholder="שם פרטי ומשפחה" hidden></div>
@@ -830,6 +831,13 @@ function fixResponse(r){
   fill(); ov.querySelector("#fx-c").onchange=fill;
   ov.querySelector("#fx-n").onchange=()=>{ ov.querySelector("#fx-o").hidden=ov.querySelector("#fx-n").value!=="__other"; };
   ov.querySelector("#fx-x").onclick=()=>ov.remove();
+  ov.querySelector("#fx-view").onclick=async()=>{
+    try{ await loadPhotos(r.cls,r.name); }catch(e){}
+    const v=document.createElement("div"); v.style.cssText="position:fixed;inset:0;z-index:70;background:rgba(30,42,79,.55);overflow:auto;padding:12px";
+    const z=Math.min(1,(innerWidth-30)/794);
+    v.innerHTML=`<div style="max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:10px"><div class="card" style="flex-direction:row;justify-content:space-between;align-items:center;padding:12px 16px"><b>השאלון כפי שמולא · ${esc(r.name)}</b><button class="btn" type="button" id="vf-x">סגירה וחזרה לתיקון</button></div><div style="zoom:${z}">${sheetHTML(r).replace('id="sheet"','')}</div></div>`;
+    document.body.appendChild(v); v.querySelector("#vf-x").onclick=()=>v.remove(); v.onclick=e=>{ if(e.target===v) v.remove(); };
+  };
   ov.querySelector("#fx-ok").onclick=async()=>{
     const sel=ov.querySelector("#fx-n").value, name=(sel==="__other"? ov.querySelector("#fx-o").value : sel).trim().replace(/\s+/g," ");
     if(!name){ ov.querySelector("#fx-msg").innerHTML=`<div class="msg err">חסר שם.</div>`; return; }
