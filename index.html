@@ -274,6 +274,22 @@ button,input,select,textarea{font:inherit;color:inherit}
 .trk{gap:10px}
 .trk-h{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
 .trk-chips{display:flex;gap:8px;flex-wrap:wrap}
+/* reminder list: who still needs to fill, per class */
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.rm-card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;break-inside:avoid}
+.rm-card h3{font-size:1.2rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rm-card h3 small{font-size:.85rem;font-weight:600;color:var(--muted)}
+.rm-card h4{margin:0;font-size:.95rem;color:var(--muted)}
+.rm-card ul{margin:0;padding:0 18px 0 0;display:grid;gap:2px}
+.rm-card .rm-done{color:#1E6B33;font-weight:700;margin:0}
+.rm-head{display:none}
+@media print{
+  body{background:#fff!important}
+  header.top,.no-print{display:none!important}
+  .rm-head{display:block;margin-bottom:12px}
+  .rm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rm-card{border:1.5px solid #9AA3B8}
+}
 .chipc{border-radius:999px;padding:4px 12px;background:var(--bg);border:1px solid var(--line);font-size:.9rem}
 .chipc.ok{background:var(--yes-col);border-color:#9fd8ae}
 .trk-bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}
@@ -1240,7 +1256,7 @@ async function renderTrack(){
   const db = await getDb(); let rows=[];
   try{ rows = db? (await db.collection("responses").get()).docs.map(d=>({id:d.id,...d.data()})) : []; }catch(e){}
   rows = rows.filter(isV2); FILLS = rows;
-  if(!trTp){ const used = TP_ORDER.filter(t=>rows.some(r=>r.timepoint===t)); trTp = used.at(-1) || "start"; }
+  if(!trTp){ const cnt = t=>rows.filter(r=>r.timepoint===t).length; trTp = [...TP_ORDER].sort((a,b)=>cnt(b)-cnt(a))[0]; if(!cnt(trTp)) trTp="start"; }
   const classes = [...new Set([...rosterClasses(), ...rows.map(r=>r.className).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"he"));
   const shown = trCls==="__all"? classes : classes.filter(c=>c===trCls);
   let totS=0, doneS=0, doneT=0, h="";
@@ -1262,7 +1278,7 @@ async function renderTrack(){
   });
   $("#view").innerHTML = `<div class="dash">
     <div class="toolbar"><div><h2 style="font-size:1.5rem">📋 מעקב מילוי</h2><p class="muted" style="margin:4px 0 0">מי כבר מילא/ה ומי עוד צריך/ה להשלים, לפי כיתה ומועד.</p></div>
-      <button class="btn ghost" type="button" id="roster-edit">👥 עריכת כיתות ותלמידים</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="trk-remind">📄 רשימת תזכורת למורים</button><button class="btn ghost" type="button" id="roster-edit">👥 עריכת כיתות ותלמידים</button></div></div>
     <section class="panel prctl">
       <div class="field"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===trTp?"selected":""}>${TP[t]}</option>`).join("")}</select></div>
       <div class="field"><label for="tr-cls">כיתה</label><select id="tr-cls"><option value="__all">כל הכיתות</option>${classes.map(c=>`<option ${c===trCls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
@@ -1273,6 +1289,42 @@ async function renderTrack(){
   $("#tr-tp").onchange=e=>{ trTp=e.target.value; renderTrack(); };
   $("#tr-cls").onchange=e=>{ trCls=e.target.value; renderTrack(); };
   $("#roster-edit").onclick=()=>requirePass(renderRosterEditor);
+  $("#trk-remind").onclick=()=>renderReminder(classes);
+}
+
+function renderReminder(classes){
+  const data = classes.map(cls=>{
+    const roster = ROSTER[cls]||[];
+    const inData = [...new Map(FILLS.filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
+    const names = [...roster, ...inData.filter(n=>!roster.some(x=>nk(x)===nk(n)))];
+    const sSet = filledSet(cls, trTp, "self"), tSet = filledSet(cls, trTp, "staff");
+    return {cls, total:names.length, missS:names.filter(n=>!sSet.has(nk(n))), missT:names.filter(n=>!tSet.has(nk(n)))};
+  }).filter(c=>c.total);
+  const list = (arr, label) => arr.length? `<h4>${label} (${arr.length})</h4><ul>${arr.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>` : `<p class="rm-done">✓ ${label}: כולם מילאו</p>`;
+  const text = c => `שלום, תזכורת לשאלוני מיפוי תפיסה עצמית (${TP[trTp]}) – ${c.cls}:\n`
+    + (c.missS.length? `\nשאלון תלמיד – עוד לא מילאו:\n${c.missS.map(n=>"• "+n).join("\n")}\n` : `\nשאלון תלמיד – כולם מילאו ✓\n`)
+    + (c.missT.length? `\nשאלון צוות – עוד לא מולא עבור:\n${c.missT.map(n=>"• "+n).join("\n")}\n` : `\nשאלון צוות – הכול מולא ✓\n`)
+    + `\nתודה רבה! 🌟`;
+  const today = new Date().toLocaleDateString("he-IL");
+  const totalMiss = data.reduce((a,c)=>a+c.missS.length+c.missT.length,0);
+  $("#view").innerHTML = `<div class="dash">
+    <div class="toolbar no-print"><div><h2 style="font-size:1.5rem">📄 רשימת תזכורת למורים</h2><p class="muted" style="margin:4px 0 0">${TP[trTp]} · רק מי שעוד צריך/ה למלא, לפי כיתה. אפשר להדפיס, או להעתיק לכל כיתה הודעה מוכנה לוואטסאפ.</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="rm-print">🖨️ הדפסה / PDF</button><button class="btn ghost" type="button" id="rm-back">חזרה למעקב</button></div></div>
+    <div id="rm-msg" class="no-print"></div>
+    <div class="rm-head"><h2 style="font-size:1.4rem">שאלוני מיפוי תפיסה עצמית · מי עוד צריך למלא</h2><p class="muted" style="margin:2px 0 0">${TP[trTp]} · נכון ל־${today}</p></div>
+    ${totalMiss? "" : `<div class="msg ok">🎉 כל התלמידים והצוות מילאו את השאלונים ל${TP[trTp]}.</div>`}
+    <div class="rm-grid">${data.map((c,i)=>`<section class="rm-card"><h3>${esc(c.cls)} <small>${c.total} תלמידים</small></h3>
+      ${list(c.missS,"שאלון תלמיד – עוד לא מילאו")}
+      ${list(c.missT,"שאלון צוות – עוד לא מולא עבור")}
+      ${c.missS.length||c.missT.length? `<button class="btn ghost no-print" type="button" data-rm-copy="${i}" style="align-self:flex-start">📋 העתקת הודעה לוואטסאפ</button>` : ""}</section>`).join("")}</div></div>`;
+  $("#rm-print").onclick=()=>window.print();
+  $("#rm-back").onclick=()=>renderTrack();
+  document.querySelectorAll("[data-rm-copy]").forEach(b=>b.onclick=async()=>{
+    const t=text(data[+b.dataset.rmCopy]);
+    try{ await navigator.clipboard.writeText(t); b.textContent="✓ הועתק – מדביקים בוואטסאפ"; }
+    catch(e){ $("#rm-msg").innerHTML=`<div class="msg">ההעתקה האוטומטית לא עבדה. מסמנים את הטקסט ומעתיקים:<textarea style="width:100%;min-height:160px;margin-top:8px">${esc(t)}</textarea></div>`; }
+  });
+  window.scrollTo({top:0});
 }
 
 let rosterDraft = null;
