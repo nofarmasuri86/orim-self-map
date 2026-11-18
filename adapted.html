@@ -755,38 +755,67 @@ function sheetHTML(r){
     <div class="sh-note">${story}${r.notes?`<br><b>הערה מהצוות:</b> ${esc(r.notes)}`:""}</div>
     <div class="sh-foot"><span>בית ספר אורים, אילת</span><span>התשובות נבחרו על ידי ${esc(r.name)} בעצמו/ה</span></div></div>`;
 }
-let prCls="__all";
+let prCls="", prQ="all", prTp="";
+/* parent pages: pick a class (and questionnaire / period) and get all its pages at once, sorted by name,
+   with one PDF for the whole selection. Right after a save, the new page is shown on its own. */
 async function renderPrint(){
   loading("טוען מילויים…");
   try{ await loadResults(); }catch(e){ $("#app").innerHTML=`<div class="wrap">${failMsg}</div>`; return; }
-  const list = RES.filter(r=>prCls==="__all"||r.cls===prCls);
-  if(!list.some(r=>r.id===printSel)) printSel=list[0]?.id||"";
-  const cur=RES.find(r=>r.id===printSel);
-  if(cur){ try{ await loadPhotos(cur.cls,cur.name); }catch(e){} }
+  const single = justSaved && RES.find(r=>r.id===printSel);
   const cl=[...new Set(RES.map(r=>r.cls))].sort((a,b)=>a.localeCompare(b,"he"));
-  $("#app").innerHTML=`<div class="wrap"><div class="hero"><h1 style="font-size:28px">דף להורים ולתלמיד/ה</h1><p>דף צבעוני עם השאלות, התמונות והתשובות שהתלמיד/ה בחר/ה. מורידים PDF ומדפיסים.</p></div>
-    ${justSaved?'<div class="msg ok">השאלון נשמר. זה הדף להורים ולתלמיד/ה.</div>':""}
+  if(single) prCls=single.cls;
+  if(!cl.includes(prCls)) prCls=cl[0]||"";
+  const inCls=RES.filter(r=>r.cls===prCls);
+  if(!prTp){ const cnt=t=>inCls.filter(r=>r.tp===t).length; prTp=[...TP_ORDER].sort((a,b)=>cnt(b)-cnt(a))[0]||"start"; }
+  const qOrder={me:0,well:1};
+  const list = single? [single] : inCls.filter(r=>(prQ==="all"||r.q===prQ)&&(prTp==="all"||r.tp===prTp))
+    .sort((a,b)=>a.name.localeCompare(b.name,"he")||qOrder[a.q]-qOrder[b.q]||TP_ORDER.indexOf(a.tp)-TP_ORDER.indexOf(b.tp));
+  const people=[...new Map(list.map(r=>[pkey(r.cls,r.name),r])).values()];
+  let i=0; for(const r of people){ i++; const el=document.querySelector(".loading p, .empty"); if(el) el.textContent=`טוען תמונות… ${i} מתוך ${people.length}`; try{ await loadPhotos(r.cls,r.name); }catch(e){} }
+  const sel=(id,label,opts,val)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}">${opts.map(([v,t])=>`<option value="${esc(v)}" ${v===val?"selected":""}>${esc(t)}</option>`).join("")}</select></div>`;
+  $("#app").innerHTML=`<div class="wrap"><div class="hero no-print"><h1 style="font-size:28px">דף להורים ולתלמיד/ה</h1><p>בוחרים כיתה, ומקבלים את כל הדפים שלה מסודרים לפי שם. כפתור אחד מוריד PDF עם כל הדפים, דף לכל תלמיד/ה ושאלון.</p></div>
+    ${single?'<div class="msg ok">השאלון נשמר. זה הדף להורים ולתלמיד/ה.</div>':""}
     ${!RES.length?`<div class="empty">עוד אין מילויים. ממלאים שאלון בלשונית ״מילוי שאלון״, והדף יופיע כאן.</div>`:`
-    <section class="card"><div class="grid2"><div class="field"><label for="pr-c">כיתה</label><select id="pr-c"><option value="__all">כל הכיתות</option>${cl.map(c=>`<option ${c===prCls?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div class="field"><label for="pr-r">מילוי</label><select id="pr-r">${list.map(r=>`<option value="${r.id}" ${r.id===printSel?"selected":""}>${esc(r.name)} · ${Q[r.q]?.short||""} · ${TPN[r.tp]||""} · ${fmtDate(r.date)}</option>`).join("")}</select></div></div>
-      <div class="actions"><button class="btn" type="button" id="pr-pdf" ${cur?"":"disabled"}>הורדת PDF להדפסה</button>${justSaved?`<button class="btn ghost" type="button" id="pr-more">מילוי נוסף</button>`:""}</div><div id="pr-msg"></div></section>
-    <div class="sheetwrap">${cur?sheetHTML(cur):""}</div>`}</div>`;
+    <section class="card">
+      ${single?"":`<div class="grid2">${sel("pr-c","כיתה",cl.map(c=>[c,`${c} (${RES.filter(r=>r.cls===c).length})`]),prCls)}
+        ${sel("pr-q","שאלון",[["all","שני השאלונים"],["me","זה אני"],["well","רווחה והשתתפות"]],prQ)}
+        ${sel("pr-tp","מועד",[...TP_ORDER.map(t=>[t,TPN[t]]),["all","כל המועדים"]],prTp)}</div>`}
+      <div class="actions"><button class="btn" type="button" id="pr-all" ${list.length?"":"disabled"}>⬇️ ${single?"הורדת PDF להדפסה":`PDF אחד עם כל ${list.length} הדפים`}</button>
+        ${single?`<button class="btn ghost" type="button" id="pr-cls">כל הדפים של ${esc(single.cls)}</button><button class="btn ghost" type="button" id="pr-more">מילוי נוסף</button>`:""}</div>
+      <div id="pr-msg"></div>
+      ${single||!list.length?"":`<p class="hint" style="margin:0">${people.length} תלמידים · ${list.length} דפים. אפשר גם להוריד דף בודד מהכפתור שמעל כל דף.</p>`}
+    </section>
+    ${list.length?"":`<div class="empty">אין מילויים בכיתה הזו לפי הבחירה. משנים שאלון או מועד.</div>`}
+    <div class="sheetwrap" style="display:flex;flex-direction:column;gap:22px">${list.map(r=>`<div class="prone" data-id="${r.id}">
+      ${single?"":`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;max-width:794px;margin:0 auto 6px"><b>${esc(r.name)} · ${esc(Q[r.q]?.short||"")} · ${TPN[r.tp]||""}</b><button class="linkbtn" type="button" data-one="${r.id}">⬇️ PDF לדף הזה</button></div>`}
+      ${sheetHTML(r).replace(' id="sheet"','')}</div>`).join("")}</div>`}</div>`;
   justSaved=false;
   if(!RES.length) return;
-  $("#pr-c").onchange=e=>{ prCls=e.target.value; printSel=""; renderPrint(); };
-  $("#pr-r").onchange=e=>{ printSel=e.target.value; renderPrint(); };
+  if($("#pr-c")) $("#pr-c").onchange=e=>{ prCls=e.target.value; prTp=""; printSel=""; renderPrint(); };
+  if($("#pr-q")) $("#pr-q").onchange=e=>{ prQ=e.target.value; renderPrint(); };
+  if($("#pr-tp")) $("#pr-tp").onchange=e=>{ prTp=e.target.value; renderPrint(); };
   if($("#pr-more")) $("#pr-more").onclick=()=>{ TAB="fill"; route(); };
-  $("#pr-pdf").onclick=async()=>{
-    const b=$("#pr-pdf"); b.disabled=true; b.textContent="מכין PDF…";
+  if($("#pr-cls")) $("#pr-cls").onclick=()=>{ printSel=""; renderPrint(); };
+  const makePdf = async (items, filename, btn, label)=>{
+    btn.disabled=true;
     try{
-      const el=$("#sheet"); const c=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false,windowWidth:900});
       const pdf=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-      const W=210, H=297, m=8; let w=W-2*m, h=c.height*w/c.width; if(h>H-2*m){ h=H-2*m; w=c.width*h/c.height; }
-      pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",(W-w)/2,m,w,h);
-      saveBlob(pdf.output("blob"), `${cur.name} - ${Q[cur.q].short} - ${TPN[cur.tp]}.pdf`);
-      b.textContent="הורדת PDF להדפסה"; b.disabled=false;
-    }catch(e){ b.textContent="הורדת PDF להדפסה"; b.disabled=false; $("#pr-msg").innerHTML=`<div class="msg err">לא הצלחתי להכין את הקובץ. מנסים שוב.</div>`; }
+      for(let k=0;k<items.length;k++){
+        btn.textContent=`מכין PDF… ${k+1} מתוך ${items.length}`;
+        const el=document.querySelector(`.prone[data-id="${items[k].id}"] .sheet`);
+        const c=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false,windowWidth:900});
+        const W=210, H=297, m=8; let w=W-2*m, h=c.height*w/c.width; if(h>H-2*m){ h=H-2*m; w=c.width*h/c.height; }
+        if(k) pdf.addPage();
+        pdf.addImage(c.toDataURL("image/jpeg",.9),"JPEG",(W-w)/2,m,w,h);
+      }
+      saveBlob(pdf.output("blob"), filename);
+    }catch(e){ $("#pr-msg").innerHTML=`<div class="msg err">לא הצלחתי להכין את הקובץ. מנסים שוב.</div>`; }
+    btn.textContent=label; btn.disabled=false;
   };
+  const allBtn=$("#pr-all"), allLabel=allBtn.textContent;
+  allBtn.onclick=()=> makePdf(list, single? `${single.name} - ${Q[single.q].short} - ${TPN[single.tp]}.pdf`
+    : `דפים להורים - ${prCls} - ${prQ==="all"?"שני השאלונים":Q[prQ].short} - ${prTp==="all"?"כל המועדים":TPN[prTp]}.pdf`, allBtn, allLabel);
+  document.querySelectorAll("[data-one]").forEach(b=>b.onclick=()=>{ const r=list.find(x=>x.id===b.dataset.one); makePdf([r], `${r.name} - ${Q[r.q].short} - ${TPN[r.tp]}.pdf`, b, b.textContent); });
 }
 function saveBlob(blob, filename){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); }
 

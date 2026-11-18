@@ -1225,8 +1225,19 @@ async function saveRoster(r){
   await db.doc("config/texts").set(v);
   configCache = v; ROSTER = r;
 }
+let ADAPTED = [];         // fills of the adapted questionnaires (זה אני / רווחה), for the tracking table
+/* "זה אני" counts as the student questionnaire AND the staff questionnaire (the staff check is built into it) */
 function filledSet(cls, tp, group){
-  return new Set(FILLS.filter(r=>r.className===cls && r.timepoint===tp && (group==="staff"? r.type==="staff" : isSelfType(r.type))).map(r=>nk(r.name)));
+  const main = FILLS.filter(r=>r.className===cls && r.timepoint===tp && (group==="staff"? r.type==="staff" : isSelfType(r.type)));
+  const ad = group==="well"? ADAPTED.filter(r=>r.className===cls && r.timepoint===tp && r.q==="well")
+    : ADAPTED.filter(r=>r.className===cls && r.timepoint===tp && r.q==="me");
+  return new Set([...(group==="well"?[]:main), ...ad].map(r=>nk(r.name)));
+}
+function selfKind(cls, tp, name){
+  const k=nk(name), hit=r=>r.className===cls && r.timepoint===tp && nk(r.name)===k;
+  const kinds=[...new Set(FILLS.filter(r=>hit(r)&&isSelfType(r.type)).map(r=>r.type==="visual"?"תת״ח":"מילולי"))];
+  if(ADAPTED.some(r=>hit(r)&&r.q==="me")) kinds.push("זה אני");
+  return kinds.join(" + ");
 }
 function refreshStudentField(){
   const sel=$("#f-student"), inp=$("#f-name"); if(!sel||!state) return;
@@ -1255,6 +1266,7 @@ async function renderTrack(){
   $("#view").innerHTML = `<div class="empty">טוען את מצב המילוי…</div>`;
   const db = await getDb(); let rows=[];
   try{ rows = db? (await db.collection("responses").get()).docs.map(d=>({id:d.id,...d.data()})) : []; }catch(e){}
+  ADAPTED = rows.filter(r=>r.version==="adapted_v1");
   rows = rows.filter(isV2); FILLS = rows;
   if(!trTp){ const cnt = t=>rows.filter(r=>r.timepoint===t).length; trTp = [...TP_ORDER].sort((a,b)=>cnt(b)-cnt(a))[0]; if(!cnt(trTp)) trTp="start"; }
   const classes = [...new Set([...rosterClasses(), ...rows.map(r=>r.className).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"he"));
@@ -1262,22 +1274,24 @@ async function renderTrack(){
   let totS=0, doneS=0, doneT=0, h="";
   shown.forEach(cls=>{
     const roster = ROSTER[cls]||[];
-    const inData = [...new Map(rows.filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
+    const inData = [...new Map([...rows,...ADAPTED].filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
     const names = [...roster, ...inData.filter(n=>!roster.some(x=>nk(x)===nk(n)))];
-    const sSet = filledSet(cls, trTp, "self"), tSet = filledSet(cls, trTp, "staff");
+    const sSet = filledSet(cls, trTp, "self"), tSet = filledSet(cls, trTp, "staff"), wSet = filledSet(cls, trTp, "well");
+    const hasAd = ADAPTED.some(r=>r.className===cls);
     const cS = names.filter(n=>sSet.has(nk(n))).length, cT = names.filter(n=>tSet.has(nk(n))).length;
     totS += names.length; doneS += cS; doneT += cT;
     const pct = names.length? Math.round(cS/names.length*100) : 0;
     h += `<section class="panel trk"><div class="trk-h"><h3>${esc(cls)}</h3>
       <div class="trk-chips"><span class="chipc ${cS===names.length&&names.length?"ok":""}">🧒 תלמידים: <b>${cS}</b> / ${names.length}</span><span class="chipc ${cT===names.length&&names.length?"ok":""}">👩‍🏫 צוות: <b>${cT}</b> / ${names.length}</span></div></div>
       <div class="trk-bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
-      ${names.length? `<div class="tablewrap"><table class="trk-t"><thead><tr><th>תלמיד/ה</th><th>שאלון תלמיד</th><th>שאלון צוות</th></tr></thead><tbody>
-      ${names.map(n=>{ const s=sSet.has(nk(n)), t=tSet.has(nk(n)), extra=!roster.some(x=>nk(x)===nk(n)) && roster.length;
-        return `<tr class="${s&&t?"":"miss"}"><td><b>${esc(n)}</b>${extra?' <span class="pill">לא ברשימת הכיתה</span>':""}</td><td>${s?'<span class="st ok">✓ מולא</span>':'<span class="st no">חסר</span>'}</td><td>${t?'<span class="st ok">✓ מולא</span>':'<span class="st no">חסר</span>'}</td></tr>`; }).join("")}
+      ${names.length? `<div class="tablewrap"><table class="trk-t"><thead><tr><th>תלמיד/ה</th><th>שאלון תלמיד</th><th>שאלון צוות</th>${hasAd?"<th>רווחה (מותאם, רשות)</th>":""}</tr></thead><tbody>
+      ${names.map(n=>{ const s=sSet.has(nk(n)), t=tSet.has(nk(n)), w=wSet.has(nk(n)), extra=!roster.some(x=>nk(x)===nk(n)) && roster.length;
+        const kind = s? selfKind(cls,trTp,n) : "", adOnly = kind==="זה אני";
+        return `<tr class="${s&&t?"":"miss"}"><td><b>${esc(n)}</b>${extra?' <span class="pill">לא ברשימת הכיתה</span>':""}</td><td>${s?`<span class="st ok">✓ ${esc(kind)}</span>`:'<span class="st no">חסר</span>'}</td><td>${t?`<span class="st ok">✓ ${adOnly?"בתוך ״זה אני״":"מולא"}</span>`:'<span class="st no">חסר</span>'}</td>${hasAd?`<td>${w?'<span class="st ok">✓ מולא</span>':'<span class="muted">—</span>'}</td>`:""}</tr>`; }).join("")}
       </tbody></table></div>` : `<p class="muted" style="margin:0">אין עדיין תלמידים ברשימה של הכיתה הזו.</p>`}</section>`;
   });
   $("#view").innerHTML = `<div class="dash">
-    <div class="toolbar"><div><h2 style="font-size:1.5rem">📋 מעקב מילוי</h2><p class="muted" style="margin:4px 0 0">מי כבר מילא/ה ומי עוד צריך/ה להשלים, לפי כיתה ומועד.</p></div>
+    <div class="toolbar"><div><h2 style="font-size:1.5rem">📋 מעקב מילוי</h2><p class="muted" style="margin:4px 0 0">כל סוגי השאלונים בטבלה אחת, לפי כיתה ומועד: מילולי, תת״ח, ״זה אני״ ורווחה (מותאמים) ושאלון הצוות.</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="trk-remind">📄 רשימת תזכורת למורים</button><button class="btn ghost" type="button" id="roster-edit">👥 עריכת כיתות ותלמידים</button></div></div>
     <section class="panel prctl">
       <div class="field"><label for="tr-tp">מועד</label><select id="tr-tp">${TP_ORDER.map(t=>`<option value="${t}" ${t===trTp?"selected":""}>${TP[t]}</option>`).join("")}</select></div>
@@ -1295,7 +1309,7 @@ async function renderTrack(){
 function renderReminder(classes){
   const data = classes.map(cls=>{
     const roster = ROSTER[cls]||[];
-    const inData = [...new Map(FILLS.filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
+    const inData = [...new Map([...FILLS,...ADAPTED].filter(r=>r.className===cls).map(r=>[nk(r.name), r.name])).values()];
     const names = [...roster, ...inData.filter(n=>!roster.some(x=>nk(x)===nk(n)))];
     const sSet = filledSet(cls, trTp, "self"), tSet = filledSet(cls, trTp, "staff");
     return {cls, total:names.length, missS:names.filter(n=>!sSet.has(nk(n))), missT:names.filter(n=>!tSet.has(nk(n)))};
