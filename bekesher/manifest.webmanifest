@@ -3,7 +3,7 @@
   "short_name": "אורים בקשר",
   "start_url": "./?go=1",
   "scope": "./",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#B9503A",
   "theme_color": "#B9503A",
   "lang": "he",
