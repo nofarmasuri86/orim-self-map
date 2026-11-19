@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>אורים בקשר</title>
+<meta name="apple-mobile-web-app-title" content="אורים בקשר">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#B9503A">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap">
+<style>
+  :root{--bg:#F7F2EC;--ink:#24322F;--muted:#6B7375;--clay:#B9503A;--clay2:#E8795F;--teal:#2D6A73;--card:#fff;--line:#E8DDD0}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Heebo",system-ui,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right)) 24px max(16px,env(safe-area-inset-left))}
+  .card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 10px 30px rgba(80,50,30,.08)}
+  .ic{width:96px;height:96px;border-radius:24px;box-shadow:0 10px 24px rgba(185,80,58,.35)}
+  h1{margin:16px 0 4px;font-size:1.8rem;font-weight:800}
+  p{margin:0;color:var(--muted)}
+  .go{display:block;margin:22px 0 6px;background:linear-gradient(135deg,var(--clay2),var(--clay));color:#fff;text-decoration:none;font-weight:800;font-size:1.15rem;padding:15px;border-radius:16px}
+  .how{margin-top:22px;text-align:start;background:#F4ECE2;border-radius:16px;padding:14px 16px;font-size:.95rem;line-height:1.7}
+  .how b{color:var(--teal)}
+  .how ol{margin:6px 0 0;padding-inline-start:20px}
+  .note{font-size:.8rem;margin-top:14px}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="ic" src="icon-180.png" alt="">
+  <h1>אורים בקשר</h1>
+  <p>לוח הפניות והעדכונים של צוות אורים</p>
+  <a class="go" id="go" href="https://script.google.com/macros/s/AKfycbwqjsOrh-SLsbwNBkE_sWlF3NL74mJ9nN2-NWNQD81B8LhPkE_7NkirQKGBJsR5a29W2A/exec">כניסה ללוח ←</a>
+  <div class="how" id="how">
+    <b>📱 לשמירה במסך הבית, עם האייקון הזה:</b>
+    <ol id="steps">
+      <li>באייפון: בספארי, לחצו על כפתור השיתוף <b>⬆︎</b></li>
+      <li>בחרו <b>״הוספה למסך הבית״</b> ואז <b>״הוספה״</b></li>
+    </ol>
+  </div>
+  <p class="note">מהאייקון במסך הבית הלוח ייפתח ישר.</p>
+</main>
+<script>
+  var APP = document.getElementById("go").href;
+  var standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  if (standalone || /[?&]go=1/.test(location.search)) { location.replace(APP); }
+  if (/Android/i.test(navigator.userAgent)) {
+    document.getElementById("steps").innerHTML = "<li>בכרום: לחצו על <b>⋮</b> למעלה</li><li>בחרו <b>״הוספה למסך הבית״</b> ואז <b>״הוספה״</b></li>";
+  }
+</script>
+</body>
+</html>
